@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -22,10 +21,13 @@ public class Project {
     private String name;
 
     @OneToMany
-    private List<Issue> issues;
+    private List<Issue> issues = new ArrayList<>();
 
-    @OneToMany
-    private Set<User> members;
+    @ElementCollection
+    @CollectionTable(name = "user_permissions", joinColumns = @JoinColumn(name = "project_id"))
+    @MapKeyJoinColumn(name = "user_id")
+    @Column(name = "permission")
+    private Map<Long, Integer> members = new HashMap<>();
 
     @Nonnull
     @ManyToOne
