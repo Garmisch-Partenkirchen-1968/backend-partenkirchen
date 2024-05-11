@@ -1,9 +1,9 @@
 package com.example.demo.entity;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -19,10 +19,10 @@ public class Issue {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
+    @Nonnull
     private String title;
 
-    @NonNull
+    @Nonnull
     @ManyToOne
     private User reporter;
 
@@ -35,7 +35,7 @@ public class Issue {
     @ManyToOne
     private User assignee;
 
-    @NonNull
+    @Nonnull
     @Enumerated(EnumType.STRING)
     private IssuePriority priority;
 
