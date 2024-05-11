@@ -23,5 +23,5 @@ public class Comment {
     private User commenter;
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDateTime commentedDate;
 }
