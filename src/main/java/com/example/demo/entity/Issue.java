@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import com.example.demo.entity.enumerate.IssuePriority;
+import com.example.demo.entity.enumerate.IssueStatus;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
