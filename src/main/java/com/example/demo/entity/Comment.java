@@ -27,4 +27,6 @@ public class Comment {
 
     @CreatedDate
     private LocalDateTime commentedDate;
+
+    private Boolean isDescription = false;
 }
