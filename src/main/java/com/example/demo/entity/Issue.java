@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,8 +43,8 @@ public class Issue {
     private IssuePriority priority;
 
     @Enumerated(EnumType.STRING)
-    private IssueStatus status;
+    private IssueStatus status = IssueStatus.NEW;
 
     @OneToMany
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 }
