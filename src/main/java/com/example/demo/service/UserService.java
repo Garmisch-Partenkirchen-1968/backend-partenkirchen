@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User addUser(User user) {
+    public User signUpUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("username already exists");
         }
@@ -20,7 +20,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User getUser(String username) {
-        return userRepository.findByUsername(username).orElseThrow();
+    public User signInUser(User user) {
+        User foundUser = userRepository.findByUsername(user.getUsername()).orElseThrow();
+        if (!foundUser.getPassword().equals(user.getPassword())) {
+            throw new RuntimeException("password does not match");
+        }
+        return foundUser;
     }
 }

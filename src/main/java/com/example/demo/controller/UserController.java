@@ -15,11 +15,11 @@ public class UserController {
 
     @PostMapping("/signup")
     public User signup(@RequestBody User user) {
-        return userService.addUser(user);
+        return userService.signUpUser(user);
     }
 
     @GetMapping("/signin")
     public User signin(@RequestBody User user) {
-        return userService.getUser(user.getUsername());
+        return userService.signInUser(user);
     }
 }
