@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
 
     public Project createProject(Project project, User user){
         if(projectRepository.findByProjectname(project.getName()).isPresent()){
@@ -25,10 +24,10 @@ public class ProjectService {
     }
 
     public Project addPermission(Project project, User user, boolean[] permissions){
-        if(userRepository.findById(user.getId()).isPresent()){
+        if(project.getMembers().get(user) != null){
             throw new RuntimeException("User already exsists in project");
         }
-        if(projectRepository.findByProject(project).isEmpty()){
+        if(projectRepository.findByProjectID(project.getId()).isEmpty()){
             throw new RuntimeException("Project not exists");
         }
 
@@ -37,22 +36,13 @@ public class ProjectService {
         if(permissions[1]) permission = permission | (1 << 2);
         if(permissions[2]) permission = permission | (1 << 1);
         if(permissions[3]) permission = permission | (1 << 0);
+        if(permission == 0){
+            if(project.getMembers().get(user) != null){
+                project.getMembers().remove(user);
+                return projectRepository.save(project);
+            }
+        }
         project.getMembers().put(user, permission);
-        return projectRepository.save(project);
-    }
-
-    public Project deletePermission(Project project, User requester, User user){
-        if(project.getMembers().get(requester) < (1 << 3)){
-            throw new RuntimeException("User does not have permission to delete user");
-        }
-        if(project.getMembers().get(user) == null){
-            throw new RuntimeException("There's no user in project");
-        }
-        if(projectRepository.findByProject(project).isEmpty()){
-            throw new RuntimeException("Project not exists");
-        }
-
-        project.getMembers().remove(user);
         return projectRepository.save(project);
     }
 }
