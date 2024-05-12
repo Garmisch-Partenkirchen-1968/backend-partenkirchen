@@ -18,7 +18,7 @@ public class ProjectService {
     private final UserRepository userRepository;
 
     public Project createProject(Long userid, String projectName){
-        Optional<Project> proj = projectRepository.findByProjectName(projectName);
+        Optional<Project> proj = projectRepository.findByName(projectName);
         Optional<User> us = userRepository.findById(userid);
 
         Project project;
@@ -28,7 +28,7 @@ public class ProjectService {
         project = proj.get();
         user = us.get();
 
-        if(projectRepository.findByProjectName(project.getName()).isPresent()){
+        if(projectRepository.findByName(project.getName()).isPresent()){
             throw new RuntimeException("project name already exists");
         }
         else if(project.getName().isEmpty()){
@@ -39,7 +39,7 @@ public class ProjectService {
     }
 
     public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest){
-        Optional<Project> proj = projectRepository.findByProjectID(projectId);
+        Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
         Optional<User> req = userRepository.findByUsername(permissionRequest.getReqName());
 
@@ -56,7 +56,7 @@ public class ProjectService {
         if(project.getMembers().get(user) != null){
             throw new RuntimeException("User already exsists in project");
         }
-        if(projectRepository.findByProjectID(project.getId()).isEmpty()){
+        if(projectRepository.findById(project.getId()).isEmpty()){
             throw new RuntimeException("Project not exists");
         }
 
