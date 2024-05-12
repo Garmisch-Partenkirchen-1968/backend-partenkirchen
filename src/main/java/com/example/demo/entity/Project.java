@@ -27,9 +27,13 @@ public class Project {
     @CollectionTable(name = "user_permissions", joinColumns = @JoinColumn(name = "project_id"))
     @MapKeyJoinColumn(name = "user_id")
     @Column(name = "permission")
-    private Map<Long, Integer> members = new HashMap<>();
+    private Map<User, Integer> members = new HashMap<>();
 
     @Nonnull
     @ManyToOne
     private User owner;
+
+    public void setOwner(User user){
+        this.owner = user;
+    }
 }
