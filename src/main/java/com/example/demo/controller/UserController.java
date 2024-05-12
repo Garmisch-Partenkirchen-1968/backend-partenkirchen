@@ -5,6 +5,8 @@ import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -21,7 +23,11 @@ public class UserController {
     }
 
     @DeleteMapping("/user/{userId}")
-    public void delete(@PathVariable Long userId) {
+    public void delete(@PathVariable Long userId, @RequestBody User user) {
+        User foundUser = userService.signInUser(user);
+        if (!Objects.equals(foundUser.getId(), userId)) {
+            throw new RuntimeException("not authorized");
+        }
         userService.deleteUser(userId);
     }
 }
