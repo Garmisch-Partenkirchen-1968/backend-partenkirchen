@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.controller.ProjectController;
 import com.example.demo.dto.project.PermissionRequest;
+import com.example.demo.dto.project.ProjectCreater;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.repository.ProjectRepository;
@@ -17,24 +19,22 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    public Project createProject(Long userid, String projectName){
+    public Project createProject(ProjectCreater projectCreater){
+        String projectName = projectCreater.getProjectName();
+        String userName = projectCreater.getUsername();
+
+        if(projectName.isEmpty()){
+            throw new RuntimeException("project name is empty");
+        }
+
         Optional<Project> proj = projectRepository.findByName(projectName);
-        Optional<User> us = userRepository.findById(userid);
+        Optional<User> us = userRepository.findByUsername(userName);
 
-        Project project;
-        User user;
-        if(proj.isEmpty()){throw new RuntimeException("project not found");}
+        if(proj.isPresent()){throw new RuntimeException("project name already exists");}
         if(us.isEmpty()){throw new RuntimeException("user not found");}
-        project = proj.get();
-        user = us.get();
+        User user = us.get();
 
-        if(projectRepository.findByName(project.getName()).isPresent()){
-            throw new RuntimeException("project name already exists");
-        }
-        else if(project.getName().isEmpty()){
-            throw new RuntimeException("proejct name is empty");
-        }
-        project.setOwner(user); // owner 설정
+        Project project = new Project(projectName, user);
         return projectRepository.save(project);
     }
 

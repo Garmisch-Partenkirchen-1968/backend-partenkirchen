@@ -13,7 +13,13 @@ import java.util.*;
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class Project {
+    public Project(String projectName, User owner){
+        this.name = projectName;
+        this.owner = owner;
+    }
+
     @Id
+    @Nonnull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -32,8 +38,4 @@ public class Project {
     @Nonnull
     @ManyToOne
     private User owner;
-
-    public void setOwner(User user){
-        this.owner = user;
-    }
 }

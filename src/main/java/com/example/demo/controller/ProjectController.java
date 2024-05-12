@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.project.PermissionRequest;
+import com.example.demo.dto.project.ProjectCreater;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.service.ProjectService;
@@ -20,9 +21,16 @@ public class ProjectController {
     private final ProjectService projectService;
     private final UserService userService;
 
-    @PostMapping("/project")
-    public Project createProject(@RequestBody Long userid, @RequestBody String projectName) {
-        return projectService.createProject(userid, projectName);
+    @PostMapping("/projects")
+    public Project createProject(@RequestBody ProjectCreater projectCreater) {
+        String username = projectCreater.getUsername();
+        String password = projectCreater.getPassword();
+        User us = new User(username, password);
+        User user = userService.signInUser(us);
+        if(user == null){
+            throw new RuntimeException("user not found");
+        }
+        return projectService.createProject(projectCreater);
     }
 
     @PostMapping("/projects/{projectId}/permissions/{userId}")
