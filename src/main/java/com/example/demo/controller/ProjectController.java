@@ -20,13 +20,17 @@ public class ProjectController {
     private final ProjectService projectService;
     private final UserService userService;
 
-    /*@PostMapping("/project")
-    public Project createProject(@RequestBody PermissionRequest permissionRequest) {
-        return projectService.createProject(permissionRequest);
+    @PostMapping("/project")
+    public Project createProject(@RequestBody Long userid, @RequestBody String projectName) {
+        return projectService.createProject(userid, projectName);
     }
 
-    @PostMapping("/projects/permissions/{userId}")
-    public Project addPermission(@PathVariable("userId") Long userid, @RequestBody PermissionRequest permissionRequest){
-        User founduser = userService.signInUser()
-    }*/
+    @PostMapping("/projects/{projectId}/permissions/{userId}")
+    public Project addPermission(@PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId, @RequestBody PermissionRequest permissionRequest){
+        User requester = new User(permissionRequest.getReqName(), permissionRequest.getPassword());
+        User founduser = userService.signInUser(requester);
+        if(founduser == null) return null;
+
+        return projectService.addPermission(projectId, userId, permissionRequest);
+    }
 }

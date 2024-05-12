@@ -11,7 +11,7 @@ import java.util.Optional;
 @Getter
 public class PermissionRequest {
     private Long projectID;
-    private String reqID;
+    private String reqName;
     private String password;
     private boolean[] permissions;
 }
