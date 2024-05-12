@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @NoArgsConstructor
 @RequiredArgsConstructor
+@Table(name = "user_table")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
