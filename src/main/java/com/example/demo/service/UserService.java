@@ -28,6 +28,15 @@ public class UserService {
         return foundUser;
     }
 
+    public void updatePassword(Long userId, String newPassword) {
+        if (newPassword.isEmpty()) {
+            throw new RuntimeException("password cannot be empty");
+        }
+        User user = userRepository.findById(userId).orElseThrow();
+        user.setPassword(newPassword);
+        userRepository.save(user);
+    }
+
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         userRepository.delete(user);

@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.user.UserUpdatePasswordRequest;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,12 @@ public class UserController {
     @GetMapping("/signin")
     public User signin(@RequestBody User user) {
         return userService.signInUser(user);
+    }
+
+    @PatchMapping("/user/{userId}")
+    public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest) {
+        checkPermission(userId, userUpdatePasswordRequest.toUser());
+        userService.updatePassword(userId, userUpdatePasswordRequest.getNewPassword());
     }
 
     @DeleteMapping("/user/{userId}")
