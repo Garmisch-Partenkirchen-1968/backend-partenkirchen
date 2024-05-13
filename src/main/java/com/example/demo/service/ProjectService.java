@@ -42,7 +42,7 @@ public class ProjectService {
     public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest){
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
-        Optional<User> req = userRepository.findByUsername(permissionRequest.getReqName());
+        Optional<User> req = userRepository.findByUsername(permissionRequest.getReqname());
 
         Project project;
         User user, requester;
@@ -57,8 +57,8 @@ public class ProjectService {
         if(project.getMembers().get(user) != null){
             throw new RuntimeException("User already exsists in project");
         }
-        if(projectRepository.findById(project.getId()).isEmpty()){
-            throw new RuntimeException("Project not exists");
+        if(project.getMembers().get(requester) < (1 << 3)){
+            throw new RuntimeException("requester has not permission");
         }
 
         Integer permission = 0;

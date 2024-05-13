@@ -34,10 +34,12 @@ public class ProjectController {
     }
 
     @PostMapping("/projects/{projectId}/permissions/{userId}")
-    public Project addPermission(@PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId, @RequestBody PermissionRequest permissionRequest){
-        User requester = new User(permissionRequest.getReqName(), permissionRequest.getPassword());
+    public Project addPermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
+        User requester = new User(permissionRequest.getReqname(), permissionRequest.getPassword());
         User founduser = userService.signInUser(requester);
-        if(founduser == null) return null;
+        if(founduser == null) {
+            throw new RuntimeException("user not found");
+        }
 
         return projectService.addPermission(projectId, userId, permissionRequest);
     }
