@@ -35,6 +35,7 @@ public class ProjectService {
         User user = us.get();
 
         Project project = new Project(projectName, user);
+        project.getMembers().put(user, 1 << 3);
         return projectRepository.save(project);
     }
 
