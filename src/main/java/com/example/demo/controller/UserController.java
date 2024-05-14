@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
 
@@ -29,20 +30,22 @@ public class UserController {
 
     @PatchMapping("/user/{userId}")
     public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest) {
-        checkPermission(userId, userUpdatePasswordRequest.toUser());
+        if (!Objects.equals(userId, checkPermission(userUpdatePasswordRequest.toUser()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong permission");
+        }
         userService.updatePassword(userId, userUpdatePasswordRequest.getNewPassword());
     }
 
     @DeleteMapping("/user/{userId}")
     public void delete(@PathVariable Long userId, @RequestBody User user) {
-        checkPermission(userId, user);
+        if (!Objects.equals(userId, checkPermission(user))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong permission");
+        }
         userService.deleteUser(userId);
     }
 
-    private void checkPermission(Long userId, User user) {
+    private Long checkPermission(User user) {
         UserSignInResponse foundUser = userService.signInUser(user);
-        if (!Objects.equals(foundUser.getId(), userId)) {
-            throw new RuntimeException("not authorized");
-        }
+        return foundUser.getId();
     }
 }
