@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Getter
 public class PermissionRequest {
-    private String reqname;
+    private String username;
     private String password;
     private boolean[] permissions;
 }
