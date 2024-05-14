@@ -4,6 +4,9 @@ import com.example.demo.dto.user.UserUpdatePasswordRequest;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -14,12 +17,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public User signup(@RequestBody User user) {
-        return userService.signUpUser(user);
+    public ResponseEntity<User> signUp(@RequestBody User user) {
+        return new ResponseEntity<>(userService.signUpUser(user), HttpStatus.CREATED);
     }
 
     @GetMapping("/signin")
-    public User signin(@RequestBody User user) {
+    public User signIn(@RequestBody User user) {
         return userService.signInUser(user);
     }
 
