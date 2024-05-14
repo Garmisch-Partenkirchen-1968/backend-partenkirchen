@@ -15,7 +15,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User signUpUser(User user) {
+    public void signUpUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already exists");
         }
@@ -25,7 +25,7 @@ public class UserService {
         if (user.getUsername().matches(".*[ \\t\\n\\r].*")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "whitespace in username");
         }
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public UserSignInResponse signInUser(User user) {
