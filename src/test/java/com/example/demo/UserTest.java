@@ -35,7 +35,7 @@ public class UserTest {
 
     @Test
     void signUp() throws Exception {
-        User user = new User().builder().username("test-admin").password("test-admin").build();
+        User user = User.builder().username("test-admin").password("test-admin").build();
         this.mockMvc.perform(post("/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
@@ -45,7 +45,7 @@ public class UserTest {
 
     @Test
     void signUpWithWhitespace() throws Exception {
-        User user = new User().builder().username("test admin").password("test-admin").build();
+        User user = User.builder().username("test admin").password("test-admin").build();
         this.mockMvc.perform(post("/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
@@ -55,7 +55,7 @@ public class UserTest {
 
     @Test
     void signUpWithEmptyUsername() throws Exception {
-        User user = new User().builder().username("").password("test-admin").build();
+        User user = User.builder().username("").password("test-admin").build();
         this.mockMvc.perform(post("/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
@@ -65,7 +65,7 @@ public class UserTest {
 
     @Test
     void signUpWithEmptyPassword() throws Exception {
-        User user = new User().builder().username("").password("test-admin").build();
+        User user = User.builder().username("").password("test-admin").build();
         this.mockMvc.perform(post("/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
@@ -75,7 +75,7 @@ public class UserTest {
 
     @Test
     void signInWithUnexistUser() throws Exception {
-        User user = new User().builder().username("wrongusernameasdflkjhasdflkjha").password("aadmin").build();
+        User user = User.builder().username("wrongusernameasdflkjhasdflkjha").password("aadmin").build();
         this.mockMvc.perform(get("/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
