@@ -65,7 +65,7 @@ public class UserTest {
 
     @Test
     void signUpWithEmptyPassword() throws Exception {
-        User user = User.builder().username("").password("test-admin").build();
+        User user = User.builder().username("admin").password("").build();
         this.mockMvc.perform(post("/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
