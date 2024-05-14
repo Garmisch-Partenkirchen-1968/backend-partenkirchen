@@ -40,3 +40,4 @@ out/
 
 ### Custom ###
 test.trace.db
+test.mv.db
