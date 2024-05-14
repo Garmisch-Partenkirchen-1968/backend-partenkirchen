@@ -1,10 +1,14 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.user.UserSignInResponse;
 import com.example.demo.dto.user.UserUpdatePasswordRequest;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
 
@@ -14,31 +18,34 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public User signup(@RequestBody User user) {
-        return userService.signUpUser(user);
+    public ResponseEntity<User> signUp(@RequestBody User user) {
+        userService.signUpUser(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/signin")
-    public User signin(@RequestBody User user) {
+    public UserSignInResponse signIn(@RequestBody User user) {
         return userService.signInUser(user);
     }
 
     @PatchMapping("/user/{userId}")
     public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest) {
-        checkPermission(userId, userUpdatePasswordRequest.toUser());
+        if (!Objects.equals(userId, checkPermission(userUpdatePasswordRequest.toUser()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong permission");
+        }
         userService.updatePassword(userId, userUpdatePasswordRequest.getNewPassword());
     }
 
     @DeleteMapping("/user/{userId}")
     public void delete(@PathVariable Long userId, @RequestBody User user) {
-        checkPermission(userId, user);
+        if (!Objects.equals(userId, checkPermission(user))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong permission");
+        }
         userService.deleteUser(userId);
     }
 
-    private void checkPermission(Long userId, User user) {
-        User foundUser = userService.signInUser(user);
-        if (!Objects.equals(foundUser.getId(), userId)) {
-            throw new RuntimeException("not authorized");
-        }
+    private Long checkPermission(User user) {
+        UserSignInResponse foundUser = userService.signInUser(user);
+        return foundUser.getId();
     }
 }
