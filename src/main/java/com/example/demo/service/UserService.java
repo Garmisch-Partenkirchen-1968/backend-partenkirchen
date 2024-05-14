@@ -41,7 +41,7 @@ public class UserService {
 
     public void updatePassword(Long userId, String newPassword) {
         if (newPassword.isEmpty()) {
-            throw new RuntimeException("password cannot be empty");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password cannot be empty");
         }
         User user = userRepository.findById(userId).orElseThrow();
         user.setPassword(newPassword);
