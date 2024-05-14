@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.user.UserSignInResponse;
 import com.example.demo.dto.user.UserUpdatePasswordRequest;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
@@ -21,7 +22,7 @@ public class UserController {
     }
 
     @GetMapping("/signin")
-    public User signIn(@RequestBody User user) {
+    public UserSignInResponse signIn(@RequestBody User user) {
         return userService.signInUser(user);
     }
 
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     private void checkPermission(Long userId, User user) {
-        User foundUser = userService.signInUser(user);
+        UserSignInResponse foundUser = userService.signInUser(user);
         if (!Objects.equals(foundUser.getId(), userId)) {
             throw new RuntimeException("not authorized");
         }
