@@ -1,17 +1,13 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.user.UserSignInResponse;
-import com.example.demo.dto.user.UserUpdatePasswordRequest;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
-import java.net.http.HttpClient;
 import java.util.Optional;
 
 @Service
@@ -21,10 +17,13 @@ public class UserService {
 
     public User signUpUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("username already exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already exists");
         }
-        if (user.getPassword().isEmpty()) {
-            throw new RuntimeException("password cannot be empty");
+        if (user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "field cannot be empty");
+        }
+        if (user.getUsername().matches(".*[ \\t\\n\\r].*")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "whitespace in username");
         }
         return userRepository.save(user);
     }
