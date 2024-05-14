@@ -7,10 +7,7 @@ import com.example.demo.entity.User;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Permission;
 import java.util.Objects;
@@ -35,12 +32,40 @@ public class ProjectController {
 
     @PostMapping("/projects/{projectId}/permissions/{userId}")
     public Project addPermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        User requester = new User(permissionRequest.getReqname(), permissionRequest.getPassword());
-        User founduser = userService.signInUser(requester);
-        if(founduser == null) {
+        if(!RequesterIsFound(permissionRequest.getUsername(), permissionRequest.getPassword())) {
             throw new RuntimeException("user not found");
         }
-
         return projectService.addPermission(projectId, userId, permissionRequest);
+    }
+
+    @PatchMapping("/projects/{projectId}/permissions/{userId}")
+    public Project updatePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
+        if(!RequesterIsFound(permissionRequest.getUsername(), permissionRequest.getPassword())) {
+            throw new RuntimeException("user not found");
+        }
+        return projectService.updatePermission(projectId, userId, permissionRequest);
+    }
+
+    @DeleteMapping("/projects/{projectId}/permissions/{userId}")
+    public Project deletePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
+        if(!RequesterIsFound(permissionRequest.getUsername(), permissionRequest.getPassword())) {
+            throw new RuntimeException("user not found");
+        }
+        return projectService.deletePermission(projectId, userId, permissionRequest);
+    }
+
+    @GetMapping("/projects/{projectId}/permissions/{userId}")
+    public Integer getPermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId) {
+        if(!RequesterIsFound(permissionRequest.getUsername(), permissionRequest.getPassword())) {
+            throw new RuntimeException("user not found");
+        }
+        return projectService.getPermission(projectId, userId, permissionRequest);
+    }
+
+    public boolean RequesterIsFound(String username, String password){
+        User requester = new User(username, password);
+        User founduser = userService.signInUser(requester);
+        if(founduser == null) {return false;}
+        return true;
     }
 }
