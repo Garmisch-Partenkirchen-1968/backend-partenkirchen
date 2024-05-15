@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class Issue {
@@ -33,10 +35,10 @@ public class Issue {
     private LocalDateTime reportedDate;
 
     @ManyToOne
-    private User fixer;
+    private User fixer = null;
 
     @ManyToOne
-    private User assignee;
+    private User assignee = null;
 
     @Nonnull
     @Enumerated(EnumType.STRING)

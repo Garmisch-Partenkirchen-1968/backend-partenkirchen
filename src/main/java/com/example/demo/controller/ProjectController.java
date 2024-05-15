@@ -19,6 +19,7 @@ import java.util.Objects;
 public class ProjectController {
     private final ProjectService projectService;
     private final UserService userService;
+    private UserFindController userFindController;
 
     @PostMapping("/projects")
     public Project createProject(@RequestBody ProjectCreater projectCreater) {
@@ -34,40 +35,25 @@ public class ProjectController {
 
     @PostMapping("/projects/{projectId}/permissions/{userId}")
     public Project addPermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        if(!RequesterIsFound(permissionRequest.getUsername(), permissionRequest.getPassword())) {
-            throw new RuntimeException("user not found");
-        }
+        Long userid = userFindController.RequesterIsFound(permissionRequest);
         return projectService.addPermission(projectId, userId, permissionRequest);
     }
 
     @PatchMapping("/projects/{projectId}/permissions/{userId}")
     public Project updatePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        if(!RequesterIsFound(permissionRequest.getUsername(), permissionRequest.getPassword())) {
-            throw new RuntimeException("user not found");
-        }
+        Long userid = userFindController.RequesterIsFound(permissionRequest);
         return projectService.updatePermission(projectId, userId, permissionRequest);
     }
 
     @DeleteMapping("/projects/{projectId}/permissions/{userId}")
     public Project deletePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        if(!RequesterIsFound(permissionRequest.getUsername(), permissionRequest.getPassword())) {
-            throw new RuntimeException("user not found");
-        }
+        Long userid = userFindController.RequesterIsFound(permissionRequest);
         return projectService.deletePermission(projectId, userId, permissionRequest);
     }
 
     @GetMapping("/projects/{projectId}/permissions/{userId}")
     public boolean[] getPermission(@RequestBody GetPermissionDTO getPermissionDTO, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId) {
-        if(!RequesterIsFound(getPermissionDTO.getUsername(), getPermissionDTO.getPassword())) {
-            throw new RuntimeException("user not found");
-        }
+        Long userid = userFindController.RequesterIsFound(getPermissionDTO);
         return projectService.getPermission(projectId, userId, getPermissionDTO);
-    }
-
-    public boolean RequesterIsFound(String username, String password){
-        User requester = new User(username, password);
-        UserSignInResponse founduser = userService.signInUser(requester);
-        if(founduser == null) {return false;}
-        return true;
     }
 }
