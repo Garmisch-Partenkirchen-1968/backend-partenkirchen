@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.issue.IssueGetRequest;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.issue.IssuesGetRequest;
@@ -19,6 +20,11 @@ public class IssueController {
 
     @GetMapping("/projects/{projectId}/issues")
     public ResponseEntity<List<Issue>> getIssues(@PathVariable("projectId") Long projectId, @RequestBody IssuesGetRequest issuesGetRequest) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @GetMapping("/projects/{projectId}/issues/{issueId}")
+    public ResponseEntity<Issue> getIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody IssueGetRequest issueGetRequest) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }
