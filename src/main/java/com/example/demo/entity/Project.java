@@ -13,7 +13,13 @@ import java.util.*;
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class Project {
+    public Project(String projectName, User owner){
+        this.name = projectName;
+        this.owner = owner;
+    }
+
     @Id
+    @Nonnull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -27,7 +33,7 @@ public class Project {
     @CollectionTable(name = "user_permissions", joinColumns = @JoinColumn(name = "project_id"))
     @MapKeyJoinColumn(name = "user_id")
     @Column(name = "permission")
-    private Map<Long, Integer> members = new HashMap<>();
+    private Map<User, Integer> members = new HashMap<>();
 
     @Nonnull
     @ManyToOne
