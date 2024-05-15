@@ -160,11 +160,11 @@ public class IssuePatchTest {
                 .build();
         projectService.addPermission(anotherProjectId, tester2Id, anotherPermissionRequest);
 
-        // default issue 생성
+        // another issue 생성
         IssuePostRequest anotherIssuePostRequest = IssuePostRequest.builder()
                 .username("tester1")
                 .password("tester1")
-                .title("default issue")
+                .title("another issue")
                 .priority(IssuePriority.MEDIUM)
                 .build();
         MvcResult anotherMvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
