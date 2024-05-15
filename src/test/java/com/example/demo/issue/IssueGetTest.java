@@ -53,12 +53,10 @@ public class IssueGetTest {
     @Autowired
     private IssueRepository issueRepository;
 
-    private Long tester1Id;
     private Long projectId;
     private Issue defaultIssue;
 
     private Long anotherProjectId;
-    private Long tester2Id;
     private Issue anotherIssue;
 
     @BeforeEach
@@ -75,14 +73,14 @@ public class IssueGetTest {
                 .username("tester1")
                 .password("tester1")
                 .build();
-        tester1Id = userService.signUpUser(tester1).getId();
+        Long tester1Id = userService.signUpUser(tester1).getId();
 
         // another issue를 생성할 유저 생성
         User tester2 = User.builder()
                 .username("tester2")
                 .password("tester2")
                 .build();
-        tester2Id = userService.signUpUser(tester2).getId();
+        Long tester2Id = userService.signUpUser(tester2).getId();
 
         // 프로젝트 생성
         ProjectCreater projectCreater = ProjectCreater.builder()
@@ -131,7 +129,7 @@ public class IssueGetTest {
                 .password("admin")
                 .permissions(new boolean[] {false, false, true, false})
                 .build();
-        projectService.addPermission(anotherProjectId, tester2Id, permissionRequest);
+        projectService.addPermission(anotherProjectId, tester2Id, anotherPermissionRequest);
 
         // default issue 생성
         IssuePostRequest anotherIssuePostRequest = IssuePostRequest.builder()
