@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles
 @AutoConfigureMockMvc
 @Transactional
-public class IssuesGet {
+public class IssueGet {
     @Autowired
     private MockMvc mockMvc;
 
