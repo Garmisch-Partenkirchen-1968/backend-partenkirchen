@@ -160,11 +160,11 @@ public class IssuePatchTest {
                 .build();
         projectService.addPermission(anotherProjectId, tester2Id, anotherPermissionRequest);
 
-        // default issue 생성
+        // another issue 생성
         IssuePostRequest anotherIssuePostRequest = IssuePostRequest.builder()
                 .username("tester1")
                 .password("tester1")
-                .title("default issue")
+                .title("another issue")
                 .priority(IssuePriority.MEDIUM)
                 .build();
         MvcResult anotherMvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
@@ -284,5 +284,337 @@ public class IssuePatchTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("PL1이 여러가지를 한 번에 바꾸려고 함")
+    void doMultiplePatch() throws Exception {
+        // title 수정
+        IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .title("new issue name")
+                .assignee("dev1")
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("dev1이 자신에게 할당된 이슈를 fixed로 바꿈")
+    void patchIssueToFixed() throws Exception {
+        // assignee 배정
+        IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .assignee("dev1")
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andExpect(status().isOk());
+
+        // fixed로 수정
+        IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()
+                .username("dev1")
+                .password("dev1")
+                .status(IssueStatus.FIXED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fixedPatchRequest)))
+                .andExpect(status().isOk());
+
+
+        // 수정된 issue 검색
+        Optional<Issue> optionalIssue = issueRepository.findById(defaultIssue.getId());
+        assertTrue(optionalIssue.isPresent());
+        Issue issue = optionalIssue.get();
+
+        // 수정된 이슈 검사
+        assertEquals("default issue", issue.getTitle());
+        assertEquals(IssueStatus.FIXED, issue.getStatus());
+        assertEquals(IssuePriority.MEDIUM, issue.getPriority());
+        assertEquals("dev1", issue.getAssignee().getUsername());
+        assertEquals("dev1", issue.getFixer().getUsername());
+    }
+
+    @Test
+    @DisplayName("권한이 없는 사람이 fixed로 바꾸려 함")
+    void patchIssueToFixedWithWrongPermission() throws Exception {
+        // assignee 배정
+        IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .assignee("dev1")
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andExpect(status().isOk());
+
+        // fixed로 수정
+        IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()
+                .username("admin")
+                .password("admin")
+                .status(IssueStatus.FIXED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fixedPatchRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("dev1이 이미 fixed인걸 또 fixed로 바꿈")
+    void patchIssueToFixedAlreadyFixed() throws Exception {
+        // assignee 배정
+        IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .assignee("dev1")
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andExpect(status().isOk());
+
+        // fixed로 수정
+        IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()
+                .username("dev1")
+                .password("dev1")
+                .status(IssueStatus.FIXED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fixedPatchRequest)))
+                .andExpect(status().isOk());
+
+        // 또 바꿈
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fixedPatchRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("dev1이 issue status를 resolved로 바꾸려 함")
+    void dev1PatchIssueToResolve() throws Exception {
+        // assignee 배정
+        IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .assignee("dev1")
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andExpect(status().isOk());
+
+        // fixed로 수정
+        IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()
+                .username("dev1")
+                .password("dev1")
+                .status(IssueStatus.RESOLVED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fixedPatchRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("tester1가 issue를 resolved로 바꿈")
+    void tester1MakeIssueToResolved() throws Exception {
+        // assignee 배정
+        IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .assignee("dev1")
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andExpect(status().isOk());
+
+        // fixed로 수정
+        IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()
+                .username("dev1")
+                .password("dev1")
+                .status(IssueStatus.FIXED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fixedPatchRequest)))
+                .andExpect(status().isOk());
+
+        // resolved로 수정
+        IssuePatchRequest resolvedPatchRequest = IssuePatchRequest.builder()
+                .username("tester1")
+                .password("tester1")
+                .status(IssueStatus.RESOLVED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(resolvedPatchRequest)))
+                .andExpect(status().isOk());
+
+        // 수정된 issue 검색
+        Optional<Issue> optionalIssue = issueRepository.findById(defaultIssue.getId());
+        assertTrue(optionalIssue.isPresent());
+        Issue issue = optionalIssue.get();
+
+        // 수정된 이슈 검사
+        assertEquals("default issue", issue.getTitle());
+        assertEquals(IssueStatus.RESOLVED, issue.getStatus());
+        assertEquals(IssuePriority.MEDIUM, issue.getPriority());
+        assertEquals("dev1", issue.getAssignee().getUsername());
+        assertEquals("dev1", issue.getFixer().getUsername());
+    }
+
+    @Test
+    @DisplayName("권한이 없는 사람이 issue를 resolved로 바꿈")
+    void tester1MakeIssueToResolvedWithoutPermission() throws Exception {
+        // assignee 배정
+        IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .assignee("dev1")
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andExpect(status().isOk());
+
+        // fixed로 수정
+        IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()
+                .username("dev1")
+                .password("dev1")
+                .status(IssueStatus.FIXED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fixedPatchRequest)))
+                .andExpect(status().isOk());
+
+        IssuePatchRequest resolvedPatchRequest = IssuePatchRequest.builder()
+                .username("tester2")
+                .password("tester2")
+                .status(IssueStatus.RESOLVED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(resolvedPatchRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("PL1이 issue를 closed로 바꿈")
+    void PL1MakeIssueToClosed() throws Exception {
+        // assignee 배정
+        IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .assignee("dev1")
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andExpect(status().isOk());
+
+        // fixed로 수정
+        IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()
+                .username("dev1")
+                .password("dev1")
+                .status(IssueStatus.FIXED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fixedPatchRequest)))
+                .andExpect(status().isOk());
+
+        // resolved로 수정
+        IssuePatchRequest resolvedPatchRequest = IssuePatchRequest.builder()
+                .username("tester1")
+                .password("tester1")
+                .status(IssueStatus.RESOLVED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(resolvedPatchRequest)))
+                .andExpect(status().isOk());
+
+        // closed로 수정
+        IssuePatchRequest closedPatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .status(IssueStatus.CLOSED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(closedPatchRequest)))
+                .andExpect(status().isOk());
+
+        // 수정된 issue 검색
+        Optional<Issue> optionalIssue = issueRepository.findById(defaultIssue.getId());
+        assertTrue(optionalIssue.isPresent());
+        Issue issue = optionalIssue.get();
+
+        // 수정된 이슈 검사
+        assertEquals("default issue", issue.getTitle());
+        assertEquals(IssueStatus.CLOSED, issue.getStatus());
+        assertEquals(IssuePriority.MEDIUM, issue.getPriority());
+        assertEquals("dev1", issue.getAssignee().getUsername());
+        assertEquals("dev1", issue.getFixer().getUsername());
+    }
+
+    @Test
+    @DisplayName("권한 없는 사람이 issue를 closed로 바꿈")
+    void foreignMakeIssueToClosed() throws Exception {
+        // assignee 배정
+        IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
+                .username("PL1")
+                .password("PL1")
+                .assignee("dev1")
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andExpect(status().isOk());
+
+        // fixed로 수정
+        IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()
+                .username("dev1")
+                .password("dev1")
+                .status(IssueStatus.FIXED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fixedPatchRequest)))
+                .andExpect(status().isOk());
+
+        // resolved로 수정
+        IssuePatchRequest resolvedPatchRequest = IssuePatchRequest.builder()
+                .username("tester1")
+                .password("tester1")
+                .status(IssueStatus.RESOLVED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(resolvedPatchRequest)))
+                .andExpect(status().isOk());
+
+        // closed로 수정
+        IssuePatchRequest closedPatchRequest = IssuePatchRequest.builder()
+                .username("admin")
+                .password("admin")
+                .status(IssueStatus.CLOSED)
+                .build();
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(closedPatchRequest)))
+                .andExpect(status().isForbidden());
     }
 }

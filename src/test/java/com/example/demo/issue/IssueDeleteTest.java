@@ -1,6 +1,6 @@
 package com.example.demo.issue;
 
-import com.example.demo.dto.issue.IssueGetRequest;
+import com.example.demo.dto.issue.IssueDeleteRequest;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.project.PermissionRequest;
@@ -8,7 +8,6 @@ import com.example.demo.dto.project.ProjectCreater;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
-import com.example.demo.entity.enumerate.IssueStatus;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
@@ -27,9 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles
 @AutoConfigureMockMvc
 @Transactional
-public class IssueGetTest {
+public class IssueDeleteTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -55,9 +53,6 @@ public class IssueGetTest {
 
     private Long projectId;
     private Issue defaultIssue;
-
-    private Long anotherProjectId;
-    private Issue anotherIssue;
 
     @BeforeEach
     void init() throws Exception {
@@ -96,7 +91,7 @@ public class IssueGetTest {
                 .password("admin")
                 .projectName("another project!")
                 .build();
-        anotherProjectId = projectService.createProject(anotherProjectCreater).getId();
+        Long anotherProjectId = projectService.createProject(anotherProjectCreater).getId();
 
         // admin이 tester1에게 tester권한 부여
         PermissionRequest permissionRequest = PermissionRequest.builder()
@@ -130,106 +125,59 @@ public class IssueGetTest {
                 .permissions(new boolean[] {false, false, true, false})
                 .build();
         projectService.addPermission(anotherProjectId, tester2Id, anotherPermissionRequest);
-
-        // another issue 생성
-        IssuePostRequest anotherIssuePostRequest = IssuePostRequest.builder()
-                .username("tester1")
-                .password("tester1")
-                .title("another issue")
-                .priority(IssuePriority.MEDIUM)
-                .build();
-        MvcResult anotherMvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(anotherIssuePostRequest)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        IssuePostResponse anotherIssuePostResponse = objectMapper.readValue(anotherMvcResult.getResponse().getContentAsString(), IssuePostResponse.class);
-        Optional<Issue> anotherOptionalIssue = issueRepository.findById(anotherIssuePostResponse.getId());
-        assertTrue(anotherOptionalIssue.isPresent());
-        anotherIssue = optionalIssue.get();
     }
 
     @Test
-    @DisplayName("issue get 성공")
-    void getIssue() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
+    @DisplayName("delete issue 성공")
+    void deleteIssue() throws Exception {
+        IssueDeleteRequest issueDeleteRequest = IssueDeleteRequest.builder()
                 .username("tester1")
                 .password("tester1")
                 .build();
-        MvcResult mvcResult = this.mockMvc.perform(get("/projects/" + projectId + "/issues/" + defaultIssue.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(issueGetRequest)))
-                .andExpect(status().isOk())
-                .andReturn();
 
-        Issue issue = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Issue.class);
-        assertEquals(issue.getTitle(), "default issue");
-        assertEquals(issue.getPriority(), IssuePriority.MEDIUM);
-        assertEquals(issue.getStatus(), IssueStatus.NEW);
-    }
-
-    @Test
-    @DisplayName("admin이 issue 검색")
-    void getIssueAsAdmin() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("admin")
-                .password("admin")
-                .build();
-        this.mockMvc.perform(get("/projects/" + projectId + "/issues/" + defaultIssue.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(issueDeleteRequest)))
                 .andExpect(status().isOk());
+
+        // 잘 지워졌는지 확인
+        Optional<Issue> optionalIssue = issueRepository.findById(defaultIssue.getId());
+        assertTrue(optionalIssue.isEmpty());
     }
 
     @Test
-    @DisplayName("존재하지 않는 프로젝트의 이슈 검색")
-    void getIssueInNotExistProject() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("tester1")
+    @DisplayName("권한이 없는 사람이 delete issue")
+    void deleteIssueWithoutPermission() throws Exception {
+        IssueDeleteRequest issueDeleteRequest = IssueDeleteRequest.builder()
+                .username("tester2")
+                .password("tester2")
                 .build();
-        this.mockMvc.perform(get("/projects/" + 982734 + "/issues/" + 123124)
+
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
+                        .content(objectMapper.writeValueAsString(issueDeleteRequest)))
                 .andExpect(status().isForbidden());
+
+        // 안 지워졌는지 확인
+        Optional<Issue> optionalIssue = issueRepository.findById(defaultIssue.getId());
+        assertTrue(optionalIssue.isPresent());
     }
 
     @Test
-    @DisplayName("member가 아닌 다른 project의 이슈 get")
-    void getIssueInAnotherProject() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("tester1")
+    @DisplayName("권한이 없는 사람이 delete issue 2")
+    void deleteIssueWithoutPermission2() throws Exception {
+        IssueDeleteRequest issueDeleteRequest = IssueDeleteRequest.builder()
+                .username("ghost")
+                .password("ghost")
                 .build();
-        this.mockMvc.perform(get("/projects/" + anotherProjectId + "/issues/" + anotherIssue)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
-                .andExpect(status().isForbidden());
-    }
 
-    @Test
-    @DisplayName("잘못된 비밀번호로 이슈 get")
-    void getIssueWithWrongPassword() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("wrongpassword")
-                .build();
-        this.mockMvc.perform(get("/projects/" + projectId + "/issues/" + defaultIssue.getId())
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
+                        .content(objectMapper.writeValueAsString(issueDeleteRequest)))
                 .andExpect(status().isUnauthorized());
-    }
 
-    @Test
-    @DisplayName("없는 issue get")
-    void getNotExistIssue() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("tester1")
-                .build();
-        this.mockMvc.perform(get("/projects/" + projectId + "/issues/" + 93843)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
-                .andExpect(status().isForbidden());
+        // 안 지워졌는지 확인
+        Optional<Issue> optionalIssue = issueRepository.findById(defaultIssue.getId());
+        assertTrue(optionalIssue.isPresent());
     }
 }
