@@ -40,7 +40,7 @@ public class UserService {
     }
 
     public void updatePassword(Long userId, String newPassword) {
-        if (newPassword.isEmpty()) {
+        if (newPassword == null || newPassword.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password cannot be empty");
         }
         User user = userRepository.findById(userId).orElseThrow();
