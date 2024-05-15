@@ -4,11 +4,13 @@ import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Optional;
 
 @Getter
+@Builder
 public class PermissionRequest {
     private String username;
     private String password;

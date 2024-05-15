@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @Builder
 public class IssuePostResponse {
-    private String id;
+    private Long id;
 }
