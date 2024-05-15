@@ -168,6 +168,24 @@ public class UserTest {
     }
 
     @Test
+    @DisplayName("새로운 비밀번호없이 patch하는 경우")
+    void updatePasswordWithoutPassword() throws Exception {
+        // 내 계정 생성
+        User userSignUp = User.builder().username("test").password("test").build();
+        userSignUp = userService.signUpUser(userSignUp);
+
+        // 비밀번호 변경 시도
+        UserUpdatePasswordRequest user = UserUpdatePasswordRequest.builder()
+                .username("test")
+                .password("test")
+                .build();
+        this.mockMvc.perform(patch("/user/" + userSignUp.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("새로운 비밀번호가 empty string인 경우")
     void updatePasswordWithEmptyPassword() throws Exception {
         // 내 계정 생성
