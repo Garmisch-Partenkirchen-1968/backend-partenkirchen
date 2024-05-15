@@ -15,7 +15,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
 
-    public void signUpUser(User user) {
+    public User signUpUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already exists");
         }
@@ -25,7 +25,7 @@ public class UserService {
         if (user.getUsername().matches(".*[ \\t\\n\\r].*")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "whitespace in username");
         }
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public UserSignInResponse signInUser(User user) {
@@ -40,7 +40,7 @@ public class UserService {
     }
 
     public void updatePassword(Long userId, String newPassword) {
-        if (newPassword.isEmpty()) {
+        if (newPassword == null || newPassword.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password cannot be empty");
         }
         User user = userRepository.findById(userId).orElseThrow();

@@ -5,9 +5,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Builder
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "user_table")
 public class User {
