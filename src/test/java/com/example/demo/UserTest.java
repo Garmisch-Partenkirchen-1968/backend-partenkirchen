@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.entity.User;
+import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,9 @@ public class UserTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserService userService;
 
     @Test
     @DisplayName("회원가입 성공하는 경우")
@@ -84,8 +88,28 @@ public class UserTest {
     }
 
     @Test
+    @DisplayName("잘못 된 비밀번호로 로그인")
+    void signInWithWrongPassword() throws Exception {
+        // 테스트 계정 생성
+        User userSignUp = User.builder().username("test-admin").password("test-admin").build();
+
+        userService.signUpUser(userSignUp);
+        User user = User.builder().username("test-admin").password("wrongpassword").build();
+        this.mockMvc.perform(get("/signin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     @DisplayName("로그인 성공하는 경우")
     void signIn() throws Exception {
+        // 테스트 계정 생성
+        User userSignUp = User.builder().username("test-admin").password("test-admin").build();
+        userService.signUpUser(userSignUp);
+
+        // 로그인 시도
         User user = User.builder().username("test-admin").password("test-admin").build();
         this.mockMvc.perform(get("/signin")
                         .contentType(MediaType.APPLICATION_JSON)
