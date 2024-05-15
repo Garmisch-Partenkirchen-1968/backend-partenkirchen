@@ -134,4 +134,80 @@ public class IssuePostTest {
         assertNull(issue.getFixer());
         assertNull(issue.getAssignee());
     }
+
+    @Test
+    @DisplayName("잘못 된 비밀번호로 이슈 생성 시도")
+    void postIssueWithWrongPassword() throws Exception {
+        // issue 생성
+        IssuePostRequest issuePostRequest = IssuePostRequest.builder()
+                .username("tester1")
+                .password("wrongpassword")
+                .title("new issue with wrong password")
+                .priority(IssuePriority.CRITICAL)
+                .build();
+        this.mockMvc.perform(post("/projects/" + projectId + "/issues")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePostRequest)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("권한 없는 사람이 이슈 생성 시도")
+    void postIssueWithoutPermission() throws Exception {
+        // issue 생성
+        IssuePostRequest issuePostRequest = IssuePostRequest.builder()
+                .username("admin")
+                .password("admin")
+                .title("new issue without permission")
+                .priority(IssuePriority.CRITICAL)
+                .build();
+        this.mockMvc.perform(post("/projects/" + projectId + "/issues")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePostRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("빈 제목으로 이슈 생성 시도")
+    void postIssueWithEmptyTitle() throws Exception {
+        // issue 생성
+        IssuePostRequest issuePostRequest = IssuePostRequest.builder()
+                .username("tester1")
+                .password("tester1")
+                .title("")
+                .priority(IssuePriority.CRITICAL)
+                .build();
+        this.mockMvc.perform(post("/projects/" + projectId + "/issues")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePostRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("priority없이 이슈 생성 시도")
+    void postIssueWithoutPriority() throws Exception {
+        // issue 생성
+        IssuePostRequest issuePostRequest = IssuePostRequest.builder()
+                .username("tester1")
+                .password("tester1")
+                .title("new issue without priority")
+                .build();
+        this.mockMvc.perform(post("/projects/" + projectId + "/issues")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePostRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("계정 없이 이슈 생성 시도")
+    void postIssueWithoutAccount() throws Exception {
+        // issue 생성
+        IssuePostRequest issuePostRequest = IssuePostRequest.builder()
+                .title("new issue without account")
+                .build();
+        this.mockMvc.perform(post("/projects/" + projectId + "/issues")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuePostRequest)))
+                .andExpect(status().isUnauthorized());
+    }
 }
