@@ -54,7 +54,6 @@ public class IssuePostTest {
 
     private Long tester1Id;
     private Long projectId;
-    private Issue defaultIssue;
 
     @BeforeEach
     void init() throws Exception {
@@ -87,23 +86,6 @@ public class IssuePostTest {
                 .permissions(new boolean[] {false, false, true, false})
                 .build();
         projectService.addPermission(projectId, tester1Id, permissionRequest);
-
-        // default issue 생성
-        IssuePostRequest issuePostRequest = IssuePostRequest.builder()
-                .username("tester1")
-                .password("tester1")
-                .title("default issue")
-                .priority(IssuePriority.MEDIUM)
-                .build();
-        MvcResult mvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issuePostRequest)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        IssuePostResponse issuePostResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), IssuePostResponse.class);
-        Optional<Issue> optionalIssue = issueRepository.findById(issuePostResponse.getId());
-        assertTrue(optionalIssue.isPresent());
-        defaultIssue = optionalIssue.get();
     }
 
     @Test
