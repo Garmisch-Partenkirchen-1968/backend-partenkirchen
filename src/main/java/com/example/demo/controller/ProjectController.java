@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.project.GetPermissionDTO;
 import com.example.demo.dto.project.PermissionRequest;
 import com.example.demo.dto.project.ProjectCreater;
+import com.example.demo.dto.user.UserSignInResponse;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.service.ProjectService;
@@ -23,7 +25,7 @@ public class ProjectController {
         String username = projectCreater.getUsername();
         String password = projectCreater.getPassword();
         User us = new User(username, password);
-        User user = userService.signInUser(us);
+        UserSignInResponse user = userService.signInUser(us);
         if(user == null){
             throw new RuntimeException("user not found");
         }
@@ -55,16 +57,16 @@ public class ProjectController {
     }
 
     @GetMapping("/projects/{projectId}/permissions/{userId}")
-    public Integer getPermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId) {
-        if(!RequesterIsFound(permissionRequest.getUsername(), permissionRequest.getPassword())) {
+    public boolean[] getPermission(@RequestBody GetPermissionDTO getPermissionDTO, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId) {
+        if(!RequesterIsFound(getPermissionDTO.getUsername(), getPermissionDTO.getPassword())) {
             throw new RuntimeException("user not found");
         }
-        return projectService.getPermission(projectId, userId, permissionRequest);
+        return projectService.getPermission(projectId, userId, getPermissionDTO);
     }
 
     public boolean RequesterIsFound(String username, String password){
         User requester = new User(username, password);
-        User founduser = userService.signInUser(requester);
+        UserSignInResponse founduser = userService.signInUser(requester);
         if(founduser == null) {return false;}
         return true;
     }
