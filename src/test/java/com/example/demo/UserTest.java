@@ -13,8 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -112,9 +111,68 @@ public class UserTest {
         // 로그인 시도
         User user = User.builder().username("test-admin").password("test-admin").build();
         this.mockMvc.perform(get("/signin")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(user)))
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("없는 계정을 삭제하려고 하는 경우")
+    void deleteNotExistUser() throws Exception {
+        User user = User.builder().username("test-admin").password("test-admin").build();
+        this.mockMvc.perform(delete("/user/3484539")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("다른 사람 계정을 삭제하려고 하는 경우")
+    void deleteAnotherUser() throws Exception {
+        // 내 계정 생성
+        User userSignUp = User.builder().username("test").password("test").build();
+        userService.signUpUser(userSignUp);
+
+        // 다른 사람 계정 생성
+        User anotherUserSignUp = User.builder().username("another").password("another").build();
+        anotherUserSignUp = userService.signUpUser(anotherUserSignUp);
+
+        // 삭제 시도
+        User user = User.builder().username("test").password("test").build();
+        this.mockMvc.perform(delete("/user/" + anotherUserSignUp.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("자기 계정을 삭제하려는데, 비밀번호가 틀린 경우")
+    void deleteMeWithWrongPassword() throws Exception {
+        // 내 계정 생성
+        User userSignUp = User.builder().username("test").password("test").build();
+        userSignUp = userService.signUpUser(userSignUp);
+
+        // 삭제 시도
+        User user = User.builder().username("test").password("wrongpassword").build();
+        this.mockMvc.perform(delete("/user/" + userSignUp.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("계정을 성공적으로 삭제한 경우")
+    void deleteMe() throws Exception {
+        // 내 계정 생성
+        User userSignUp = User.builder().username("test").password("test").build();
+        userSignUp = userService.signUpUser(userSignUp);
+
+        // 삭제 시도
+        User user = User.builder().username("test").password("test").build();
+        this.mockMvc.perform(delete("/user/" + userSignUp.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
     }
 }
