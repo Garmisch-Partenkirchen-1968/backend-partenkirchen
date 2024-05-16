@@ -29,9 +29,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class IssueService {
-    IssueRepository issueRepository;
-    ProjectRepository projectRepository;
-    UserRepository userRepository;
+    private final IssueRepository issueRepository;
+    private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     public ResponseEntity<IssuePostResponse> postIssue(Long projectId, IssuePostRequest issuePostRequest) {
         User user = issuePostRequest.toUser();
@@ -46,11 +46,16 @@ public class IssueService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
         }
 
+        if(issuePostRequest.getTitle().equals("")){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is required");
+        }
+
         Issue issue = new Issue();
         issue.setPriority(issuePostRequest.getPriority());
         issue.setTitle(issuePostRequest.getTitle());
         issue.setReporter(user);
         issue.setReportedDate(LocalDateTime.now());
+        issue.setStatus(IssueStatus.NEW);
         issueRepository.save(issue);
 
         IssuePostResponse issuePostResponse = new IssuePostResponse(issue.getId(), issue.getTitle(), issue.getPriority());
@@ -149,50 +154,54 @@ public class IssueService {
 
     public ResponseEntity patchIssue(Long projectId, Long issueId, IssuePatchRequest issuePatchRequest) {
         Pair<Project, Issue> PI = FindPI(projectId, issueId);
-
-        Optional<User> assign = userRepository.findByUsername(issuePatchRequest.getAssignee());
-        if (assign.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not exists");
-        }
-
         Project project = PI.a;
         Issue issue = PI.b;
+        Optional<User> assign = userRepository.findByUsername(issuePatchRequest.getAssignee());
+
         User user = issuePatchRequest.toUser();
-        User assignee = assign.get();
-
-        issue.setPriority(issuePatchRequest.getPriority());
-
         Integer userPermission = project.getMembers().get(user);
-        // Assignee 수정(PL만 가능)
-        if (issue.getAssignee() != assignee) {
-            if ((userPermission & (1 << 3)) == 0) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
-            }
-            issue.setAssignee(assignee);
+
+        // priority 받았을 때
+        if(issuePatchRequest.getPriority() != null){
+            issue.setPriority(issuePatchRequest.getPriority());
         }
+        // assignee 받았을 때
+        if(assign.isPresent()){
+            User assignee = assign.get();
+            // Assignee 수정, 원래랑 다른 입력을 받을 때만 변경
+            if (issue.getAssignee() == null || issue.getAssignee() != assignee) {
+                // permission check(PL만 가능)
+                if ((userPermission & (1 << 3)) == 0) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
+                }
+                issue.setAssignee(assignee);
+            }
+        }
+
         // Status FIXED로 수정(assignee만 가능)
-        else if (issuePatchRequest.getStatus() == IssueStatus.FIXED) {
+        else if (issue.getStatus() != null && issuePatchRequest.getStatus() == IssueStatus.FIXED) {
             if (issue.getAssignee() != user) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
             }
             issue.setStatus(IssueStatus.FIXED);
         }
         // Status RESOLVED로 수정(reporter만 가능)
-        else if (issuePatchRequest.getStatus() == IssueStatus.RESOLVED) {
+        else if (issue.getStatus() != null && issuePatchRequest.getStatus() == IssueStatus.RESOLVED) {
             if (issue.getReporter() != user) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not reporter");
             }
             issue.setStatus(IssueStatus.RESOLVED);
         }
         // Status closed로 바꿈(PL만 가능)
-        else if (issuePatchRequest.getStatus() == IssueStatus.CLOSED) {
+        else if (issue.getStatus() != null && issuePatchRequest.getStatus() == IssueStatus.CLOSED) {
             if ((userPermission & (1 << 3)) == 0) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not PL");
             }
+            issue.setStatus(IssueStatus.CLOSED);
         }
 
+        issueRepository.save(issue);
         return new ResponseEntity<>(issueRepository.save(issue), HttpStatus.OK);
-
     }
 
     public ResponseEntity deleteIssue(Long projectId, Long issueId, IssueDeleteRequest issueDeleteRequest) {
@@ -220,6 +229,6 @@ public class IssueService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Issue not found");
         }
 
-        return new Pair(project.get(), issue.get());
+        return new Pair<>(project.get(), issue.get());
     }
 }

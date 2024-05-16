@@ -4,6 +4,7 @@ import com.example.demo.dto.issue.*;
 import com.example.demo.entity.Issue;
 import com.example.demo.service.IssueService;
 import com.example.demo.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +13,10 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class IssueController {
-    IssueService issueService;
-    UserFindController userFindController;
+    private final IssueService issueService;
+    private final UserFindController userFindController;
 
     @PostMapping("/projects/{projectId}/issues")
     public ResponseEntity<IssuePostResponse> postIssue(@PathVariable("projectId") Long projectId, @RequestBody IssuePostRequest issuePostRequest) {
