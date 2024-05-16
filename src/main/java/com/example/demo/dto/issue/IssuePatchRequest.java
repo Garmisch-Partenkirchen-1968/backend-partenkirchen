@@ -6,6 +6,8 @@ import com.example.demo.entity.enumerate.IssuePriority;
 import com.example.demo.entity.enumerate.IssueStatus;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Getter
 @Builder
@@ -19,6 +21,9 @@ public class IssuePatchRequest implements ToUser {
     private IssuePriority priority;
 
     public User toUser(){
+        if(username == null || password == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         return new User(username, password);
     }
 }

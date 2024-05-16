@@ -7,6 +7,8 @@ import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -18,6 +20,9 @@ public class PermissionRequest implements ToUser {
     private boolean[] permissions;
 
     public User toUser(){
+        if(username == null || password == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         return new User(username, password);
     }
 }
