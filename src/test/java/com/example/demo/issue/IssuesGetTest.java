@@ -673,9 +673,5 @@ public class IssuesGetTest {
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isForbidden())
                 .andReturn();
-
-        Issue[] issues = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Issue[].class);
-        assertEquals(20, issues.length);
-
     }
 }
