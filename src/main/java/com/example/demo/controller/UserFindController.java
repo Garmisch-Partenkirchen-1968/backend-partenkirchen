@@ -20,7 +20,7 @@ public class UserFindController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User requester = req.get();
-        if(requester.getPassword() != toUser.toUser().getPassword()) {
+        if(!requester.getPassword().equals(toUser.toUser().getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Passwords do not match");
         }
         return toUser.toUser().getId();
