@@ -4,25 +4,18 @@ import com.example.demo.dto.issue.*;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
-import com.example.demo.entity.enumerate.IssuePriority;
 import com.example.demo.entity.enumerate.IssueStatus;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
-import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.Pair;
-import org.antlr.v4.runtime.misc.Triple;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,19 +27,39 @@ public class IssueService {
     private final UserRepository userRepository;
 
     public ResponseEntity<IssuePostResponse> postIssue(Long projectId, IssuePostRequest issuePostRequest) {
-        User user = issuePostRequest.toUser();
+        User us = issuePostRequest.toUser();
         Optional<Project> proj = projectRepository.findById(projectId);
+        System.out.println("PostIssue");
 
+        // 요청자가 존재하지 않는 user일 경우
+        if(userRepository.findByUsername(us.getUsername()).isEmpty()) {
+            System.out.println("User not found");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        User user = userRepository.findByUsername(us.getUsername()).get();
+
+        // project가 없는 경우
         if (proj.isEmpty()) {
+            System.out.println("Project not found");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project not found");
         }
         Project project = proj.get();
 
+        // user가 project member가 아닌 경우
+        if(project.getMembers().get(user) == null){
+            System.out.println("User is not a member of this project");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not a member of this project");
+        }
+
+        // user가 tester가 아닌 경우
         if ((project.getMembers().get(user) & (1 << 1)) == 0) {
+            System.out.println("User is not tester");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
         }
 
+        // title 입력이 없는 경우
         if(issuePostRequest.getTitle().equals("")){
+            System.out.println("Title is required");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is required");
         }
 
@@ -57,6 +70,7 @@ public class IssueService {
         issue.setReportedDate(LocalDateTime.now());
         issue.setStatus(IssueStatus.NEW);
         issueRepository.save(issue);
+        System.out.println("Helloworld");
 
         IssuePostResponse issuePostResponse = new IssuePostResponse(issue.getId(), issue.getTitle(), issue.getPriority());
         return new ResponseEntity<>(issuePostResponse, HttpStatus.CREATED);
@@ -64,12 +78,20 @@ public class IssueService {
 
     public ResponseEntity<List<Issue>> getIssues(Long projectId, IssuesGetRequest issuesGetRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
+        // project가 없는 경우
         if (proj.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project not found");
         }
 
         Project project = proj.get();
-        User user = issuesGetRequest.toUser();
+        User us = issuesGetRequest.toUser();
+        // user가 존재하지 않을 때
+        if(userRepository.findByUsername(us.getUsername()).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
+        }
+        User user = userRepository.findByUsername(us.getUsername()).get();
+
+        // user가 project의 member가 아닐 때
         if (project.getMembers().get(user) == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not member of project");
         }

@@ -19,7 +19,7 @@ import java.util.Objects;
 public class ProjectController {
     private final ProjectService projectService;
     private final UserService userService;
-    private UserFindController userFindController;
+    private final UserFindController userFindController;
 
     @PostMapping("/projects")
     public Project createProject(@RequestBody ProjectCreater projectCreater) {
