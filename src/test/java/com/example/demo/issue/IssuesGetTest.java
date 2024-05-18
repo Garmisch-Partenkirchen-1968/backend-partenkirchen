@@ -94,8 +94,8 @@ public class IssuesGetTest {
 
         // create PL1
         User PL1 = User.builder()
-                .username("tester1")
-                .password("tester1")
+                .username("PL1")
+                .password("PL1")
                 .build();
         Long PL1Id = userService.signUpUser(PL1).getId();
 

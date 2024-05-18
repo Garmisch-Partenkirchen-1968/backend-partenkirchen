@@ -76,15 +76,15 @@ public class IssuePatchTest {
 
         // PL1 생성
         User PL1 = User.builder()
-                .username("tester1")
-                .password("tester1")
+                .username("PL1")
+                .password("PL1")
                 .build();
         Long PL1Id = userService.signUpUser(PL1).getId();
 
         // dev1 생성
         User dev1 = User.builder()
-                .username("tester1")
-                .password("tester1")
+                .username("dev1")
+                .password("dev1")
                 .build();
         Long dev1Id = userService.signUpUser(dev1).getId();
 
