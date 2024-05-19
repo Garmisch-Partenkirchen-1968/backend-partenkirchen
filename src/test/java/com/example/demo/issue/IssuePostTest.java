@@ -169,14 +169,9 @@ public class IssuePostTest {
     @DisplayName("priority없이 이슈 생성 시도")
     void postIssueWithoutPriority() throws Exception {
         // issue 생성
-        IssuePostRequest issuePostRequest = IssuePostRequest.builder()
-                .username("tester1")
-                .password("tester1")
-                .title("new issue without priority")
-                .build();
         this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issuePostRequest)))
+                        .content("{\"username\":  \"tester1\", \"password\": \"tester1\",  \"title\":  \"new issue without priority\"}"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -186,6 +181,7 @@ public class IssuePostTest {
         // issue 생성
         IssuePostRequest issuePostRequest = IssuePostRequest.builder()
                 .title("new issue without account")
+                .priority(IssuePriority.CRITICAL)
                 .build();
         this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                         .contentType(MediaType.APPLICATION_JSON)

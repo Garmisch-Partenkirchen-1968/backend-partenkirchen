@@ -8,33 +8,13 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+@Getter
 @Builder
 public class IssuePostRequest implements ToUser {
     private String username;
     private String password;
     private String title;
     private IssuePriority priority;
-
-    public User toUser(){
-        if(username == null || password == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return new User(username, password);
-    }
-
-    public String getUsername(){
-        if(username == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return this.username;
-    }
-
-    public String getPassword(){
-        if(password == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return this.password;
-    }
 
     public String getTitle(){
         if(title == null){
@@ -48,5 +28,12 @@ public class IssuePostRequest implements ToUser {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return this.priority;
+    }
+
+    public User toUser(){
+        if(username == null || password == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        return new User(username, password);
     }
 }

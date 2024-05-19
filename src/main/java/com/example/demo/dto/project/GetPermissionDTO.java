@@ -13,7 +13,7 @@ public class GetPermissionDTO implements ToUser {
 
     public User toUser(){
         if(username == null || password == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         return new User(username, password);
     }
