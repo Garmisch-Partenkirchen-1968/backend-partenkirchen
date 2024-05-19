@@ -1,4 +1,4 @@
-package com.example.demo.dto.project;
+package com.example.demo.dto.issue;
 
 import com.example.demo.Interface.ToUser;
 import com.example.demo.entity.User;
@@ -9,10 +9,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Getter
 @Builder
-public class ProjectCreater implements ToUser {
+public class IssueGetRequest implements ToUser {
     private String username;
     private String password;
-    private String projectName;
 
     public User toUser(){
         if(username == null || password == null){

@@ -4,9 +4,7 @@ import com.example.demo.entity.enumerate.IssuePriority;
 import com.example.demo.entity.enumerate.IssueStatus;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -15,6 +13,9 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class Issue {
@@ -42,8 +43,9 @@ public class Issue {
     @Enumerated(EnumType.STRING)
     private IssuePriority priority;
 
+    @Nonnull
     @Enumerated(EnumType.STRING)
-    private IssueStatus status = IssueStatus.NEW;
+    private IssueStatus status;
 
     @OneToMany
     private List<Comment> comments = new ArrayList<>();

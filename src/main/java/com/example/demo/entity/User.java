@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.Interface.ToUser;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.*;
