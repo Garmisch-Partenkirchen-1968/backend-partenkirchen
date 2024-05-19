@@ -12,6 +12,7 @@ import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,6 +27,7 @@ public class CommentService {
     private final IssueRepository issueRepository;
     private final CommentRepository commentRepository;
 
+    @Autowired
     public CommentService(ProjectRepository projectRepository, UserRepository userRepository, IssueRepository issueRepository, CommentRepository commentRepository) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
