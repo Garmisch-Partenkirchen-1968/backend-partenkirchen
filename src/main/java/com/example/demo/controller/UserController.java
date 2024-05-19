@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.user.UserGetResponse;
 import com.example.demo.dto.user.UserSignInResponse;
 import com.example.demo.dto.user.UserUpdatePasswordRequest;
 import com.example.demo.entity.User;
@@ -42,6 +43,12 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong permission");
         }
         userService.deleteUser(userId);
+    }
+
+    @GetMapping("/user")
+    public UserGetResponse getUser(@RequestBody User user, @PathVariable("username") String keyword) {
+        checkPermission(user);
+        return userService.getUsers(keyword);
     }
 
     private Long checkPermission(User user) {
