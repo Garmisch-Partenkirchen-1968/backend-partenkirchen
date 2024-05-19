@@ -92,7 +92,7 @@ public class CommentPostTest {
         // project에 해당되지 않는 dev(dev2) 생성
         User dev2 = User.builder()
                 .username("dev2")
-                .username("dev2")
+                .password("dev2")
                 .build();
         Long dev2Id = userService.signUpUser(dev2).getId();
 
