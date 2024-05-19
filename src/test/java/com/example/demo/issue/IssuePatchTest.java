@@ -257,7 +257,7 @@ public class IssuePatchTest {
         this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
 
         // 수정안된 issue 검색
         Optional<Issue> optionalIssue = issueRepository.findById(defaultIssue.getId());

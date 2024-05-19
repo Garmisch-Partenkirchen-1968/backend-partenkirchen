@@ -212,6 +212,12 @@ public class IssueService {
         }
         User user = userRepository.findByUsername(us.getUsername()).get();
 
+        // user가 project 소속 인원이 아닐 때
+        if(project.getMembers().get(user) == null) {
+            System.out.println("User is not member of project");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not member of project");
+        }
+
         // 비밀번호가 틀렸을 때
         if(!user.getPassword().equals(us.getPassword())){
             System.out.println("Wrong password");
