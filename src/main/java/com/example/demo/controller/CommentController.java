@@ -27,16 +27,16 @@ public class CommentController {
     }
 
     @PatchMapping("/projects/{projectId}/issues/{issueId}/comments/{commentId}")
-    public ResponseEntity patchComment(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @PathVariable("commentId") Long commentId, @RequestBody CommentPatchRequest commentPatchRequest) {
+    public ResponseEntity patchComment(@PathVariable("projectId") Long projectId, @PathVariable("commentId") Long commentId, @RequestBody CommentPatchRequest commentPatchRequest) {
         Long userId = userFindController.RequesterIsFound(commentPatchRequest);
-        commentService.patchComment(projectId, issueId, issueId, userId, commentPatchRequest);
+        commentService.patchComment(projectId, commentId, userId, commentPatchRequest);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/projects/{projectId}/issues/{issueId}/comments/{commentId}")
-    public ResponseEntity deleteComment(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @PathVariable("commentId") Long commentId, @RequestBody CommentDeleteRequest commentDeleteRequest) {
+    public ResponseEntity deleteComment(@PathVariable("projectId") Long projectId, @PathVariable("commentId") Long commentId, @RequestBody CommentDeleteRequest commentDeleteRequest) {
         Long userId = userFindController.RequesterIsFound(commentDeleteRequest);
-        commentService.deleteComment(projectId, issueId, issueId, userId, commentDeleteRequest);
+        commentService.deleteComment(projectId, commentId, userId, commentDeleteRequest);
         return new ResponseEntity(HttpStatus.OK);
     }
 }
