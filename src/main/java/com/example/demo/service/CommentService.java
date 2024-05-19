@@ -49,8 +49,11 @@ public class CommentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "content is required");
         }
 
-        Boolean isDescription = commentPostRequest.getIsDescription() != null && commentPostRequest.getIsDescription();
-        Comment comment = new Comment(commentPostRequest.getContent(), user, isDescription);
+        if (commentPostRequest.getIsDescription() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Description is required");
+        }
+
+        Comment comment = new Comment(commentPostRequest.getContent(), user, commentPostRequest.getIsDescription());
         comment = commentRepository.save(comment);
         issue.getComments().add(comment);
         issueRepository.save(issue);
