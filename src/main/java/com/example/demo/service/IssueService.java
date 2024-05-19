@@ -245,6 +245,7 @@ public class IssueService {
                 System.out.println("User is not assignee");
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not assignee");
             }
+            issue.setFixer(user);
             issue.setStatus(IssueStatus.FIXED);
         }
         // Status RESOLVED로 수정(reporter만 가능)
@@ -265,7 +266,7 @@ public class IssueService {
         }
 
         issueRepository.save(issue);
-        return new ResponseEntity<>(issueRepository.save(issue), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public ResponseEntity deleteIssue(Long projectId, Long issueId, IssueDeleteRequest issueDeleteRequest) {
