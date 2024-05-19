@@ -201,7 +201,7 @@ public class IssueGetTest {
                 .username("tester1")
                 .password("tester1")
                 .build();
-        this.mockMvc.perform(get("/projects/" + anotherProjectId + "/issues/" + anotherIssue)
+        this.mockMvc.perform(get("/projects/" + anotherProjectId + "/issues/" + anotherIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issueGetRequest)))
                 .andExpect(status().isForbidden());
