@@ -199,7 +199,7 @@ public class CommentPostTest {
         MvcResult dev1mvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dev1commentPostRequest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
         // comment 잘 등록됐는지 확인
         CommentPostResponse dev1commentPostResponse = objectMapper.readValue(dev1mvcResult.getResponse().getContentAsString(), CommentPostResponse.class);
