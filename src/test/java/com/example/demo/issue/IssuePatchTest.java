@@ -187,7 +187,7 @@ public class IssuePatchTest {
                 .password("tester1")
                 .title("new issue name")
                 .build();
-        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(issuePatchRequest)))
                 .andExpect(status().isOk());
@@ -213,7 +213,7 @@ public class IssuePatchTest {
                 .password("tester2")
                 .title("new issue name")
                 .build();
-        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
                 .andExpect(status().isForbidden());
@@ -228,7 +228,7 @@ public class IssuePatchTest {
                 .password("PL1")
                 .assignee("dev1")
                 .build();
-        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
                 .andExpect(status().isOk());
@@ -254,7 +254,7 @@ public class IssuePatchTest {
                 .password("tester2")
                 .assignee("dev1")
                 .build();
-        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
                 .andExpect(status().isOk());
@@ -280,7 +280,7 @@ public class IssuePatchTest {
                 .password("PL1")
                 .assignee("ghost")
                 .build();
-        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
                 .andExpect(status().isBadRequest());
@@ -296,7 +296,7 @@ public class IssuePatchTest {
                 .title("new issue name")
                 .assignee("dev1")
                 .build();
-        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
                 .andExpect(status().isBadRequest());
@@ -311,7 +311,7 @@ public class IssuePatchTest {
                 .password("PL1")
                 .assignee("dev1")
                 .build();
-        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
                 .andExpect(status().isOk());
@@ -322,7 +322,7 @@ public class IssuePatchTest {
                 .password("dev1")
                 .status(IssueStatus.FIXED)
                 .build();
-        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(fixedPatchRequest)))
                 .andExpect(status().isOk());

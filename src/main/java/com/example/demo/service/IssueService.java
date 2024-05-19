@@ -220,6 +220,11 @@ public class IssueService {
 
         Integer userPermission = project.getMembers().get(user);
 
+        // title 받았을 때
+        if(issuePatchRequest.getTitle() != null){
+            issue.setTitle(issuePatchRequest.getTitle());
+        }
+
         // priority 받았을 때
         if(issuePatchRequest.getPriority() != null){
             issue.setPriority(issuePatchRequest.getPriority());
