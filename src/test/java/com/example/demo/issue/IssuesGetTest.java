@@ -4,10 +4,12 @@ import com.example.demo.dto.issue.IssuesGetRequest;
 import com.example.demo.dto.project.PermissionRequest;
 import com.example.demo.dto.project.ProjectCreater;
 import com.example.demo.entity.Issue;
+import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
 import com.example.demo.entity.enumerate.IssueStatus;
 import com.example.demo.repository.IssueRepository;
+import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.IssueService;
 import com.example.demo.service.ProjectService;
@@ -55,6 +57,9 @@ public class IssuesGetTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
     private Long projectId;
     @Autowired
     private IssueService issueService;
@@ -79,6 +84,11 @@ public class IssuesGetTest {
                 .status(status)
                 .build();
         issueRepository.save(issue);
+
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        Project project = optionalProject.orElse(null);
+        project.getIssues().add(issue);
+        projectRepository.save(project);
     }
 
     // admin
