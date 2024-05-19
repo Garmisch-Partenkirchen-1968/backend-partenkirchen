@@ -45,7 +45,7 @@ public class UserController {
         userService.deleteUser(userId);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/users")
     public UserGetResponse getUser(@RequestBody User user, @PathVariable("username") String keyword) {
         checkPermission(user);
         return userService.getUsers(keyword);
