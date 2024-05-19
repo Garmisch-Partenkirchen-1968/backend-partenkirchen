@@ -3,11 +3,13 @@ package com.example.demo.dto.comment;
 import com.example.demo.Interface.ToUser;
 import com.example.demo.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class CommentPostRequest implements ToUser {
     private String username;
