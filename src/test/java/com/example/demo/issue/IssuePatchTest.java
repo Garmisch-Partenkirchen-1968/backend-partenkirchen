@@ -125,7 +125,7 @@ public class IssuePatchTest {
                 .password("admin")
                 .permissions(new boolean[] {false, true, false, false})
                 .build();
-        projectService.addPermission(projectId, PL1Id, permissionRequest);
+        projectService.addPermission(projectId, PL1Id, PL1PermissionRequest);
 
         // admin이 dev1에게 tester권한 부여
         PermissionRequest dev1PermissionRequest = PermissionRequest.builder()
@@ -133,7 +133,7 @@ public class IssuePatchTest {
                 .password("admin")
                 .permissions(new boolean[] {false, false, false, true})
                 .build();
-        projectService.addPermission(projectId, dev1Id, permissionRequest);
+        projectService.addPermission(projectId, dev1Id, dev1PermissionRequest);
 
         // default issue 생성
         IssuePostRequest issuePostRequest = IssuePostRequest.builder()
