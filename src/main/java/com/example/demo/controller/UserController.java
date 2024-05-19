@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.user.UserGetResponse;
 import com.example.demo.dto.user.UserSignInResponse;
 import com.example.demo.dto.user.UserUpdatePasswordRequest;
 import com.example.demo.entity.User;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public UserGetResponse getUser(@RequestBody User user, @PathVariable("username") String keyword) {
+    public List<User> getUser(@RequestBody User user, @RequestParam("keyword") String keyword) {
         checkPermission(user);
         return userService.getUsers(keyword);
     }
