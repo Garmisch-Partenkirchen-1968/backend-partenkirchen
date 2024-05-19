@@ -142,9 +142,10 @@ public class IssueService {
         // Fixer가 요청으로 왔을 때
         if (issuesGetRequest.getFixer() != null) {
             Optional<User> fix = userRepository.findByUsername(issuesGetRequest.getFixer());
-            if (issuesGetRequest.getFixer().equals("")) { // fixer 배정 안 된 issue 찾기
+            if (issuesGetRequest.getFixer().isEmpty()) { // fixer 배정 안 된 issue 찾기
                 issues.removeIf(issue -> issue.getFixer() != null);
-            } else {
+            }
+            else {
                 // fixer가 존재하는지
                 if (fix.isPresent()) {
                     User fixer = fix.get();
@@ -229,8 +230,9 @@ public class IssueService {
             // Assignee 수정, 원래랑 다른 입력을 받을 때만 변경
             if (issue.getAssignee() == null || issue.getAssignee() != assignee) {
                 // permission check(PL만 가능)
-                if ((userPermission & (1 << 3)) == 0) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
+                if ((userPermission & (1 << 2)) == 0) {
+                    System.out.println("User is not PL");
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not PL");
                 }
                 issue.setAssignee(assignee);
                 issue.setStatus(IssueStatus.ASSIGNED);
@@ -238,22 +240,25 @@ public class IssueService {
         }
 
         // Status FIXED로 수정(assignee만 가능)
-        else if (issue.getStatus() != null && issuePatchRequest.getStatus() == IssueStatus.FIXED) {
+        else if (issuePatchRequest.getStatus() == IssueStatus.FIXED) {
             if (issue.getAssignee() != user) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
+                System.out.println("User is not assignee");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not assignee");
             }
             issue.setStatus(IssueStatus.FIXED);
         }
         // Status RESOLVED로 수정(reporter만 가능)
-        else if (issue.getStatus() != null && issuePatchRequest.getStatus() == IssueStatus.RESOLVED) {
+        else if (issuePatchRequest.getStatus() == IssueStatus.RESOLVED) {
             if (issue.getReporter() != user) {
+                System.out.println("User is not reporter");
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not reporter");
             }
             issue.setStatus(IssueStatus.RESOLVED);
         }
         // Status closed로 바꿈(PL만 가능)
-        else if (issue.getStatus() != null && issuePatchRequest.getStatus() == IssueStatus.CLOSED) {
-            if ((userPermission & (1 << 3)) == 0) {
+        else if (issuePatchRequest.getStatus() == IssueStatus.CLOSED) {
+            if ((userPermission & (1 << 2)) == 0) {
+                System.out.println("User is not PL");
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not PL");
             }
             issue.setStatus(IssueStatus.CLOSED);
