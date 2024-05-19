@@ -80,7 +80,7 @@ public class CommentPostTest {
                 .username("tester")
                 .password("tester")
                 .build();
-        userService.signUpUser(tester);
+        Long testerId = userService.signUpUser(tester).getId();
 
         // comment를 추가할 dev(dev1) 생성
         User dev1 = User.builder()
@@ -104,13 +104,21 @@ public class CommentPostTest {
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 
+        // project에 tester 할당
+        PermissionRequest testerPermissionRequest = PermissionRequest.builder()
+                .username("admin")
+                .password("admin")
+                .permissions(new boolean[] {false, false, true, false})
+                .build();
+        projectService.addPermission(projectId, testerId, testerPermissionRequest);
+
         // project에 dev1 할당
-        PermissionRequest permissionRequest = PermissionRequest.builder()
+        PermissionRequest dev1PermissionRequest = PermissionRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, false, false, true})
                 .build();
-        projectService.addPermission(projectId, dev1Id, permissionRequest);
+        projectService.addPermission(projectId, dev1Id, dev1PermissionRequest);
 
         // issue 생성 (reporter는 tester)
         IssuePostRequest issuePostRequest = IssuePostRequest.builder()
@@ -122,7 +130,7 @@ public class CommentPostTest {
         MvcResult mvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(issuePostRequest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
         IssuePostResponse issuePostResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), IssuePostResponse.class);
         Optional<Issue> optionalIssue = issueRepository.findById(issuePostResponse.getId());
@@ -133,17 +141,17 @@ public class CommentPostTest {
     @Test
     @DisplayName("members의 description comment 등록 성공")
     void postComment() throws Exception {
-        // tester(reporter)의 description
+        // 1. tester(reporter)의 description
         CommentPostRequest commentTruePostRequest = CommentPostRequest.builder()
                 .username("tester")
                 .password("tester")
-                .content("This is initial true description")
+                .content("This is initial description")
                 .isDescription(true)
                 .build();
         MvcResult mvcTrueResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(commentTruePostRequest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
         // comment 잘 등록됐는지 확인
         CommentPostResponse commentTruePostResponse = objectMapper.readValue(mvcTrueResult.getResponse().getContentAsString(), CommentPostResponse.class);
@@ -157,17 +165,17 @@ public class CommentPostTest {
         assertEquals(Truecomment.getContent(), "This is initial description");
         assertEquals(Truecomment.getIsDescription(), true);
 
-        // tester(reporter)의 false description
+        // 2. tester(reporter)의 comment
         CommentPostRequest commentFalsePostRequest = CommentPostRequest.builder()
                 .username("tester")
                 .password("tester")
-                .content("This is initial false description")
+                .content("This is initial comment")
                 .isDescription(false)
                 .build();
         MvcResult mvcFalseResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentFalsePostRequest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
         // comment 잘 등록됐는지 확인
         CommentPostResponse commentFalsePostResponse = objectMapper.readValue(mvcFalseResult.getResponse().getContentAsString(), CommentPostResponse.class);
@@ -181,7 +189,7 @@ public class CommentPostTest {
         assertEquals(Falsecomment.getContent(), "This is initial comment");
         assertEquals(Falsecomment.getIsDescription(), false);
 
-        // dev1의 comment
+        // 3. dev1의 comment
         CommentPostRequest dev1commentPostRequest = CommentPostRequest.builder()
                 .username("dev1")
                 .password("dev1")
