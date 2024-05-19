@@ -21,30 +21,32 @@ public class IssueController {
     @PostMapping("/projects/{projectId}/issues")
     public ResponseEntity<IssuePostResponse> postIssue(@PathVariable("projectId") Long projectId, @RequestBody IssuePostRequest issuePostRequest) {
         Long userid = userFindController.RequesterIsFound(issuePostRequest);
-        return issueService.postIssue(projectId, issuePostRequest);
+        return new ResponseEntity<> (issueService.postIssue(projectId, issuePostRequest), HttpStatus.CREATED);
     }
 
     @GetMapping("/projects/{projectId}/issues")
     public ResponseEntity<List<Issue>> getIssues(@PathVariable("projectId") Long projectId, @RequestBody IssuesGetRequest issuesGetRequest) {
         Long userid = userFindController.RequesterIsFound(issuesGetRequest);
-        return issueService.getIssues(projectId, issuesGetRequest);
+        return new ResponseEntity<>(issueService.getIssues(projectId, issuesGetRequest), HttpStatus.OK);
     }
 
     @GetMapping("/projects/{projectId}/issues/{issueId}")
     public ResponseEntity<Issue> getIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody IssueGetRequest issueGetRequest) {
         Long userid = userFindController.RequesterIsFound(issueGetRequest);
-        return issueService.getIssue(projectId, issueId, issueGetRequest);
+        return new ResponseEntity<>(issueService.getIssue(projectId, issueId, issueGetRequest), HttpStatus.OK);
     }
 
     @PatchMapping("/projects/{projectId}/issues/{issueId}")
     public ResponseEntity patchIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody IssuePatchRequest issuePatchRequest) {
         Long userid = userFindController.RequesterIsFound(issuePatchRequest);
-        return issueService.patchIssue(projectId, issueId, issuePatchRequest);
+        issueService.patchIssue(projectId, issueId, issuePatchRequest);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/projects/{projectId}/issues/{issueId}")
     public ResponseEntity deleteIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody IssueDeleteRequest issueDeleteRequest) {
         Long userid = userFindController.RequesterIsFound(issueDeleteRequest);
-        return issueService.deleteIssue(projectId, issueId, issueDeleteRequest);
+        issueService.deleteIssue(projectId, issueId, issueDeleteRequest);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

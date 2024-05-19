@@ -35,7 +35,7 @@ public class IssueService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<IssuePostResponse> postIssue(Long projectId, IssuePostRequest issuePostRequest) {
+    public IssuePostResponse postIssue(Long projectId, IssuePostRequest issuePostRequest) {
         User us = issuePostRequest.toUser();
         Optional<Project> proj = projectRepository.findById(projectId);
         System.out.println("PostIssue");
@@ -88,10 +88,10 @@ public class IssueService {
         projectRepository.save(project);
 
         IssuePostResponse issuePostResponse = new IssuePostResponse(issue.getId(), issue.getTitle(), issue.getPriority());
-        return new ResponseEntity<>(issuePostResponse, HttpStatus.CREATED);
+        return issuePostResponse;
     }
 
-    public ResponseEntity<List<Issue>> getIssues(Long projectId, IssuesGetRequest issuesGetRequest) {
+    public List<Issue> getIssues(Long projectId, IssuesGetRequest issuesGetRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         // project가 없는 경우
         if (proj.isEmpty()) {
@@ -180,10 +180,10 @@ public class IssueService {
             issues.removeIf(issue -> !(issue.getStatus().equals(issuesGetRequest.getStatus())));
         }
 
-        return new ResponseEntity<>(issues, HttpStatus.OK);
+        return issues;
     }
 
-    public ResponseEntity<Issue> getIssue(Long projectId, Long issueId, IssueGetRequest issueGetRequest) {
+    public Issue getIssue(Long projectId, Long issueId, IssueGetRequest issueGetRequest) {
         Pair<Project, Issue> PI = FindPI(projectId, issueId);
 
         Project project = PI.a;
@@ -195,10 +195,10 @@ public class IssueService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
         }
 
-        return new ResponseEntity<>(issue, HttpStatus.OK);
+        return issue;
     }
 
-    public ResponseEntity patchIssue(Long projectId, Long issueId, IssuePatchRequest issuePatchRequest) {
+    public void patchIssue(Long projectId, Long issueId, IssuePatchRequest issuePatchRequest) {
         Pair<Project, Issue> PI = FindPI(projectId, issueId);
         Project project = PI.a;
         Issue issue = PI.b;
@@ -291,10 +291,9 @@ public class IssueService {
         }
 
         issueRepository.save(issue);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity deleteIssue(Long projectId, Long issueId, IssueDeleteRequest issueDeleteRequest) {
+    public void deleteIssue(Long projectId, Long issueId, IssueDeleteRequest issueDeleteRequest) {
         Pair<Project, Issue> PI = FindPI(projectId, issueId);
 
         Project project = PI.a;
@@ -317,7 +316,6 @@ public class IssueService {
         project.getIssues().remove(issue);
         issueRepository.delete(issue);
         projectRepository.save(project);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public Pair<Project, Issue> FindPI(Long projectId, Long issueId) {
