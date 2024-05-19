@@ -34,7 +34,7 @@ public class ProjectController {
     }
 
     @PostMapping("/projects/{projectId}/permissions/{userId}")
-    public Project addPermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
+    public Project addPermission(@PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId, @RequestBody PermissionRequest permissionRequest){
         Long userid = userFindController.RequesterIsFound(permissionRequest);
         return projectService.addPermission(projectId, userId, permissionRequest);
     }
