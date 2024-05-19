@@ -21,7 +21,7 @@ public class UserFindController {
     public Long RequesterIsFound(ToUser toUser){
         Optional<User> req = userRepository.findByUsername(toUser.toUser().getUsername());
         if(req.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
         }
         User requester = req.get();
         if(!requester.getPassword().equals(toUser.toUser().getPassword())) {
