@@ -135,7 +135,7 @@ public class IssueDeleteTest {
                 .password("tester1")
                 .build();
 
-        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(issueDeleteRequest)))
                 .andExpect(status().isOk());
@@ -153,7 +153,7 @@ public class IssueDeleteTest {
                 .password("tester2")
                 .build();
 
-        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issueDeleteRequest)))
                 .andExpect(status().isForbidden());
@@ -171,7 +171,7 @@ public class IssueDeleteTest {
                 .password("ghost")
                 .build();
 
-        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue)
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issueDeleteRequest)))
                 .andExpect(status().isUnauthorized());

@@ -10,33 +10,52 @@ import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class IssueService {
     private final IssueRepository issueRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+
+    @Autowired
+    public IssueService(IssueRepository issueRepository, ProjectRepository projectRepository, UserRepository userRepository) {
+        this.issueRepository = issueRepository;
+        this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
+    }
 
     public ResponseEntity<IssuePostResponse> postIssue(Long projectId, IssuePostRequest issuePostRequest) {
         User us = issuePostRequest.toUser();
         Optional<Project> proj = projectRepository.findById(projectId);
         System.out.println("PostIssue");
 
+        // User가 없는 경우
+        if(userRepository.findByUsername(us.getUsername()).isEmpty()) {
+            System.out.println("User not found");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+        }
+        User user = userRepository.findByUsername(us.getUsername()).get();
+
+        if(!user.getPassword().equals(us.getPassword())){
+            System.out.println("Wrong password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
+        }
+
         // 요청자가 존재하지 않는 user일 경우
         if(userRepository.findByUsername(us.getUsername()).isEmpty()) {
             System.out.println("User not found");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findByUsername(us.getUsername()).get();
 
         // project가 없는 경우
         if (proj.isEmpty()) {
@@ -70,7 +89,8 @@ public class IssueService {
         issue.setReportedDate(LocalDateTime.now());
         issue.setStatus(IssueStatus.NEW);
         issueRepository.save(issue);
-        System.out.println("Helloworld");
+        project.getIssues().add(issue);
+        projectRepository.save(project);
 
         IssuePostResponse issuePostResponse = new IssuePostResponse(issue.getId(), issue.getTitle(), issue.getPriority());
         return new ResponseEntity<>(issuePostResponse, HttpStatus.CREATED);
@@ -87,9 +107,16 @@ public class IssueService {
         User us = issuesGetRequest.toUser();
         // user가 존재하지 않을 때
         if(userRepository.findByUsername(us.getUsername()).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
+            System.out.println("User not found");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
         }
         User user = userRepository.findByUsername(us.getUsername()).get();
+
+        // 비밀번호가 틀렸을 때
+        if(!user.getPassword().equals(us.getPassword())){
+            System.out.println("Wrong password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
+        }
 
         // user가 project의 member가 아닐 때
         if (project.getMembers().get(user) == null) {
@@ -180,7 +207,20 @@ public class IssueService {
         Issue issue = PI.b;
         Optional<User> assign = userRepository.findByUsername(issuePatchRequest.getAssignee());
 
-        User user = issuePatchRequest.toUser();
+        User us = issuePatchRequest.toUser();
+        // user가 없는 사람일 때
+        if(userRepository.findByUsername(us.getUsername()).isEmpty()) {
+            System.out.println("User not found");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+        }
+        User user = userRepository.findByUsername(us.getUsername()).get();
+
+        // 비밀번호가 틀렸을 때
+        if(!user.getPassword().equals(us.getPassword())){
+            System.out.println("Wrong password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
+        }
+
         Integer userPermission = project.getMembers().get(user);
 
         // priority 받았을 때
@@ -229,14 +269,26 @@ public class IssueService {
     public ResponseEntity deleteIssue(Long projectId, Long issueId, IssueDeleteRequest issueDeleteRequest) {
         Pair<Project, Issue> PI = FindPI(projectId, issueId);
 
+        Project project = PI.a;
         Issue issue = PI.b;
-        User user = issueDeleteRequest.toUser();
+        User us = issueDeleteRequest.toUser();
+        User user = FindUser(us);
 
+        // User가 Project에 없으면
+        if(project.getMembers().get(user) == null){
+            System.out.println("User not found");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found");
+        }
+
+        // User가 Reporter가 아니면
         if (issue.getReporter() != user) {
+            System.out.println("User is not reporter");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not reporter");
         }
 
+        project.getIssues().remove(issue);
         issueRepository.delete(issue);
+        projectRepository.save(project);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -245,12 +297,32 @@ public class IssueService {
         Optional<Issue> issue = issueRepository.findById(issueId);
 
         if (project.isEmpty()) {
+            System.out.println("Project not found");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Project not found");
         }
         if (issue.isEmpty()) {
+            System.out.println("Issue not found");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Issue not found");
         }
 
         return new Pair<>(project.get(), issue.get());
+    }
+
+    private User FindUser(User ToUser){
+        Optional<User> Optional_user = userRepository.findByUsername(ToUser.getUsername());
+        // User가 없는 사람일 때
+        if(Optional_user.isEmpty()){
+            System.out.println("User not found");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+        }
+
+        // User의 Password가 틀렸을 때
+        User user = Optional_user.get();
+        if(!user.getPassword().equals(ToUser.getPassword())){
+            System.out.println("Password not match");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password not match");
+        }
+
+        return user;
     }
 }

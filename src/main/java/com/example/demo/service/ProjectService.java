@@ -9,16 +9,22 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Permission;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+
+    @Autowired
+    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
+        this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
+    }
 
     public Project createProject(ProjectCreater projectCreater){
         String projectName = projectCreater.getProjectName();
