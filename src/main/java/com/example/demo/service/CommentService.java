@@ -25,26 +25,36 @@ public class CommentService {
     private final UserRepository userRepository;
     private final IssueRepository issueRepository;
     private final CommentRepository commentRepository;
-    private final CommentController commentController;
 
     public CommentService(ProjectRepository projectRepository, UserRepository userRepository, IssueRepository issueRepository, CommentRepository commentRepository, CommentController commentController) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.issueRepository = issueRepository;
         this.commentRepository = commentRepository;
-        this.commentController = commentController;
     }
 
     public CommentPostResponse postComment(Long projectId, Long issueId, Long userId, CommentPostRequest commentPostRequest) {
-
+        Project project = getProject(projectId);
+        Issue issue = getIssue(issueId);
+        User user = getUser(userId);
 
         return null;
     }
 
     public void patchComment(Long projectId, Long issueId, Long commentId, Long userId, CommentPatchRequest commentPatchRequest) {
+        Project project = getProject(projectId);
+        Issue issue = getIssue(issueId);
+        User user = getUser(userId);
+        Comment comment = getComment(commentId);
+
     }
 
     public void deleteComment(Long projectId, Long issueId, Long commentId, Long userId, CommentDeleteRequest commentDeleteRequest) {
+        Project project = getProject(projectId);
+        Issue issue = getIssue(issueId);
+        User user = getUser(userId);
+        Comment comment = getComment(commentId);
+
     }
 
     private Project getProject(Long projectId) {
