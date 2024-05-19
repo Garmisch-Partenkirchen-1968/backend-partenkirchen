@@ -9,6 +9,7 @@ import com.example.demo.entity.enumerate.IssuePriority;
 import com.example.demo.entity.enumerate.IssueStatus;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.IssueService;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,6 +56,8 @@ public class IssuesGetTest {
     private UserRepository userRepository;
 
     private Long projectId;
+    @Autowired
+    private IssueService issueService;
 
     void addIssue(String title, String reporterUsername, String fixerUsername, String assigneeUsername, IssuePriority priority, IssueStatus status) {
         Optional<User> optionalReporter = userRepository.getReferenceByUsername(reporterUsername);
@@ -647,7 +650,7 @@ public class IssuesGetTest {
                 .fixer("")
                 .assignee("dev3")
                 .priority(IssuePriority.CRITICAL)
-                .status(IssueStatus.ASSIGNED)
+                .status(IssueStatus.FIXED)
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
