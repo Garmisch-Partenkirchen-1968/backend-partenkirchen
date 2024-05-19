@@ -38,7 +38,17 @@ public class CommentService {
         Issue issue = getIssue(issueId);
         User user = getUser(userId);
 
-        return null;
+        // 요청한 사람이 해당 프로젝트에 있는 사람인지 권한 확인
+        if (project.getMembers().get(user) == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "request is not in this project");
+        }
+
+        Comment comment = new Comment(commentPostRequest.getContent(), user, commentPostRequest.getIsDescription());
+        comment = commentRepository.save(comment);
+        issue.getComments().add(comment);
+        issueRepository.save(issue);
+
+        return new CommentPostResponse(comment.getId());
     }
 
     public void patchComment(Long projectId, Long issueId, Long commentId, Long userId, CommentPatchRequest commentPatchRequest) {
