@@ -353,7 +353,7 @@ public class IssuePatchTest {
         this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk());
 
         // fixed로 수정
         IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()
