@@ -4,6 +4,7 @@ import com.example.demo.dto.issue.*;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
+import com.example.demo.entity.enumerate.IssuePriority;
 import com.example.demo.entity.enumerate.IssueStatus;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
@@ -49,12 +50,6 @@ public class IssueService {
         if(!user.getPassword().equals(us.getPassword())){
             System.out.println("Wrong password");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
-        }
-
-        // 요청자가 존재하지 않는 user일 경우
-        if(userRepository.findByUsername(us.getUsername()).isEmpty()) {
-            System.out.println("User not found");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
         // project가 없는 경우
@@ -238,6 +233,7 @@ public class IssueService {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
                 }
                 issue.setAssignee(assignee);
+                issue.setStatus(IssueStatus.ASSIGNED);
             }
         }
 
