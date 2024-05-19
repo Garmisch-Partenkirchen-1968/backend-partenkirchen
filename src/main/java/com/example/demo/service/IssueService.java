@@ -225,6 +225,12 @@ public class IssueService {
             issue.setTitle(issuePatchRequest.getTitle());
         }
 
+        // 없는 사람을 asignee로 요청
+        if(issuePatchRequest.getAssignee() != null && assign.isEmpty()){
+            System.out.println("Assignee is not in project");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignee is not in project");
+        }
+
         // priority 받았을 때
         if(issuePatchRequest.getPriority() != null){
             issue.setPriority(issuePatchRequest.getPriority());
@@ -238,6 +244,10 @@ public class IssueService {
                 if ((userPermission & (1 << 2)) == 0) {
                     System.out.println("User is not PL");
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not PL");
+                }
+                if((project.getMembers().get(assignee) & (1 << 0)) == 0) {
+                    System.out.println("Assignee is not developer");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignee is not developer");
                 }
                 issue.setAssignee(assignee);
                 issue.setStatus(IssueStatus.ASSIGNED);

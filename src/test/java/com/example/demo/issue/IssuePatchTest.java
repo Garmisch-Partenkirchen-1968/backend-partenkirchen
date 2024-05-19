@@ -287,14 +287,13 @@ public class IssuePatchTest {
     }
 
     @Test
-    @DisplayName("PL1이 여러가지를 한 번에 바꾸려고 함")
-    void doMultiplePatch() throws Exception {
+    @DisplayName("not developer가 assignee로 지정된 경우")
+    void assignNotDeveloperToAssignee() throws Exception {
         // title 수정
         IssuePatchRequest issuePatchRequest = IssuePatchRequest.builder()
                 .username("PL1")
                 .password("PL1")
-                .title("new issue name")
-                .assignee("dev1")
+                .assignee("admin")
                 .build();
         this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
