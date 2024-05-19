@@ -396,7 +396,7 @@ public class IssuePatchTest {
         this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(fixedPatchRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
     }
 
     @Test
