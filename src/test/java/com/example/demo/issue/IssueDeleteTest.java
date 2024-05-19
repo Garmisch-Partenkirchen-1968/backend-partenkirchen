@@ -56,7 +56,7 @@ public class IssueDeleteTest {
 
     @BeforeEach
     void init() throws Exception {
-        // projeect를 생성할 유저 생성
+        // project를 생성할 유저 생성
         User admin = User.builder()
                 .username("admin")
                 .password("admin")
