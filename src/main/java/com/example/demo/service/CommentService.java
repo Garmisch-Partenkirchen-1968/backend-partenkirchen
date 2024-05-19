@@ -44,7 +44,12 @@ public class CommentService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "request is not in this project");
         }
 
-        Comment comment = new Comment(commentPostRequest.getContent(), user, commentPostRequest.getIsDescription());
+        if (commentPostRequest.getContent() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "content is required");
+        }
+
+        Boolean isDescription = commentPostRequest.getIsDescription() != null && commentPostRequest.getIsDescription();
+        Comment comment = new Comment(commentPostRequest.getContent(), user, isDescription);
         comment = commentRepository.save(comment);
         issue.getComments().add(comment);
         issueRepository.save(issue);
