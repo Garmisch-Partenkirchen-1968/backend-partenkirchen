@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.controller.CommentController;
 import com.example.demo.dto.comment.CommentDeleteRequest;
 import com.example.demo.dto.comment.CommentPatchRequest;
 import com.example.demo.dto.comment.CommentPostRequest;
@@ -27,7 +26,7 @@ public class CommentService {
     private final IssueRepository issueRepository;
     private final CommentRepository commentRepository;
 
-    public CommentService(ProjectRepository projectRepository, UserRepository userRepository, IssueRepository issueRepository, CommentRepository commentRepository, CommentController commentController) {
+    public CommentService(ProjectRepository projectRepository, UserRepository userRepository, IssueRepository issueRepository, CommentRepository commentRepository) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.issueRepository = issueRepository;
