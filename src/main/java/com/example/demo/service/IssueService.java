@@ -222,6 +222,10 @@ public class IssueService {
 
         // title 받았을 때
         if(issuePatchRequest.getTitle() != null){
+            if(issue.getReporter() != user){
+                System.out.println("User is not reporter");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not reporter");
+            }
             issue.setTitle(issuePatchRequest.getTitle());
         }
 
