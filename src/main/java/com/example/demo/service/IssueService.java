@@ -192,7 +192,8 @@ public class IssueService {
 
         Project project = PI.a;
         Issue issue = PI.b;
-        User user = issueGetRequest.toUser();
+        User us = issueGetRequest.toUser();
+        User user = FindUser(us);
 
         if (project.getMembers().get(user) == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not tester");
