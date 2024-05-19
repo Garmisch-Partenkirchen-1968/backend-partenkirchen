@@ -34,15 +34,16 @@ public class Issue {
     private LocalDateTime reportedDate;
 
     @ManyToOne
-    private User fixer = null;
+    private User fixer;
 
     @ManyToOne
-    private User assignee = null;
+    private User assignee;
 
     @Nonnull
     @Enumerated(EnumType.STRING)
     private IssuePriority priority;
 
+    @Nonnull
     @Enumerated(EnumType.STRING)
     private IssueStatus status;
 
