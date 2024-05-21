@@ -25,7 +25,8 @@ public class UserController {
     }
 
     @GetMapping("/signin")
-    public UserSignInResponse signIn(@RequestBody User user) {
+    public UserSignInResponse signIn(@RequestParam String username, @RequestParam String password) {
+        User user = new User(username, password);
         return userService.signInUser(user);
     }
 
