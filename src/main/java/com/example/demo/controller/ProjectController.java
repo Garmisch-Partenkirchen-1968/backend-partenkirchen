@@ -50,5 +50,7 @@ public class ProjectController {
     @DeleteMapping("/projects/{projectId}")
     public void deleteProject(@PathVariable Long projectId, @RequestBody ProjectDeleteRequest projectDeleteRequest) {
         userFindController.RequesterIsFound(projectDeleteRequest);
+
+        projectService.deleteProject(projectId);
     }
 }

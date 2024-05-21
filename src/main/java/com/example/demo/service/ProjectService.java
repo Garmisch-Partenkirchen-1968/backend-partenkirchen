@@ -81,6 +81,11 @@ public class ProjectService {
         }
     }
 
+    public void deleteProject(Long projectId) {
+        Project project = getProject(projectId);
+        projectRepository.delete(project);
+    }
+
     public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
