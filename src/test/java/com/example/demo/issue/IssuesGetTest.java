@@ -230,14 +230,9 @@ public class IssuesGetTest {
     @Test
     @DisplayName("get all issues") // 20
     void getAllIssues() throws Exception {
-        IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
-                .build();
-
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(issuesGetRequest)))
+                        .param("username", "admin")
+                        .param("password", "admin"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -249,12 +244,12 @@ public class IssuesGetTest {
     @DisplayName("get issues title: alpha") // 4
     void getIssueTitleAlpha() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .title("alpha")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -268,12 +263,12 @@ public class IssuesGetTest {
     @DisplayName("get issues title: delta") // 3
     void getIssueTitleDelta() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("PL1")
-                .password("PL1")
                 .title("delta")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -287,12 +282,12 @@ public class IssuesGetTest {
     @DisplayName("get issues title: 2") // 6
     void getIssueTitle2() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .title("2")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -306,12 +301,12 @@ public class IssuesGetTest {
     @DisplayName("get issues title: 4") // 2
     void getIssueTitle4() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .title("4")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -325,12 +320,12 @@ public class IssuesGetTest {
     @DisplayName("get issues reporter: tester1") // 10
     void getIssueReporterTester1() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .reporter("tester1")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -344,12 +339,12 @@ public class IssuesGetTest {
     @DisplayName("get issues reporter: tester2") // 10
     void getIssueReporterTester2() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .reporter("tester2")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -363,12 +358,12 @@ public class IssuesGetTest {
     @DisplayName("get issues fixer: null") // 8
     void getIssueFixerNull() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .reporter("")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -382,12 +377,12 @@ public class IssuesGetTest {
     @DisplayName("get issues fixer: dev1") // 3
     void getIssueFixerDev1() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .fixer("dev1")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -401,12 +396,12 @@ public class IssuesGetTest {
     @DisplayName("get issues fixer: dev3") // 3
     void getIssueFixerDev3() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .fixer("dev3")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -420,12 +415,12 @@ public class IssuesGetTest {
     @DisplayName("get issues assignee: null") // 4
     void getIssueAssigneeNull() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .assignee("")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -439,12 +434,12 @@ public class IssuesGetTest {
     @DisplayName("get issues assignee: dev2") // 4
     void getIssueAssigneeDev2() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .assignee("dev2")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -458,12 +453,12 @@ public class IssuesGetTest {
     @DisplayName("get issues assignee: dev4") // 4
     void getIssueAssigneeDev4() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .assignee("dev4")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -477,12 +472,12 @@ public class IssuesGetTest {
     @DisplayName("get issues priority: medium") // 5
     void getIssuePriorityMedium() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .priority(IssuePriority.MEDIUM)
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -496,12 +491,12 @@ public class IssuesGetTest {
     @DisplayName("get issues priority: critical") // 5
     void getIssuePriorityCritical() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .priority(IssuePriority.CRITICAL)
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -515,12 +510,12 @@ public class IssuesGetTest {
     @DisplayName("get issues status: new") // 4
     void getIssueStatusNew() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .status(IssueStatus.NEW)
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -534,12 +529,12 @@ public class IssuesGetTest {
     @DisplayName("get issues status: fixed") // 4
     void getIssueStatusFixed() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("tester2")
-                .password("tester2")
                 .status(IssueStatus.FIXED)
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -553,13 +548,13 @@ public class IssuesGetTest {
     @DisplayName("get issues title: beta, reporter: tester1") // 0
     void getIssueTitleBetaReporterTester1() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("tester1")
-                .password("tester1")
                 .title("beta")
                 .reporter("tester1")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -573,13 +568,13 @@ public class IssuesGetTest {
     @DisplayName("get issues title: beta, reporter: tester2") // 4
     void getIssueTitleBetaReporterTester2() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("dev4")
-                .password("dev4")
                 .title("beta")
                 .reporter("tester2")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -593,13 +588,13 @@ public class IssuesGetTest {
     @DisplayName("get issues title: zeta, reporter: tester2") // 3
     void getIssueTitleZetaReporterTester2() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("dev3")
-                .password("dev3")
                 .title("zeta")
                 .reporter("tester2")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -613,13 +608,13 @@ public class IssuesGetTest {
     @DisplayName("get issues fixer: dev2, status: closed") // 1
     void getIssueFixerDev2StatusClosed() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("dev2")
-                .password("dev2")
                 .fixer("dev2")
                 .status(IssueStatus.CLOSED)
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -633,13 +628,13 @@ public class IssuesGetTest {
     @DisplayName("get issues assignee: dev3, priority: low") // 1
     void getIssueAssigneeDev3PriorityLow() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("dev1")
-                .password("dev1")
                 .assignee("dev3")
                 .priority(IssuePriority.LOW)
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "dev1")
+                        .param("password", "dev1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -653,8 +648,6 @@ public class IssuesGetTest {
     @DisplayName("get issues title: zeta2, reporter: tester2, fixer: null, assignee: dev3, priority: critical, status: assigned") // 1
     void getIssueFinalBoss() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
                 .title("zeta2")
                 .reporter("tester2")
                 .fixer("")
@@ -664,6 +657,8 @@ public class IssuesGetTest {
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isOk())
@@ -677,14 +672,13 @@ public class IssuesGetTest {
     @DisplayName("get issues with wrong permission")
     void getIssueWithWrongPermission() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("foreign")
-                .password("foreign")
                 .build();
 
-        MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+        mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
-                .andExpect(status().isForbidden())
-                .andReturn();
+                .andExpect(status().isForbidden());
     }
 }

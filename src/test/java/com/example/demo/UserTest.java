@@ -81,8 +81,8 @@ public class UserTest {
     void signInWithUnexistUser() throws Exception {
         User user = User.builder().username("wrongusernameasdflkjhasdflkjha").password("aadmin").build();
         this.mockMvc.perform(get("/signin")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .param("username", "wrongusername")
+                        .param("password", "aadmin"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -94,10 +94,9 @@ public class UserTest {
         User userSignUp = User.builder().username("test-admin").password("test-admin").build();
 
         userService.signUpUser(userSignUp);
-        User user = User.builder().username("test-admin").password("wrongpassword").build();
         this.mockMvc.perform(get("/signin")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .param("username", "test-admin")
+                        .param("password", "wrongpassword"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -110,10 +109,9 @@ public class UserTest {
         userService.signUpUser(userSignUp);
 
         // 로그인 시도
-        User user = User.builder().username("test-admin").password("test-admin").build();
         this.mockMvc.perform(get("/signin")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(user)))
+                    .param("username", "test-admin")
+                    .param("password", "test-admin"))
             .andDo(print())
             .andExpect(status().isOk());
     }

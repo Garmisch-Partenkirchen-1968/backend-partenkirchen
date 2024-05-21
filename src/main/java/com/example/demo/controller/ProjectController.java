@@ -35,25 +35,31 @@ public class ProjectController {
 
     @PostMapping("/projects/{projectId}/permissions/{userId}")
     public Project addPermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        Long userid = userFindController.RequesterIsFound(permissionRequest);
+        userFindController.RequesterIsFound(permissionRequest);
         return projectService.addPermission(projectId, userId, permissionRequest);
     }
 
     @PatchMapping("/projects/{projectId}/permissions/{userId}")
     public Project updatePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        Long userid = userFindController.RequesterIsFound(permissionRequest);
+        userFindController.RequesterIsFound(permissionRequest);
         return projectService.updatePermission(projectId, userId, permissionRequest);
     }
 
     @DeleteMapping("/projects/{projectId}/permissions/{userId}")
     public Project deletePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        Long userid = userFindController.RequesterIsFound(permissionRequest);
+        userFindController.RequesterIsFound(permissionRequest);
         return projectService.deletePermission(projectId, userId, permissionRequest);
     }
 
     @GetMapping("/projects/{projectId}/permissions/{userId}")
-    public boolean[] getPermission(@RequestBody GetPermissionDTO getPermissionDTO, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId) {
-        Long userid = userFindController.RequesterIsFound(getPermissionDTO);
+    public boolean[] getPermission(@RequestBody GetPermissionDTO getPermissionDTO,
+                                   @RequestParam(value = "username", defaultValue = "") String username,
+                                   @RequestParam(value = "password", defaultValue = "") String password,
+                                   @PathVariable("projectId") Long projectId,
+                                   @PathVariable("userId") Long userId) {
+        getPermissionDTO.setUsername(username);
+        getPermissionDTO.setPassword(password);
+        userFindController.RequesterIsFound(getPermissionDTO);
         return projectService.getPermission(projectId, userId, getPermissionDTO);
     }
 }

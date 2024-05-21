@@ -25,7 +25,9 @@ public class UserController {
     }
 
     @GetMapping("/signin")
-    public UserSignInResponse signIn(@RequestBody User user) {
+    public UserSignInResponse signIn(@RequestParam(value = "username", defaultValue = "") String username,
+                                     @RequestParam(value = "password", defaultValue = "") String password) {
+        User user = new User(username, password);
         return userService.signInUser(user);
     }
 
@@ -46,7 +48,10 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<User> getUser(@RequestBody User user, @RequestParam("keyword") String keyword) {
+    public List<User> getUser(@RequestParam("keyword") String keyword,
+                              @RequestParam(value = "username", defaultValue = "") String username,
+                              @RequestParam(value = "password", defaultValue = "") String password) {
+        User user = new User(username, password);
         checkPermission(user);
         return userService.getUsers(keyword);
     }

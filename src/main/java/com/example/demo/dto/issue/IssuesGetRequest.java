@@ -4,15 +4,17 @@ import com.example.demo.Interface.ToUser;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
 import com.example.demo.entity.enumerate.IssueStatus;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class IssuesGetRequest implements ToUser {
     private String username;
     private String password;
