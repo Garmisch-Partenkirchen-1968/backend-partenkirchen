@@ -71,6 +71,12 @@ public class ProjectService {
 
     public void patchProject(Long projectId, ProjectPatchRequest projectPatchRequest) {
         Project project = getProject(projectId);
+        User user = getUserByUsername(projectPatchRequest.getUsername());
+
+        if (project.getMembers().get(user) == null ||
+                (project.getMembers().get(user) & (1 << 3)) == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "you don't have permission to this project");
+        }
 
         if (projectPatchRequest.getName() != null) {
             updateProjectName(project, projectPatchRequest.getName());
@@ -81,8 +87,15 @@ public class ProjectService {
         }
     }
 
-    public void deleteProject(Long projectId) {
+    public void deleteProject(Long projectId, String username) {
         Project project = getProject(projectId);
+        User user = getUserByUsername(username);
+
+        if (project.getMembers().get(user) == null ||
+                (project.getMembers().get(user) & (1 << 3)) == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "you don't have permission to this project");
+        }
+
         projectRepository.delete(project);
     }
 

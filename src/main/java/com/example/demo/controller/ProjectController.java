@@ -51,6 +51,6 @@ public class ProjectController {
     public void deleteProject(@PathVariable Long projectId, @RequestBody ProjectDeleteRequest projectDeleteRequest) {
         userFindController.RequesterIsFound(projectDeleteRequest);
 
-        projectService.deleteProject(projectId);
+        projectService.deleteProject(projectId, projectDeleteRequest.getUsername());
     }
 }
