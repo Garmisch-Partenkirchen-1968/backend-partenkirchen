@@ -1,11 +1,13 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.project.*;
 import com.example.demo.entity.Project;
+import com.example.demo.entity.User;
 import com.example.demo.service.ProjectService;
-import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,5 +19,34 @@ public class ProjectController {
     public Project createProject(@RequestBody ProjectPostRequest projectCreater) {
         userFindController.RequesterIsFound(projectCreater);
         return projectService.createProject(projectCreater);
+    }
+
+    @GetMapping("/projects")
+    public List<ProjectsGetResponse> getProjects(@RequestParam(value = "username", defaultValue = "") String username,
+                                                 @RequestParam(value = "password", defaultValue = "") String password) {
+        User user = new User(username, password);
+        userFindController.RequesterIsFound(user);
+
+        return null;
+    }
+
+    @GetMapping("/projects/{projectId}")
+    public ProjectGetResponse getProject(@PathVariable Long projectId,
+                                         @RequestParam(value = "username", defaultValue = "") String username,
+                                         @RequestParam(value = "password", defaultValue = "") String password) {
+        User user = new User(username, password);
+        userFindController.RequesterIsFound(user);
+
+        return null;
+    }
+
+    @PatchMapping("/projects/{projectId}")
+    public void patchProject(@PathVariable Long projectId, @RequestBody ProjectPatchRequest projectPatchRequest) {
+        userFindController.RequesterIsFound(projectPatchRequest);
+    }
+
+    @DeleteMapping("/projects/{projectId}")
+    public void deleteProject(@PathVariable Long projectId, @RequestBody ProjectDeleteRequest projectDeleteRequest) {
+        userFindController.RequesterIsFound(projectDeleteRequest);
     }
 }
