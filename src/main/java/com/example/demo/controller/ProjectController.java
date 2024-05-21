@@ -35,19 +35,19 @@ public class ProjectController {
 
     @PostMapping("/projects/{projectId}/permissions/{userId}")
     public Project addPermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        Long userid = userFindController.RequesterIsFound(permissionRequest);
+        userFindController.RequesterIsFound(permissionRequest);
         return projectService.addPermission(projectId, userId, permissionRequest);
     }
 
     @PatchMapping("/projects/{projectId}/permissions/{userId}")
     public Project updatePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        Long userid = userFindController.RequesterIsFound(permissionRequest);
+        userFindController.RequesterIsFound(permissionRequest);
         return projectService.updatePermission(projectId, userId, permissionRequest);
     }
 
     @DeleteMapping("/projects/{projectId}/permissions/{userId}")
     public Project deletePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        Long userid = userFindController.RequesterIsFound(permissionRequest);
+        userFindController.RequesterIsFound(permissionRequest);
         return projectService.deletePermission(projectId, userId, permissionRequest);
     }
 
@@ -59,7 +59,7 @@ public class ProjectController {
                                    @PathVariable("userId") Long userId) {
         getPermissionDTO.setUsername(username);
         getPermissionDTO.setPassword(password);
-        Long userid = userFindController.RequesterIsFound(getPermissionDTO);
+        userFindController.RequesterIsFound(getPermissionDTO);
         return projectService.getPermission(projectId, userId, getPermissionDTO);
     }
 }
