@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<User> getUser(@RequestParam("keyword") String keyword,
+    public List<User> getUser(@RequestParam(value = "keyword", defaultValue = "") String keyword,
                               @RequestParam(value = "username", defaultValue = "") String username,
                               @RequestParam(value = "password", defaultValue = "") String password) {
         User user = new User(username, password);
