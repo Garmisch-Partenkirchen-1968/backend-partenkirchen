@@ -25,7 +25,12 @@ public class IssueController {
     }
 
     @GetMapping("/projects/{projectId}/issues")
-    public ResponseEntity<List<Issue>> getIssues(@PathVariable("projectId") Long projectId, @RequestBody IssuesGetRequest issuesGetRequest) {
+    public ResponseEntity<List<Issue>> getIssues(@PathVariable("projectId") Long projectId,
+                                                 @RequestParam(value = "username", defaultValue = "") String username,
+                                                 @RequestParam(value = "password", defaultValue = "") String password,
+                                                 @RequestBody IssuesGetRequest issuesGetRequest) {
+        issuesGetRequest.setUsername(username);
+        issuesGetRequest.setPassword(password);
         userFindController.RequesterIsFound(issuesGetRequest);
         return issueService.getIssues(projectId, issuesGetRequest);
     }
