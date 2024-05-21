@@ -230,14 +230,9 @@ public class IssuesGetTest {
     @Test
     @DisplayName("get all issues") // 20
     void getAllIssues() throws Exception {
-        IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .username("admin")
-                .password("admin")
-                .build();
-
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(issuesGetRequest)))
+                        .param("username", "admin")
+                        .param("password", "admin"))
                 .andExpect(status().isOk())
                 .andReturn();
 

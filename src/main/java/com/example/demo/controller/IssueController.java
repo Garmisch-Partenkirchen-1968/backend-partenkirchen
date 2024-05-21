@@ -28,7 +28,10 @@ public class IssueController {
     public ResponseEntity<List<Issue>> getIssues(@PathVariable("projectId") Long projectId,
                                                  @RequestParam(value = "username", defaultValue = "") String username,
                                                  @RequestParam(value = "password", defaultValue = "") String password,
-                                                 @RequestBody IssuesGetRequest issuesGetRequest) {
+                                                 @RequestBody(required = false) IssuesGetRequest issuesGetRequest) {
+        if (issuesGetRequest == null) {
+            issuesGetRequest = new IssuesGetRequest();
+        }
         issuesGetRequest.setUsername(username);
         issuesGetRequest.setPassword(password);
         userFindController.RequesterIsFound(issuesGetRequest);
