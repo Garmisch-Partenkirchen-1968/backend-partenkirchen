@@ -224,7 +224,7 @@ public class IssuesGetTest {
         addIssue("epsilon3", "tester1", "", "dev4", IssuePriority.LOW, IssueStatus.ASSIGNED);
         addIssue("zeta3", "tester2", "dev3", "dev4", IssuePriority.MEDIUM, IssueStatus.FIXED);
         addIssue("alpha4", "tester1", "dev3", "dev4", IssuePriority.HIGH, IssueStatus.RESOLVED);
-        addIssue("beta4", "tester2", "dev3", "dev4", IssuePriority.LOW, IssueStatus.CLOSED);
+        addIssue("beta4", "tester2", "dev3", "dev4", IssuePriority.CRITICAL, IssueStatus.CLOSED);
     }
 
     @Test
