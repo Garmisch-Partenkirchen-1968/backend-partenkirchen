@@ -20,23 +20,24 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    public Project createProject(ProjectPostRequest projectCreater){
-        String projectName = projectCreater.getProjectName();
-        String userName = projectCreater.getUsername();
-
-        if(projectName.isEmpty()){
-            throw new RuntimeException("project name is empty");
+    public Project createProject(ProjectPostRequest projectPostRequest){
+        // project name이 겹치는 지 검사
+        Optional<Project> optionalProject = projectRepository.findByName(projectPostRequest.getProjectName());
+        if(optionalProject.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project name already exists");
         }
 
-        Optional<Project> proj = projectRepository.findByName(projectName);
-        Optional<User> us = userRepository.findByUsername(userName);
+        User user = getUserByUsername(projectPostRequest.getUsername());
 
-        if(proj.isPresent()){throw new RuntimeException("Bad Request: project name already exists");}
-        if(us.isEmpty()){throw new RuntimeException("Bad Request: user not found");}
-        User user = us.get();
+        // project 생성
+        Project project = new Project(projectPostRequest.getUsername());
+        project = projectRepository.save(project);
 
-        Project project = new Project(projectName);
-        project.getMembers().put(user, 1 << 3);
+        // project 생성자에게 admin 권한 부여
+        PermissionRequest permissionRequest = PermissionRequest.builder().
+                permissions(new boolean[]{true, false, false, false}).build();
+        addPermission(project.getId(), user.getId(), permissionRequest);
+
         return projectRepository.save(project);
     }
 
@@ -166,7 +167,6 @@ public class ProjectService {
     public boolean hasPermisiion(Project project, User user){
         return project.getMembers().get(user) >= (1 << 3);
     }
-
 
     private Project getProject(Long projectId) {
         Optional<Project> optionalProject = projectRepository.findById(projectId);
