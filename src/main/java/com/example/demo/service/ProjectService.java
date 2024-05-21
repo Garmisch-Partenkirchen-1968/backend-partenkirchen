@@ -1,9 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.project.GetPermissionDTO;
-import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectPostRequest;
-import com.example.demo.dto.project.ProjectsGetResponse;
+import com.example.demo.dto.project.*;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.repository.ProjectRepository;
@@ -23,7 +20,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    public Project createProject(ProjectPostRequest projectPostRequest){
+    public Project createProject(ProjectPostRequest projectPostRequest) {
         // project name이 겹치는 지 검사
         Optional<Project> optionalProject = projectRepository.findByName(projectPostRequest.getName());
         if(optionalProject.isPresent()){
@@ -42,7 +39,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public List<ProjectsGetResponse> getAllProjects(){
+    public List<ProjectsGetResponse> getAllProjects() {
         List<Project> projects = projectRepository.findAll();
         List<ProjectsGetResponse> projectsGetResponses = new ArrayList<>();
 
@@ -53,7 +50,7 @@ public class ProjectService {
         return projectsGetResponses;
     }
 
-    public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest){
+    public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
         Optional<User> req = userRepository.findByUsername(permissionRequest.getUsername());
@@ -86,7 +83,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public Project updatePermission(Long projectId, Long userId, PermissionRequest permissionRequest){
+    public Project updatePermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
         Optional<User> req = userRepository.findByUsername(permissionRequest.getUsername());
@@ -120,7 +117,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public Project deletePermission(Long projectId, Long userId, PermissionRequest permissionRequest){
+    public Project deletePermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
         Project project = getProject(projectId);
         User requester = getUserByUsername(permissionRequest.getUsername());
         User user = getUserById(userId);
@@ -135,7 +132,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public boolean[] getPermission(Long projectId, Long userId, GetPermissionDTO getPermissionDTO){
+    public boolean[] getPermission(Long projectId, Long userId, GetPermissionDTO getPermissionDTO) {
         Project project = getProject(projectId);
         User requester = getUserByUsername(getPermissionDTO.getUsername());
         User user = getUserById(userId);
@@ -176,11 +173,11 @@ public class ProjectService {
         return permissions;
     }
 
-    public boolean hasPermisiion(Project project, User user){
+    public boolean hasPermisiion(Project project, User user) {
         return project.getMembers().get(user) >= (1 << 3);
     }
 
-    private Project getProject(Long projectId) {
+    public Project getProject(Long projectId) {
         Optional<Project> optionalProject = projectRepository.findById(projectId);
         if (optionalProject.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project not found");

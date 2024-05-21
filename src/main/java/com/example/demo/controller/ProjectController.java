@@ -37,7 +37,7 @@ public class ProjectController {
         User user = new User(username, password);
         userFindController.RequesterIsFound(user);
 
-        return null;
+        return projectService.getProject(projectId).toProjectGetResponse();
     }
 
     @PatchMapping("/projects/{projectId}")

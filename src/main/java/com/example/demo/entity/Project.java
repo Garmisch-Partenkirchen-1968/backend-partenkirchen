@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.dto.project.ProjectGetResponse;
 import com.example.demo.dto.project.ProjectsGetResponse;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
@@ -35,5 +36,9 @@ public class Project {
 
     public ProjectsGetResponse toProjectsGetResponse() {
         return new ProjectsGetResponse(id, name, description);
+    }
+
+    public ProjectGetResponse toProjectGetResponse() {
+        return new ProjectGetResponse(id, name, description, members);
     }
 }
