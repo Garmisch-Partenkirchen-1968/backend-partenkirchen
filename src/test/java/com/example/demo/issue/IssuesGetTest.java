@@ -656,8 +656,8 @@ public class IssuesGetTest {
                 .build();
 
         mockMvc.perform(get("/projects/" + projectId + "/issues")
-                        .param("username", "admin")
-                        .param("password", "admin")
+                        .param("username", "foreign")
+                        .param("password", "foreign")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isForbidden());
