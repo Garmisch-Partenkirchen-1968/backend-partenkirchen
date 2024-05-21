@@ -30,7 +30,7 @@ public class ProjectService {
         User user = getUserByUsername(projectPostRequest.getUsername());
 
         // project 생성
-        Project project = new Project(projectPostRequest.getUsername());
+        Project project = new Project(projectPostRequest.getUsername(), projectPostRequest.getProjectDescription());
         project = projectRepository.save(project);
 
         // project 생성자에게 admin 권한 부여

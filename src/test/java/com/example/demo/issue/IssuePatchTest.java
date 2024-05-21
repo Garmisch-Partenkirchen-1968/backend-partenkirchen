@@ -100,6 +100,7 @@ public class IssuePatchTest {
                 .username("admin")
                 .password("admin")
                 .projectName("new project!")
+                .projectDescription("some description")
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 
@@ -108,6 +109,7 @@ public class IssuePatchTest {
                 .username("admin")
                 .password("admin")
                 .projectName("another project!")
+                .projectDescription("another description")
                 .build();
         anotherProjectId = projectService.createProject(anotherProjectCreater).getId();
 

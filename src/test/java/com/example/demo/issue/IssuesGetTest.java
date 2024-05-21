@@ -166,6 +166,7 @@ public class IssuesGetTest {
                 .username("admin")
                 .password("admin")
                 .projectName("new project!")
+                .projectDescription("some description")
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 

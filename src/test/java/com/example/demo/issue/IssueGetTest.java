@@ -86,6 +86,7 @@ public class IssueGetTest {
                 .username("admin")
                 .password("admin")
                 .projectName("new project!")
+                .projectDescription("some description")
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 
@@ -93,6 +94,7 @@ public class IssueGetTest {
         ProjectPostRequest anotherProjectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
+                .projectDescription("another description")
                 .projectName("another project!")
                 .build();
         anotherProjectId = projectService.createProject(anotherProjectCreater).getId();
