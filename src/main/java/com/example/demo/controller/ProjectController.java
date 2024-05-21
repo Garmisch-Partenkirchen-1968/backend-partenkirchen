@@ -52,7 +52,13 @@ public class ProjectController {
     }
 
     @GetMapping("/projects/{projectId}/permissions/{userId}")
-    public boolean[] getPermission(@RequestBody GetPermissionDTO getPermissionDTO, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId) {
+    public boolean[] getPermission(@RequestBody GetPermissionDTO getPermissionDTO,
+                                   @RequestParam(value = "username", defaultValue = "") String username,
+                                   @RequestParam(value = "password", defaultValue = "") String password,
+                                   @PathVariable("projectId") Long projectId,
+                                   @PathVariable("userId") Long userId) {
+        getPermissionDTO.setUsername(username);
+        getPermissionDTO.setPassword(password);
         Long userid = userFindController.RequesterIsFound(getPermissionDTO);
         return projectService.getPermission(projectId, userId, getPermissionDTO);
     }
