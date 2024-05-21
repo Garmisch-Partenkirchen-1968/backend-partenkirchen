@@ -25,7 +25,7 @@ public class ProjectService {
 
     public Project createProject(ProjectPostRequest projectPostRequest){
         // project name이 겹치는 지 검사
-        Optional<Project> optionalProject = projectRepository.findByName(projectPostRequest.getProjectName());
+        Optional<Project> optionalProject = projectRepository.findByName(projectPostRequest.getName());
         if(optionalProject.isPresent()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project name already exists");
         }
@@ -33,7 +33,7 @@ public class ProjectService {
         User user = getUserByUsername(projectPostRequest.getUsername());
 
         // project 생성
-        Project project = new Project(projectPostRequest.getUsername(), projectPostRequest.getProjectDescription());
+        Project project = new Project(projectPostRequest.getUsername(), projectPostRequest.getDescription());
         project = projectRepository.save(project);
 
         // project 생성자에게 admin 권한 부여
