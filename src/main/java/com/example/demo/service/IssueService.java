@@ -122,7 +122,7 @@ public class IssueService {
 
         // Title이 요청으로 왔을 때
         if (issuesGetRequest.getTitle() != null) {
-            issues.removeIf(issue -> !(issuesGetRequest.getTitle().equals(issue.getTitle())));
+            issues.removeIf(issue -> !(issue.getTitle().contains(issuesGetRequest.getTitle())));
         }
         // Reporter가 요청으로 왔을 때
         if (issuesGetRequest.getReporter() != null) {
