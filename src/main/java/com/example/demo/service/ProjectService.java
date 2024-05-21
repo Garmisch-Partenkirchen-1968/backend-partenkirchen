@@ -1,22 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.controller.ProjectController;
 import com.example.demo.dto.project.GetPermissionDTO;
 import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectCreater;
-import com.example.demo.entity.Issue;
+import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
-import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Permission;
 import java.util.Optional;
 
 @Service
@@ -25,7 +20,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    public Project createProject(ProjectCreater projectCreater){
+    public Project createProject(ProjectPostRequest projectCreater){
         String projectName = projectCreater.getProjectName();
         String userName = projectCreater.getUsername();
 

@@ -1,10 +1,9 @@
 package com.example.demo.issue;
 
-import com.example.demo.dto.issue.IssueGetRequest;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectCreater;
+import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
@@ -83,7 +82,7 @@ public class IssueGetTest {
         Long tester2Id = userService.signUpUser(tester2).getId();
 
         // 프로젝트 생성
-        ProjectCreater projectCreater = ProjectCreater.builder()
+        ProjectPostRequest projectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .projectName("new project!")
@@ -91,7 +90,7 @@ public class IssueGetTest {
         projectId = projectService.createProject(projectCreater).getId();
 
         // 다른 프로젝트 생성
-        ProjectCreater anotherProjectCreater = ProjectCreater.builder()
+        ProjectPostRequest anotherProjectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .projectName("another project!")

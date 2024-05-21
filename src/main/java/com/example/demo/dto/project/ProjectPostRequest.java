@@ -9,7 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Getter
 @Builder
-public class ProjectCreater implements ToUser {
+public class ProjectPostRequest implements ToUser {
     private String username;
     private String password;
     private String projectName;
