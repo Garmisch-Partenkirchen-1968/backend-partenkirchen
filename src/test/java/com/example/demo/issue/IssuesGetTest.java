@@ -222,9 +222,9 @@ public class IssuesGetTest {
         addIssue("gamma3", "tester1", "dev3", "dev3", IssuePriority.HIGH, IssueStatus.CLOSED);
         addIssue("delta3", "tester2", "", "", IssuePriority.CRITICAL, IssueStatus.NEW);
         addIssue("epsilon3", "tester1", "", "dev4", IssuePriority.LOW, IssueStatus.ASSIGNED);
-        addIssue("zeta3", "tester2", "dev3", "dev4", IssuePriority.MEDIUM, IssueStatus.FIXED);
-        addIssue("alpha4", "tester1", "dev3", "dev4", IssuePriority.HIGH, IssueStatus.RESOLVED);
-        addIssue("beta4", "tester2", "dev3", "dev4", IssuePriority.CRITICAL, IssueStatus.CLOSED);
+        addIssue("zeta3", "tester2", "dev4", "dev4", IssuePriority.MEDIUM, IssueStatus.FIXED);
+        addIssue("alpha4", "tester1", "dev4", "dev4", IssuePriority.HIGH, IssueStatus.RESOLVED);
+        addIssue("beta4", "tester2", "dev4", "dev4", IssuePriority.CRITICAL, IssueStatus.CLOSED);
     }
 
     @Test
@@ -390,6 +390,7 @@ public class IssuesGetTest {
 
         Issue[] issues = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Issue[].class);
         assertEquals(3, issues.length);
+        System.out.println(issues.toString());
     }
 
     @Test
