@@ -50,6 +50,37 @@ public class ProjectService {
         return projectsGetResponses;
     }
 
+    private void updateProjectName(Project project, String newName) {
+        if (newName.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project name cannot be empty");
+        }
+
+        Optional<Project> anotherProject = projectRepository.findByName(newName);
+        if (anotherProject.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project name already exists");
+        }
+
+        project.setName(newName);
+        projectRepository.save(project);
+    }
+
+    private void updateProjectDescription(Project project, String newDescription) {
+        project.setDescription(newDescription);
+        projectRepository.save(project);
+    }
+
+    public void patchProject(Long projectId, ProjectPatchRequest projectPatchRequest) {
+        Project project = getProject(projectId);
+
+        if (projectPatchRequest.getName() != null) {
+            updateProjectName(project, projectPatchRequest.getName());
+        }
+
+        if (projectPatchRequest.getDescription() != null) {
+            updateProjectDescription(project, projectPatchRequest.getDescription());
+        }
+    }
+
     public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);

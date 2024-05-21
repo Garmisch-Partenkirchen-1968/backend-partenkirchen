@@ -43,6 +43,8 @@ public class ProjectController {
     @PatchMapping("/projects/{projectId}")
     public void patchProject(@PathVariable Long projectId, @RequestBody ProjectPatchRequest projectPatchRequest) {
         userFindController.RequesterIsFound(projectPatchRequest);
+
+        projectService.patchProject(projectId, projectPatchRequest);
     }
 
     @DeleteMapping("/projects/{projectId}")
