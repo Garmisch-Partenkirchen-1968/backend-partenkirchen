@@ -13,15 +13,17 @@ import java.util.*;
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class Project {
+    public Project(String projectName){
+        this.name = projectName;
+    }
+
     @Id
+    @Nonnull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Nonnull
     private String name;
-
-    @Nonnull
-    private String description;
 
     @OneToMany
     private List<Issue> issues = new ArrayList<>();

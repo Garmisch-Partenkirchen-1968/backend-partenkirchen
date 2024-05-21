@@ -20,15 +20,22 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    public Project createProject(ProjectPostRequest projectPostRequest){
-        Optional<Project> optionalProject = projectRepository.findByName(projectPostRequest.getProjectName());
-        if (optionalProject.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project name already exist");
-        }
-        User user = getUserByUsername(projectPostRequest.getUsername());
+    public Project createProject(ProjectPostRequest projectCreater){
+        String projectName = projectCreater.getProjectName();
+        String userName = projectCreater.getUsername();
 
-        Project project = new Project(projectPostRequest.getProjectName(),
-                projectPostRequest.getProjectDescription());
+        if(projectName.isEmpty()){
+            throw new RuntimeException("project name is empty");
+        }
+
+        Optional<Project> proj = projectRepository.findByName(projectName);
+        Optional<User> us = userRepository.findByUsername(userName);
+
+        if(proj.isPresent()){throw new RuntimeException("Bad Request: project name already exists");}
+        if(us.isEmpty()){throw new RuntimeException("Bad Request: user not found");}
+        User user = us.get();
+
+        Project project = new Project(projectName);
         project.getMembers().put(user, 1 << 3);
         return projectRepository.save(project);
     }
@@ -159,6 +166,7 @@ public class ProjectService {
     public boolean hasPermisiion(Project project, User user){
         return project.getMembers().get(user) >= (1 << 3);
     }
+
 
     private Project getProject(Long projectId) {
         Optional<Project> optionalProject = projectRepository.findById(projectId);
