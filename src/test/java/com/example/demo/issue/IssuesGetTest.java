@@ -355,6 +355,25 @@ public class IssuesGetTest {
     }
 
     @Test
+    @DisplayName("get issues fixer: null") // 8
+    void getIssueFixerNull() throws Exception {
+        IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
+                .reporter("")
+                .build();
+
+        MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
+                        .param("username", "admin")
+                        .param("password", "admin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(issuesGetRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Issue[] issues = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Issue[].class);
+        assertEquals(8, issues.length);
+    }
+
+    @Test
     @DisplayName("get issues fixer: dev1") // 3
     void getIssueFixerDev1() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
