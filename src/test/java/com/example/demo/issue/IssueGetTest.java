@@ -152,13 +152,9 @@ public class IssueGetTest {
     @Test
     @DisplayName("issue get 성공")
     void getIssue() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("tester1")
-                .build();
         MvcResult mvcResult = this.mockMvc.perform(get("/projects/" + projectId + "/issues/" + defaultIssue.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(issueGetRequest)))
+                        .param("username", "tester1")
+                        .param("password", "tester1"))
                 .andExpect(status().isOk())
                 .andReturn();
 

@@ -39,7 +39,16 @@ public class IssueController {
     }
 
     @GetMapping("/projects/{projectId}/issues/{issueId}")
-    public ResponseEntity<Issue> getIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody IssueGetRequest issueGetRequest) {
+    public ResponseEntity<Issue> getIssue(@PathVariable("projectId") Long projectId,
+                                          @PathVariable("issueId") Long issueId,
+                                          @RequestParam(value = "username", defaultValue = "") String username,
+                                          @RequestParam(value = "password", defaultValue = "") String password,
+                                          @RequestBody(required = false) IssueGetRequest issueGetRequest) {
+        if (issueGetRequest == null) {
+            issueGetRequest = new IssueGetRequest();
+        }
+        issueGetRequest.setUsername(username);
+        issueGetRequest.setPassword(password);
         userFindController.RequesterIsFound(issueGetRequest);
         return issueService.getIssue(projectId, issueId, issueGetRequest);
     }
