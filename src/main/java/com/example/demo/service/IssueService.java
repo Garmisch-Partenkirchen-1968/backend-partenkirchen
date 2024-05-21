@@ -149,7 +149,7 @@ public class IssueService {
                 // fixer가 존재하는지
                 if (fix.isPresent()) {
                     User fixer = fix.get();
-                    issues.removeIf(issue -> !(issue.getFixer().equals(fixer)));
+                    issues.removeIf(issue -> !(fixer.equals(issue.getFixer())));
                 } else {
                     issues.clear();
                 }
@@ -164,7 +164,7 @@ public class IssueService {
                 // assignee가 존재하는지
                 if (assign.isPresent()) {
                     User assignee = assign.get();
-                    issues.removeIf(issue -> !(issue.getAssignee().equals(assignee)));
+                    issues.removeIf(issue -> !(assignee.equals(issue.getAssignee())));
                 } else {
                     issues.clear();
                 }
