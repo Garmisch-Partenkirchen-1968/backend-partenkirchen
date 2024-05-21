@@ -27,7 +27,7 @@ public class ProjectController {
         User user = new User(username, password);
         userFindController.RequesterIsFound(user);
 
-        return null;
+        return projectService.getAllProjects();
     }
 
     @GetMapping("/projects/{projectId}")

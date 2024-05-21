@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.dto.project.ProjectsGetResponse;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -31,4 +32,8 @@ public class Project {
     @MapKeyJoinColumn(name = "user_id")
     @Column(name = "permission")
     private Map<User, Integer> members = new HashMap<>();
+
+    public ProjectsGetResponse toProjectsGetResponse() {
+        return new ProjectsGetResponse(id, name, description);
+    }
 }

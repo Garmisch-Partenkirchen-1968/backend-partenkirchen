@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.project.GetPermissionDTO;
 import com.example.demo.dto.project.PermissionRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.project.ProjectsGetResponse;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.repository.ProjectRepository;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,6 +40,17 @@ public class ProjectService {
         project.getMembers().put(user, 1 << 3);
 
         return projectRepository.save(project);
+    }
+
+    public List<ProjectsGetResponse> getAllProjects(){
+        List<Project> projects = projectRepository.findAll();
+        List<ProjectsGetResponse> projectsGetResponses = new ArrayList<>();
+
+        for (Project project : projects) {
+            projectsGetResponses.add(project.toProjectsGetResponse());
+        }
+
+        return projectsGetResponses;
     }
 
     public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest){
