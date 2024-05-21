@@ -358,7 +358,7 @@ public class IssuesGetTest {
     @DisplayName("get issues fixer: null") // 8
     void getIssueFixerNull() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .reporter("")
+                .fixer("")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
@@ -654,7 +654,7 @@ public class IssuesGetTest {
                 .fixer("")
                 .assignee("dev3")
                 .priority(IssuePriority.CRITICAL)
-                .status(IssueStatus.FIXED)
+                .status(IssueStatus.ASSIGNED)
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
