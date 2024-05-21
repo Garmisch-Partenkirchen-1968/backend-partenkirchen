@@ -34,9 +34,7 @@ public class ProjectService {
         project = projectRepository.save(project);
 
         // project 생성자에게 admin 권한 부여
-        PermissionRequest permissionRequest = PermissionRequest.builder().
-                permissions(new boolean[]{true, false, false, false}).build();
-        addPermission(project.getId(), user.getId(), permissionRequest);
+        project.getMembers().put(user, 1 << 3);
 
         return projectRepository.save(project);
     }
