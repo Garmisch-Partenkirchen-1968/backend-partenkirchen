@@ -210,7 +210,7 @@ public class IssuesGetTest {
         addIssue("gamma1", "tester1", "dev1", "dev1", IssuePriority.HIGH, IssueStatus.FIXED);
         addIssue("delta1", "tester2", "dev1", "dev1", IssuePriority.CRITICAL, IssueStatus.RESOLVED);
         addIssue("epsilon1", "tester1", "dev1", "dev1", IssuePriority.LOW, IssueStatus.CLOSED);
-        addIssue("zeta2", "tester2", "", "", IssuePriority.MEDIUM, IssueStatus.NEW);
+        addIssue("zeta1", "tester2", "", "", IssuePriority.MEDIUM, IssueStatus.NEW);
         addIssue("alpha2", "tester1", "", "dev2", IssuePriority.HIGH, IssueStatus.ASSIGNED);
         addIssue("beta2", "tester2", "dev2", "dev2", IssuePriority.CRITICAL, IssueStatus.FIXED);
         addIssue("gamma2", "tester1", "dev2", "dev2", IssuePriority.LOW, IssueStatus.RESOLVED);
@@ -222,9 +222,9 @@ public class IssuesGetTest {
         addIssue("gamma3", "tester1", "dev3", "dev3", IssuePriority.HIGH, IssueStatus.CLOSED);
         addIssue("delta3", "tester2", "", "", IssuePriority.CRITICAL, IssueStatus.NEW);
         addIssue("epsilon3", "tester1", "", "dev4", IssuePriority.LOW, IssueStatus.ASSIGNED);
-        addIssue("zeta3", "tester2", "dev3", "dev4", IssuePriority.MEDIUM, IssueStatus.FIXED);
-        addIssue("alpha4", "tester1", "dev3", "dev4", IssuePriority.HIGH, IssueStatus.RESOLVED);
-        addIssue("beta4", "tester2", "dev3", "dev4", IssuePriority.LOW, IssueStatus.CLOSED);
+        addIssue("zeta3", "tester2", "dev4", "dev4", IssuePriority.MEDIUM, IssueStatus.FIXED);
+        addIssue("alpha4", "tester1", "dev4", "dev4", IssuePriority.HIGH, IssueStatus.RESOLVED);
+        addIssue("beta4", "tester2", "dev4", "dev4", IssuePriority.CRITICAL, IssueStatus.CLOSED);
     }
 
     @Test
@@ -358,7 +358,7 @@ public class IssuesGetTest {
     @DisplayName("get issues fixer: null") // 8
     void getIssueFixerNull() throws Exception {
         IssuesGetRequest issuesGetRequest = IssuesGetRequest.builder()
-                .reporter("")
+                .fixer("")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
@@ -409,6 +409,7 @@ public class IssuesGetTest {
 
         Issue[] issues = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Issue[].class);
         assertEquals(3, issues.length);
+        System.out.println(issues.toString());
     }
 
     @Test
@@ -653,7 +654,7 @@ public class IssuesGetTest {
                 .fixer("")
                 .assignee("dev3")
                 .priority(IssuePriority.CRITICAL)
-                .status(IssueStatus.FIXED)
+                .status(IssueStatus.ASSIGNED)
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
@@ -675,8 +676,8 @@ public class IssuesGetTest {
                 .build();
 
         mockMvc.perform(get("/projects/" + projectId + "/issues")
-                        .param("username", "admin")
-                        .param("password", "admin")
+                        .param("username", "foreign")
+                        .param("password", "foreign")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuesGetRequest)))
                 .andExpect(status().isForbidden());
