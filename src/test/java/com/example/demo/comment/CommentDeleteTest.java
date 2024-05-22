@@ -18,7 +18,6 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Status;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
