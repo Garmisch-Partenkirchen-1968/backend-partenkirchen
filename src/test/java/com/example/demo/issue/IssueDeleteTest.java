@@ -4,7 +4,7 @@ import com.example.demo.dto.issue.IssueDeleteRequest;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectCreater;
+import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
@@ -78,18 +78,20 @@ public class IssueDeleteTest {
         Long tester2Id = userService.signUpUser(tester2).getId();
 
         // 프로젝트 생성
-        ProjectCreater projectCreater = ProjectCreater.builder()
+        ProjectPostRequest projectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
-                .projectName("new project!")
+                .name("new project!")
+                .description("some description")
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 
         // 다른 프로젝트 생성
-        ProjectCreater anotherProjectCreater = ProjectCreater.builder()
+        ProjectPostRequest anotherProjectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
-                .projectName("another project!")
+                .name("another project!")
+                .description("another description")
                 .build();
         Long anotherProjectId = projectService.createProject(anotherProjectCreater).getId();
 

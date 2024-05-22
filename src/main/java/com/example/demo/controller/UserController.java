@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -24,7 +25,9 @@ public class UserController {
     }
 
     @GetMapping("/signin")
-    public UserSignInResponse signIn(@RequestBody User user) {
+    public UserSignInResponse signIn(@RequestParam(value = "username", defaultValue = "") String username,
+                                     @RequestParam(value = "password", defaultValue = "") String password) {
+        User user = new User(username, password);
         return userService.signInUser(user);
     }
 
@@ -42,6 +45,15 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong permission");
         }
         userService.deleteUser(userId);
+    }
+
+    @GetMapping("/users")
+    public List<User> getUser(@RequestParam(value = "keyword", defaultValue = "") String keyword,
+                              @RequestParam(value = "username", defaultValue = "") String username,
+                              @RequestParam(value = "password", defaultValue = "") String password) {
+        User user = new User(username, password);
+        checkPermission(user);
+        return userService.getUsers(keyword);
     }
 
     private Long checkPermission(User user) {

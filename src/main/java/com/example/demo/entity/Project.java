@@ -1,30 +1,31 @@
 package com.example.demo.entity;
 
+import com.example.demo.dto.project.ProjectGetResponse;
+import com.example.demo.dto.project.ProjectsGetResponse;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class Project {
-    public Project(String projectName, User owner){
-        this.name = projectName;
-        this.owner = owner;
-    }
-
     @Id
-    @Nonnull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Nonnull
     private String name;
+
+    @Nonnull
+    private String description;
 
     @OneToMany
     private List<Issue> issues = new ArrayList<>();
@@ -35,7 +36,11 @@ public class Project {
     @Column(name = "permission")
     private Map<User, Integer> members = new HashMap<>();
 
-    @Nonnull
-    @ManyToOne
-    private User owner;
+    public ProjectsGetResponse toProjectsGetResponse() {
+        return new ProjectsGetResponse(id, name, description);
+    }
+
+    public ProjectGetResponse toProjectGetResponse() {
+        return new ProjectGetResponse(id, name, description, members);
+    }
 }

@@ -1,10 +1,9 @@
 package com.example.demo.issue;
 
-import com.example.demo.dto.issue.IssueGetRequest;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectCreater;
+import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
@@ -83,18 +82,20 @@ public class IssueGetTest {
         Long tester2Id = userService.signUpUser(tester2).getId();
 
         // 프로젝트 생성
-        ProjectCreater projectCreater = ProjectCreater.builder()
+        ProjectPostRequest projectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
-                .projectName("new project!")
+                .name("new project!")
+                .description("some description")
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 
         // 다른 프로젝트 생성
-        ProjectCreater anotherProjectCreater = ProjectCreater.builder()
+        ProjectPostRequest anotherProjectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
-                .projectName("another project!")
+                .name("another project!")
+                .description("another description")
                 .build();
         anotherProjectId = projectService.createProject(anotherProjectCreater).getId();
 
@@ -152,13 +153,9 @@ public class IssueGetTest {
     @Test
     @DisplayName("issue get 성공")
     void getIssue() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("tester1")
-                .build();
         MvcResult mvcResult = this.mockMvc.perform(get("/projects/" + projectId + "/issues/" + defaultIssue.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(issueGetRequest)))
+                        .param("username", "tester1")
+                        .param("password", "tester1"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -171,65 +168,45 @@ public class IssueGetTest {
     @Test
     @DisplayName("admin이 issue 검색")
     void getIssueAsAdmin() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("admin")
-                .password("admin")
-                .build();
         this.mockMvc.perform(get("/projects/" + projectId + "/issues/" + defaultIssue.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
+                        .param("username", "admin")
+                        .param("password", "admin"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("존재하지 않는 프로젝트의 이슈 검색")
     void getIssueInNotExistProject() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("tester1")
-                .build();
         this.mockMvc.perform(get("/projects/" + 982734 + "/issues/" + 123124)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
+                        .param("username", "tester1")
+                        .param("password", "tester1"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("member가 아닌 다른 project의 이슈 get")
     void getIssueInAnotherProject() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("tester1")
-                .build();
         this.mockMvc.perform(get("/projects/" + anotherProjectId + "/issues/" + anotherIssue.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
+                        .param("username", "tester1")
+                        .param("password", "tester1"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("잘못된 비밀번호로 이슈 get")
     void getIssueWithWrongPassword() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("wrongpassword")
-                .build();
         this.mockMvc.perform(get("/projects/" + projectId + "/issues/" + defaultIssue.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
+                        .param("username", "tester1")
+                        .param("password", "wrongpassword"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("없는 issue get")
     void getNotExistIssue() throws Exception {
-        IssueGetRequest issueGetRequest = IssueGetRequest.builder()
-                .username("tester1")
-                .password("tester1")
-                .build();
         this.mockMvc.perform(get("/projects/" + projectId + "/issues/" + 93843)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issueGetRequest)))
+                        .param("username", "tester1")
+                        .param("password", "tester1"))
                 .andExpect(status().isForbidden());
     }
 }

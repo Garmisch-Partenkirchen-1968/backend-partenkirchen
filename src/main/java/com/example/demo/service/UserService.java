@@ -3,12 +3,12 @@ package com.example.demo.service;
 import com.example.demo.dto.user.UserSignInResponse;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,5 +56,9 @@ public class UserService {
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         userRepository.delete(user);
+    }
+
+    public List<User> getUsers(String keyword) {
+        return userRepository.findByUsernameContaining(keyword);
     }
 }

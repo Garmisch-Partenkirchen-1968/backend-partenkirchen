@@ -122,7 +122,7 @@ public class IssueService {
 
         // Title이 요청으로 왔을 때
         if (issuesGetRequest.getTitle() != null) {
-            issues.removeIf(issue -> !(issuesGetRequest.getTitle().equals(issue.getTitle())));
+            issues.removeIf(issue -> !(issue.getTitle().contains(issuesGetRequest.getTitle())));
         }
         // Reporter가 요청으로 왔을 때
         if (issuesGetRequest.getReporter() != null) {
@@ -149,7 +149,7 @@ public class IssueService {
                 // fixer가 존재하는지
                 if (fix.isPresent()) {
                     User fixer = fix.get();
-                    issues.removeIf(issue -> !(issue.getFixer().equals(fixer)));
+                    issues.removeIf(issue -> !(fixer.equals(issue.getFixer())));
                 } else {
                     issues.clear();
                 }
@@ -164,7 +164,7 @@ public class IssueService {
                 // assignee가 존재하는지
                 if (assign.isPresent()) {
                     User assignee = assign.get();
-                    issues.removeIf(issue -> !(issue.getAssignee().equals(assignee)));
+                    issues.removeIf(issue -> !(assignee.equals(issue.getAssignee())));
                 } else {
                     issues.clear();
                 }

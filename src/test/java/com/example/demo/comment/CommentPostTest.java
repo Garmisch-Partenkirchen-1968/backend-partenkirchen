@@ -5,7 +5,7 @@ import com.example.demo.dto.comment.CommentPostResponse;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectCreater;
+import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
@@ -97,10 +97,11 @@ public class CommentPostTest {
         Long dev2Id = userService.signUpUser(dev2).getId();
 
         // project 생성
-        ProjectCreater projectCreater = ProjectCreater.builder()
+        ProjectPostRequest projectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
-                .projectName("TestProject")
+                .name("TestProject")
+                .description("some description")
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 

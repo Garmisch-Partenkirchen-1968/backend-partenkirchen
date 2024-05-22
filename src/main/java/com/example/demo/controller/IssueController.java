@@ -20,32 +20,49 @@ public class IssueController {
 
     @PostMapping("/projects/{projectId}/issues")
     public ResponseEntity<IssuePostResponse> postIssue(@PathVariable("projectId") Long projectId, @RequestBody IssuePostRequest issuePostRequest) {
-        Long userid = userFindController.RequesterIsFound(issuePostRequest);
+        userFindController.RequesterIsFound(issuePostRequest);
         return new ResponseEntity<> (issueService.postIssue(projectId, issuePostRequest), HttpStatus.CREATED);
     }
 
     @GetMapping("/projects/{projectId}/issues")
-    public ResponseEntity<List<Issue>> getIssues(@PathVariable("projectId") Long projectId, @RequestBody IssuesGetRequest issuesGetRequest) {
-        Long userid = userFindController.RequesterIsFound(issuesGetRequest);
+    public ResponseEntity<List<Issue>> getIssues(@PathVariable("projectId") Long projectId,
+                                                 @RequestParam(value = "username", defaultValue = "") String username,
+                                                 @RequestParam(value = "password", defaultValue = "") String password,
+                                                 @RequestBody(required = false) IssuesGetRequest issuesGetRequest) {
+        if (issuesGetRequest == null) {
+            issuesGetRequest = new IssuesGetRequest();
+        }
+        issuesGetRequest.setUsername(username);
+        issuesGetRequest.setPassword(password);
+        userFindController.RequesterIsFound(issuesGetRequest);
         return new ResponseEntity<>(issueService.getIssues(projectId, issuesGetRequest), HttpStatus.OK);
     }
 
     @GetMapping("/projects/{projectId}/issues/{issueId}")
-    public ResponseEntity<Issue> getIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody IssueGetRequest issueGetRequest) {
-        Long userid = userFindController.RequesterIsFound(issueGetRequest);
+    public ResponseEntity<Issue> getIssue(@PathVariable("projectId") Long projectId,
+                                          @PathVariable("issueId") Long issueId,
+                                          @RequestParam(value = "username", defaultValue = "") String username,
+                                          @RequestParam(value = "password", defaultValue = "") String password,
+                                          @RequestBody(required = false) IssueGetRequest issueGetRequest) {
+        if (issueGetRequest == null) {
+            issueGetRequest = new IssueGetRequest();
+        }
+        issueGetRequest.setUsername(username);
+        issueGetRequest.setPassword(password);
+        userFindController.RequesterIsFound(issueGetRequest);
         return new ResponseEntity<>(issueService.getIssue(projectId, issueId, issueGetRequest), HttpStatus.OK);
     }
 
     @PatchMapping("/projects/{projectId}/issues/{issueId}")
     public ResponseEntity patchIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody IssuePatchRequest issuePatchRequest) {
-        Long userid = userFindController.RequesterIsFound(issuePatchRequest);
+        userFindController.RequesterIsFound(issuePatchRequest);
         issueService.patchIssue(projectId, issueId, issuePatchRequest);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/projects/{projectId}/issues/{issueId}")
     public ResponseEntity deleteIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody IssueDeleteRequest issueDeleteRequest) {
-        Long userid = userFindController.RequesterIsFound(issueDeleteRequest);
+        userFindController.RequesterIsFound(issueDeleteRequest);
         issueService.deleteIssue(projectId, issueId, issueDeleteRequest);
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -1,52 +1,105 @@
 package com.example.demo.service;
 
-import com.example.demo.controller.ProjectController;
-import com.example.demo.dto.project.GetPermissionDTO;
-import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectCreater;
+import com.example.demo.dto.project.*;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Permission;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    @Autowired
-    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
-        this.projectRepository = projectRepository;
-        this.userRepository = userRepository;
-    }
-
-    public Project createProject(ProjectCreater projectCreater){
-        String projectName = projectCreater.getProjectName();
-        String userName = projectCreater.getUsername();
-
-        if(projectName.isEmpty()){
-            throw new RuntimeException("project name is empty");
+    public Project createProject(ProjectPostRequest projectPostRequest) {
+        // project name이 겹치는 지 검사
+        Optional<Project> optionalProject = projectRepository.findByName(projectPostRequest.getName());
+        if(optionalProject.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project name already exists");
         }
 
-        Optional<Project> proj = projectRepository.findByName(projectName);
-        Optional<User> us = userRepository.findByUsername(userName);
+        User user = getUserByUsername(projectPostRequest.getUsername());
 
-        if(proj.isPresent()){throw new RuntimeException("Bad Request: project name already exists");}
-        if(us.isEmpty()){throw new RuntimeException("Bad Request: user not found");}
-        User user = us.get();
+        // project 생성
+        Project project = new Project(projectPostRequest.getName(), projectPostRequest.getDescription());
+        project = projectRepository.save(project);
 
-        Project project = new Project(projectName, user);
+        // project 생성자에게 admin 권한 부여
         project.getMembers().put(user, 1 << 3);
+
         return projectRepository.save(project);
     }
 
-    public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest){
+    public List<ProjectsGetResponse> getAllProjects() {
+        List<Project> projects = projectRepository.findAll();
+        List<ProjectsGetResponse> projectsGetResponses = new ArrayList<>();
+
+        for (Project project : projects) {
+            projectsGetResponses.add(project.toProjectsGetResponse());
+        }
+
+        return projectsGetResponses;
+    }
+
+    private void updateProjectName(Project project, String newName) {
+        if (newName.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project name cannot be empty");
+        }
+
+        Optional<Project> anotherProject = projectRepository.findByName(newName);
+        if (anotherProject.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project name already exists");
+        }
+
+        project.setName(newName);
+        projectRepository.save(project);
+    }
+
+    private void updateProjectDescription(Project project, String newDescription) {
+        project.setDescription(newDescription);
+        projectRepository.save(project);
+    }
+
+    public void patchProject(Long projectId, ProjectPatchRequest projectPatchRequest) {
+        Project project = getProject(projectId);
+        User user = getUserByUsername(projectPatchRequest.getUsername());
+
+        if (project.getMembers().get(user) == null ||
+                (project.getMembers().get(user) & (1 << 3)) == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "you don't have permission to this project");
+        }
+
+        if (projectPatchRequest.getName() != null) {
+            updateProjectName(project, projectPatchRequest.getName());
+        }
+
+        if (projectPatchRequest.getDescription() != null) {
+            updateProjectDescription(project, projectPatchRequest.getDescription());
+        }
+    }
+
+    public void deleteProject(Long projectId, String username) {
+        Project project = getProject(projectId);
+        User user = getUserByUsername(username);
+
+        if (project.getMembers().get(user) == null ||
+                (project.getMembers().get(user) & (1 << 3)) == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "you don't have permission to this project");
+        }
+
+        projectRepository.delete(project);
+    }
+
+    public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
         Optional<User> req = userRepository.findByUsername(permissionRequest.getUsername());
@@ -79,7 +132,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public Project updatePermission(Long projectId, Long userId, PermissionRequest permissionRequest){
+    public Project updatePermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
         Optional<User> req = userRepository.findByUsername(permissionRequest.getUsername());
@@ -113,20 +166,11 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public Project deletePermission(Long projectId, Long userId, PermissionRequest permissionRequest){
-        Optional<Project> proj = projectRepository.findById(projectId);
-        Optional<User> us = userRepository.findById(userId);
-        Optional<User> req = userRepository.findByUsername(permissionRequest.getUsername());
+    public Project deletePermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
+        Project project = getProject(projectId);
+        User requester = getUserByUsername(permissionRequest.getUsername());
+        User user = getUserById(userId);
 
-        Project project;
-        User user, requester;
-        if(req.isEmpty()){throw new RuntimeException("requester is not exist");}
-        if(proj.isEmpty()){throw new RuntimeException("project not found");}
-        if(us.isEmpty()){throw new RuntimeException("user is not exist"); }
-
-        requester = req.get();
-        project = proj.get();
-        user = us.get();
         if(project.getMembers().get(user) == null){
             throw new RuntimeException("Bad Request: user not exsists in project");
         }
@@ -137,20 +181,11 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public boolean[] getPermission(Long projectId, Long userId, GetPermissionDTO getPermissionDTO){
-        Optional<Project> proj = projectRepository.findById(projectId);
-        Optional<User> us = userRepository.findById(userId);
-        Optional<User> req = userRepository.findByUsername(getPermissionDTO.getUsername());
+    public boolean[] getPermission(Long projectId, Long userId, GetPermissionDTO getPermissionDTO) {
+        Project project = getProject(projectId);
+        User requester = getUserByUsername(getPermissionDTO.getUsername());
+        User user = getUserById(userId);
 
-        Project project;
-        User user, requester;
-        if(req.isEmpty()){throw new RuntimeException("requester is not exist");}
-        if(proj.isEmpty()){throw new RuntimeException("project not found");}
-        if(us.isEmpty()){throw new RuntimeException("user is not exist"); }
-
-        requester = req.get();
-        project = proj.get();
-        user = us.get();
         if(project.getMembers().get(user) == null){
             throw new RuntimeException("User not exsists in project");
         }
@@ -187,7 +222,31 @@ public class ProjectService {
         return permissions;
     }
 
-    public boolean hasPermisiion(Project project, User user){
+    public boolean hasPermisiion(Project project, User user) {
         return project.getMembers().get(user) >= (1 << 3);
+    }
+
+    public Project getProject(Long projectId) {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if (optionalProject.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project not found");
+        }
+        return optionalProject.get();
+    }
+
+    private User getUserByUsername(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
+        }
+        return optionalUser.get();
+    }
+
+    private User getUserById(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
+        }
+        return optionalUser.get();
     }
 }
