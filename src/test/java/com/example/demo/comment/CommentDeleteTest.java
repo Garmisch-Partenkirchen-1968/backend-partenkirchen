@@ -100,7 +100,7 @@ public class CommentDeleteTest {
                 .username("dev2")
                 .password("dev2")
                 .build();
-        Long dev2Id = userService.signUpUser(dev2).getId();
+        userService.signUpUser(dev2);
 
         // project 생성
         ProjectPostRequest projectCreater = ProjectPostRequest.builder()
