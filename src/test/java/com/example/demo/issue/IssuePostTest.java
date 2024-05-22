@@ -3,7 +3,7 @@ package com.example.demo.issue;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectCreater;
+import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
@@ -11,7 +11,6 @@ import com.example.demo.entity.enumerate.IssueStatus;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -72,10 +71,11 @@ public class IssuePostTest {
         tester1Id = userService.signUpUser(tester1).getId();
 
         // 프로젝트 생성
-        ProjectCreater projectCreater = ProjectCreater.builder()
+        ProjectPostRequest projectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .projectName("new project!")
+                .projectDescription("some description")
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 

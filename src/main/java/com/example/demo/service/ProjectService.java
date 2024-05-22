@@ -1,22 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.controller.ProjectController;
 import com.example.demo.dto.project.GetPermissionDTO;
 import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectCreater;
-import com.example.demo.entity.Issue;
+import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
-import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Permission;
 import java.util.Optional;
 
 @Service
@@ -25,23 +20,22 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    public Project createProject(ProjectCreater projectCreater){
-        String projectName = projectCreater.getProjectName();
-        String userName = projectCreater.getUsername();
-
-        if(projectName.isEmpty()){
-            throw new RuntimeException("project name is empty");
+    public Project createProject(ProjectPostRequest projectPostRequest){
+        // project name이 겹치는 지 검사
+        Optional<Project> optionalProject = projectRepository.findByName(projectPostRequest.getProjectName());
+        if(optionalProject.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project name already exists");
         }
 
-        Optional<Project> proj = projectRepository.findByName(projectName);
-        Optional<User> us = userRepository.findByUsername(userName);
+        User user = getUserByUsername(projectPostRequest.getUsername());
 
-        if(proj.isPresent()){throw new RuntimeException("Bad Request: project name already exists");}
-        if(us.isEmpty()){throw new RuntimeException("Bad Request: user not found");}
-        User user = us.get();
+        // project 생성
+        Project project = new Project(projectPostRequest.getUsername(), projectPostRequest.getProjectDescription());
+        project = projectRepository.save(project);
 
-        Project project = new Project(projectName);
+        // project 생성자에게 admin 권한 부여
         project.getMembers().put(user, 1 << 3);
+
         return projectRepository.save(project);
     }
 
@@ -171,7 +165,6 @@ public class ProjectService {
     public boolean hasPermisiion(Project project, User user){
         return project.getMembers().get(user) >= (1 << 3);
     }
-
 
     private Project getProject(Long projectId) {
         Optional<Project> optionalProject = projectRepository.findById(projectId);

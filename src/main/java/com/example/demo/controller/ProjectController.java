@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.project.GetPermissionDTO;
 import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectCreater;
+import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.dto.user.UserSignInResponse;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
@@ -10,9 +10,6 @@ import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Permission;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,14 +19,8 @@ public class ProjectController {
     private final UserFindController userFindController;
 
     @PostMapping("/projects")
-    public Project createProject(@RequestBody ProjectCreater projectCreater) {
-        String username = projectCreater.getUsername();
-        String password = projectCreater.getPassword();
-        User us = new User(username, password);
-        UserSignInResponse user = userService.signInUser(us);
-        if(user == null){
-            throw new RuntimeException("user not found");
-        }
+    public Project createProject(@RequestBody ProjectPostRequest projectCreater) {
+        userFindController.RequesterIsFound(projectCreater);
         return projectService.createProject(projectCreater);
     }
 
