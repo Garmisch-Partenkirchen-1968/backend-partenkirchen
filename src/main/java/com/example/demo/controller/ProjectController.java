@@ -1,21 +1,18 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.project.GetPermissionDTO;
-import com.example.demo.dto.project.PermissionRequest;
-import com.example.demo.dto.project.ProjectPostRequest;
-import com.example.demo.dto.user.UserSignInResponse;
+import com.example.demo.dto.project.*;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.service.ProjectService;
-import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class ProjectController {
     private final ProjectService projectService;
-    private final UserService userService;
     private final UserFindController userFindController;
 
     @PostMapping("/projects")
@@ -24,33 +21,36 @@ public class ProjectController {
         return projectService.createProject(projectCreater);
     }
 
-    @PostMapping("/projects/{projectId}/permissions/{userId}")
-    public Project addPermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        userFindController.RequesterIsFound(permissionRequest);
-        return projectService.addPermission(projectId, userId, permissionRequest);
+    @GetMapping("/projects")
+    public List<ProjectsGetResponse> getProjects(@RequestParam(value = "username", defaultValue = "") String username,
+                                                 @RequestParam(value = "password", defaultValue = "") String password) {
+        User user = new User(username, password);
+        userFindController.RequesterIsFound(user);
+
+        return projectService.getAllProjects();
     }
 
-    @PatchMapping("/projects/{projectId}/permissions/{userId}")
-    public Project updatePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        userFindController.RequesterIsFound(permissionRequest);
-        return projectService.updatePermission(projectId, userId, permissionRequest);
+    @GetMapping("/projects/{projectId}")
+    public ProjectGetResponse getProject(@PathVariable Long projectId,
+                                         @RequestParam(value = "username", defaultValue = "") String username,
+                                         @RequestParam(value = "password", defaultValue = "") String password) {
+        User user = new User(username, password);
+        userFindController.RequesterIsFound(user);
+
+        return projectService.getProject(projectId).toProjectGetResponse();
     }
 
-    @DeleteMapping("/projects/{projectId}/permissions/{userId}")
-    public Project deletePermission(@RequestBody PermissionRequest permissionRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
-        userFindController.RequesterIsFound(permissionRequest);
-        return projectService.deletePermission(projectId, userId, permissionRequest);
+    @PatchMapping("/projects/{projectId}")
+    public void patchProject(@PathVariable Long projectId, @RequestBody ProjectPatchRequest projectPatchRequest) {
+        userFindController.RequesterIsFound(projectPatchRequest);
+
+        projectService.patchProject(projectId, projectPatchRequest);
     }
 
-    @GetMapping("/projects/{projectId}/permissions/{userId}")
-    public boolean[] getPermission(@RequestBody GetPermissionDTO getPermissionDTO,
-                                   @RequestParam(value = "username", defaultValue = "") String username,
-                                   @RequestParam(value = "password", defaultValue = "") String password,
-                                   @PathVariable("projectId") Long projectId,
-                                   @PathVariable("userId") Long userId) {
-        getPermissionDTO.setUsername(username);
-        getPermissionDTO.setPassword(password);
-        userFindController.RequesterIsFound(getPermissionDTO);
-        return projectService.getPermission(projectId, userId, getPermissionDTO);
+    @DeleteMapping("/projects/{projectId}")
+    public void deleteProject(@PathVariable Long projectId, @RequestBody ProjectDeleteRequest projectDeleteRequest) {
+        userFindController.RequesterIsFound(projectDeleteRequest);
+
+        projectService.deleteProject(projectId, projectDeleteRequest.getUsername());
     }
 }

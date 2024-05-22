@@ -81,8 +81,8 @@ public class IssueDeleteTest {
         ProjectPostRequest projectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
-                .projectName("new project!")
-                .projectDescription("some description")
+                .name("new project!")
+                .description("some description")
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 
@@ -90,8 +90,8 @@ public class IssueDeleteTest {
         ProjectPostRequest anotherProjectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
-                .projectName("another project!")
-                .projectDescription("another description")
+                .name("another project!")
+                .description("another description")
                 .build();
         Long anotherProjectId = projectService.createProject(anotherProjectCreater).getId();
 

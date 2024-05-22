@@ -1,15 +1,19 @@
 package com.example.demo.entity;
 
+import com.example.demo.dto.project.ProjectGetResponse;
+import com.example.demo.dto.project.ProjectsGetResponse;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class Project {
@@ -31,4 +35,12 @@ public class Project {
     @MapKeyJoinColumn(name = "user_id")
     @Column(name = "permission")
     private Map<User, Integer> members = new HashMap<>();
+
+    public ProjectsGetResponse toProjectsGetResponse() {
+        return new ProjectsGetResponse(id, name, description);
+    }
+
+    public ProjectGetResponse toProjectGetResponse() {
+        return new ProjectGetResponse(id, name, description, members);
+    }
 }

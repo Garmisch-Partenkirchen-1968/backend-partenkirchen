@@ -74,8 +74,8 @@ public class IssuePostTest {
         ProjectPostRequest projectCreater = ProjectPostRequest.builder()
                 .username("admin")
                 .password("admin")
-                .projectName("new project!")
-                .projectDescription("some description")
+                .name("new project!")
+                .description("some description")
                 .build();
         projectId = projectService.createProject(projectCreater).getId();
 
