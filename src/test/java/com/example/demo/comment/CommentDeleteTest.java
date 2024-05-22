@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Optional;
@@ -144,14 +145,14 @@ public class CommentDeleteTest {
         assertTrue(optionalIssue1.isPresent());
         defaultIssue = optionalIssue1.get();
 
-        // tester가 project 1에 Comment(description으로) 1 만들기 (status: Created)
+        // tester가 issue 1에 Comment(description으로) 1 만들기 (status: Created)
         CommentPostRequest comment1PostRequest = CommentPostRequest.builder()
                 .username("tester")
                 .password("tester")
                 .content("Project 1 Description 1")
                 .isDescription(true)
                 .build();
-        MvcResult mvcComment1Result = this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/")
+        MvcResult mvcComment1Result = this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(comment1PostRequest)))
                 .andExpect(status().isCreated())
@@ -161,14 +162,14 @@ public class CommentDeleteTest {
         assertTrue(optionalComment1.isPresent());
         comment1 = optionalComment1.get();
 
-        // tester가 project 1에 Comment(comment로) 2 만들기 (status: Created)
+        // tester가 issue 1에 Comment(comment로) 2 만들기 (status: Created)
         CommentPostRequest comment2PostRequest = CommentPostRequest.builder()
                 .username("tester")
                 .password("tester")
                 .content("Project 1 Comment 2")
                 .isDescription(false)
                 .build();
-        MvcResult mvcComment2Result = this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/")
+        MvcResult mvcComment2Result = this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(comment2PostRequest)))
                 .andExpect(status().isCreated())
@@ -178,14 +179,14 @@ public class CommentDeleteTest {
         assertTrue(optionalComment2.isPresent());
         comment2 = optionalComment2.get();
 
-        // dev1이 project 1에 Comment(comment로) 3 만들기 (status: Created)
+        // dev1이 issue 1에 Comment(comment로) 3 만들기 (status: Created)
         CommentPostRequest comment3PostRequest = CommentPostRequest.builder()
                 .username("dev1")
                 .password("dev1")
                 .content("Project 1 Comment 3")
                 .isDescription(false)
                 .build();
-        MvcResult mvcComment3Result = this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/")
+        MvcResult mvcComment3Result = this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(comment3PostRequest)))
                 .andExpect(status().isCreated())
@@ -204,11 +205,13 @@ public class CommentDeleteTest {
                 .username("tester")
                 .password("tester")
                 .build();
-        this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment1.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(comment1DeleteRequest)))
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment1.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(comment1DeleteRequest)))
                 .andExpect(status().isOk());
-        assertFalse(defaultIssue.getComments().contains(comment1));
+
+        Optional<Comment> optionalComment1 = commentRepository.findById(comment1.getId());
+        assertTrue(optionalComment1.isEmpty());
     }
 
     @Test
@@ -219,11 +222,13 @@ public class CommentDeleteTest {
                 .username("tester")
                 .password("tester")
                 .build();
-        this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment2.getId())
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment2.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(comment1DeleteRequest)))
                 .andExpect(status().isOk());
-        assertFalse(defaultIssue.getComments().contains(comment2));
+
+        Optional<Comment> optionalComment2 = commentRepository.findById(comment2.getId());
+        assertTrue(optionalComment2.isEmpty());
     }
 
     @Test
@@ -234,16 +239,90 @@ public class CommentDeleteTest {
                 .username("dev1")
                 .password("dev1")
                 .build();
-        this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment3.getId())
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment3.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(comment1DeleteRequest)))
                 .andExpect(status().isOk());
-        assertFalse(defaultIssue.getComments().contains(comment3));
+
+        Optional<Comment> optionalComment3 = commentRepository.findById(comment3.getId());
+        assertTrue(optionalComment3.isEmpty());
     }
 
     @Test
-    @DisplayName("Project에 없는 사람이 Delete한 경우")
-    void deleteCommitNonProjectMember() throws Exception {
-        
+    @DisplayName("Project에 없는 사람이 comment 1을 Delete한 경우")
+    void deleteComment1NonProjectMember() throws Exception {
+        CommentDeleteRequest commentDeleteRequest = CommentDeleteRequest.builder()
+                .username("dev2")
+                .password("dev2")
+                .build();
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment1.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(commentDeleteRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Project에 없는 사람이 comment 2을 Delete한 경우")
+    void deleteComment2NonProjectMember() throws Exception {
+        CommentDeleteRequest commentDeleteRequest = CommentDeleteRequest.builder()
+                .username("dev2")
+                .password("dev2")
+                .build();
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment2.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDeleteRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Project에 없는 사람이 comment 3을 Delete한 경우")
+    void deleteComment3NonProjectMember() throws Exception {
+        CommentDeleteRequest commentDeleteRequest = CommentDeleteRequest.builder()
+                .username("dev2")
+                .password("dev2")
+                .build();
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment3.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDeleteRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Comment 미작성자(dev1)가 issue 1을 Delete한 경우")
+    void deleteComment1NonCommenter() throws Exception {
+        CommentDeleteRequest commentDeleteRequest = CommentDeleteRequest.builder()
+                .username("dev1")
+                .password("dev1")
+                .build();
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment1.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDeleteRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Comment 미작성자(dev1)가 issue 2을 Delete한 경우")
+    void deleteComment2NonCommenter() throws Exception {
+        CommentDeleteRequest commentDeleteRequest = CommentDeleteRequest.builder()
+                .username("dev1")
+                .password("dev1")
+                .build();
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment2.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDeleteRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Comment 미작성자(admin)가 issue 3을 Delete한 경우")
+    void deleteComment3NonCommenter() throws Exception {
+        CommentDeleteRequest commentDeleteRequest = CommentDeleteRequest.builder()
+                .username("admin")
+                .password("admin")
+                .build();
+        this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment3.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDeleteRequest)))
+                .andExpect(status().isForbidden());
     }
 }

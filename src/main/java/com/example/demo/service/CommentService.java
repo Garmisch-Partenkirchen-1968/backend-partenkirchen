@@ -86,19 +86,19 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    public void deleteComment(Long projectId, Long commentId, Long userId, CommentDeleteRequest commentDeleteRequest) {
+    public void deleteComment(Long projectId, Long commentId, Long userId) {
         Project project = getProject(projectId);
         User user = getUser(userId);
         Comment comment = getComment(commentId);
 
         // 요청한 사람이 해당 프로젝트에 있는 사람인지 권한 확인
         if (project.getMembers().get(user) == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "request is not in this project");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "requester is not in this project");
         }
 
         // 요청을 한 사람이 그 comment를 작성한 사람인지 확인
-        if (Objects.equals(comment.getCommenter().getId(), user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "request is not in this project");
+        if (!Objects.equals(comment.getCommenter().getId(), user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "requester is not writer");
         }
 
         commentRepository.delete(comment);

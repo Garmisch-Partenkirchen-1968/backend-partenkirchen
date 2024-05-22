@@ -36,7 +36,7 @@ public class CommentController {
     @DeleteMapping("/projects/{projectId}/issues/{issueId}/comments/{commentId}")
     public ResponseEntity deleteComment(@PathVariable("projectId") Long projectId, @PathVariable("commentId") Long commentId, @RequestBody CommentDeleteRequest commentDeleteRequest) {
         Long userId = userFindController.RequesterIsFound(commentDeleteRequest);
-        commentService.deleteComment(projectId, commentId, userId, commentDeleteRequest);
+        commentService.deleteComment(projectId, commentId, userId);
         return new ResponseEntity(HttpStatus.OK);
     }
 }
