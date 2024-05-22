@@ -1,0 +1,12 @@
+= Partenkirchen REST API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+
+== user
+=== POST /signup success
+operation::users/post/success[snippets='curl-request,http-request,http-response']
+=== POST /signup fail-empty-password
+operation::users/post/fail-empty-password[snippets='curl-request,http-request,http-response']

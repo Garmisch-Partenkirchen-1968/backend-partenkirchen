@@ -7,13 +7,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
 public class UserTest {
     @Autowired
     private MockMvc mockMvc;
@@ -40,7 +47,10 @@ public class UserTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(document("users/post/success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -51,7 +61,15 @@ public class UserTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(document("users/post/fail-with-whitespace-username",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("id").ignored(),
+                                fieldWithPath("username").description(""),
+                                fieldWithPath("password").description("")
+                        )));
     }
 
     @Test
@@ -62,7 +80,10 @@ public class UserTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(document("users/post/fail-empty-username",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -73,7 +94,10 @@ public class UserTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(document("users/post/fail-empty-password",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())));
     }
 
     @Test
