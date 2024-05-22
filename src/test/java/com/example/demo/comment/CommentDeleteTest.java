@@ -127,24 +127,24 @@ public class CommentDeleteTest {
                 .build();
         projectService.addPermission(projectId, dev1Id, dev1PermissionRequest);
 
-        // project에 issue 1 생성 (reporter는 tester)
-        IssuePostRequest issue1PostRequest = IssuePostRequest.builder()
+        // project에 issue 생성 (reporter는 tester)
+        IssuePostRequest issuePostRequest = IssuePostRequest.builder()
                 .username("tester")
                 .password("tester")
                 .title("TestIssue")
                 .priority(IssuePriority.CRITICAL)
                 .build();
-        MvcResult mvcIssue1Result = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
+        MvcResult mvcIssueResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(issue1PostRequest)))
+                        .content(objectMapper.writeValueAsString(issuePostRequest)))
                 .andExpect(status().isCreated())
                 .andReturn();
-        IssuePostResponse issue1PostResponse = objectMapper.readValue(mvcIssue1Result.getResponse().getContentAsString(), IssuePostResponse.class);
-        Optional<Issue> optionalIssue1 = issueRepository.findById(issue1PostResponse.getId());
-        assertTrue(optionalIssue1.isPresent());
-        defaultIssue = optionalIssue1.get();
+        IssuePostResponse issuePostResponse = objectMapper.readValue(mvcIssueResult.getResponse().getContentAsString(), IssuePostResponse.class);
+        Optional<Issue> optionalIssue = issueRepository.findById(issuePostResponse.getId());
+        assertTrue(optionalIssue.isPresent());
+        defaultIssue = optionalIssue.get();
 
-        // tester가 issue 1에 Comment(description으로) 1 만들기 (status: Created)
+        // tester가 issue에 Comment(description으로) 1 만들기 (status: Created)
         CommentPostRequest comment1PostRequest = CommentPostRequest.builder()
                 .username("tester")
                 .password("tester")
@@ -161,7 +161,7 @@ public class CommentDeleteTest {
         assertTrue(optionalComment1.isPresent());
         comment1 = optionalComment1.get();
 
-        // tester가 issue 1에 Comment(comment로) 2 만들기 (status: Created)
+        // tester가 issue에 Comment(comment로) 2 만들기 (status: Created)
         CommentPostRequest comment2PostRequest = CommentPostRequest.builder()
                 .username("tester")
                 .password("tester")
@@ -178,7 +178,7 @@ public class CommentDeleteTest {
         assertTrue(optionalComment2.isPresent());
         comment2 = optionalComment2.get();
 
-        // dev1이 issue 1에 Comment(comment로) 3 만들기 (status: Created)
+        // dev1이 issue에 Comment(comment로) 3 만들기 (status: Created)
         CommentPostRequest comment3PostRequest = CommentPostRequest.builder()
                 .username("dev1")
                 .password("dev1")
