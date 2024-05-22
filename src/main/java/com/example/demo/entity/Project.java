@@ -13,9 +13,8 @@ import java.util.*;
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class Project {
-    public Project(String projectName, User owner){
+    public Project(String projectName){
         this.name = projectName;
-        this.owner = owner;
     }
 
     @Id
@@ -34,8 +33,4 @@ public class Project {
     @MapKeyJoinColumn(name = "user_id")
     @Column(name = "permission")
     private Map<User, Integer> members = new HashMap<>();
-
-    @Nonnull
-    @ManyToOne
-    private User owner;
 }

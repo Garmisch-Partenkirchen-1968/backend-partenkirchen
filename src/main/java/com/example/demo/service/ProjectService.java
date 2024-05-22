@@ -4,27 +4,26 @@ import com.example.demo.controller.ProjectController;
 import com.example.demo.dto.project.GetPermissionDTO;
 import com.example.demo.dto.project.PermissionRequest;
 import com.example.demo.dto.project.ProjectCreater;
+import com.example.demo.entity.Issue;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
+import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Permission;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-
-    @Autowired
-    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
-        this.projectRepository = projectRepository;
-        this.userRepository = userRepository;
-    }
 
     public Project createProject(ProjectCreater projectCreater){
         String projectName = projectCreater.getProjectName();
@@ -41,7 +40,7 @@ public class ProjectService {
         if(us.isEmpty()){throw new RuntimeException("Bad Request: user not found");}
         User user = us.get();
 
-        Project project = new Project(projectName, user);
+        Project project = new Project(projectName);
         project.getMembers().put(user, 1 << 3);
         return projectRepository.save(project);
     }
@@ -114,19 +113,10 @@ public class ProjectService {
     }
 
     public Project deletePermission(Long projectId, Long userId, PermissionRequest permissionRequest){
-        Optional<Project> proj = projectRepository.findById(projectId);
-        Optional<User> us = userRepository.findById(userId);
-        Optional<User> req = userRepository.findByUsername(permissionRequest.getUsername());
+        Project project = getProject(projectId);
+        User requester = getUserByUsername(permissionRequest.getUsername());
+        User user = getUserById(userId);
 
-        Project project;
-        User user, requester;
-        if(req.isEmpty()){throw new RuntimeException("requester is not exist");}
-        if(proj.isEmpty()){throw new RuntimeException("project not found");}
-        if(us.isEmpty()){throw new RuntimeException("user is not exist"); }
-
-        requester = req.get();
-        project = proj.get();
-        user = us.get();
         if(project.getMembers().get(user) == null){
             throw new RuntimeException("Bad Request: user not exsists in project");
         }
@@ -138,19 +128,10 @@ public class ProjectService {
     }
 
     public boolean[] getPermission(Long projectId, Long userId, GetPermissionDTO getPermissionDTO){
-        Optional<Project> proj = projectRepository.findById(projectId);
-        Optional<User> us = userRepository.findById(userId);
-        Optional<User> req = userRepository.findByUsername(getPermissionDTO.getUsername());
+        Project project = getProject(projectId);
+        User requester = getUserByUsername(getPermissionDTO.getUsername());
+        User user = getUserById(userId);
 
-        Project project;
-        User user, requester;
-        if(req.isEmpty()){throw new RuntimeException("requester is not exist");}
-        if(proj.isEmpty()){throw new RuntimeException("project not found");}
-        if(us.isEmpty()){throw new RuntimeException("user is not exist"); }
-
-        requester = req.get();
-        project = proj.get();
-        user = us.get();
         if(project.getMembers().get(user) == null){
             throw new RuntimeException("User not exsists in project");
         }
@@ -189,5 +170,30 @@ public class ProjectService {
 
     public boolean hasPermisiion(Project project, User user){
         return project.getMembers().get(user) >= (1 << 3);
+    }
+
+
+    private Project getProject(Long projectId) {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if (optionalProject.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project not found");
+        }
+        return optionalProject.get();
+    }
+
+    private User getUserByUsername(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
+        }
+        return optionalUser.get();
+    }
+
+    private User getUserById(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
+        }
+        return optionalUser.get();
     }
 }
