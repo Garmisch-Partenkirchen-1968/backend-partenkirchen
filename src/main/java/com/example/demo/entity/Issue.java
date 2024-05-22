@@ -48,5 +48,5 @@ public class Issue {
     private IssueStatus status;
 
     @OneToMany
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 }
