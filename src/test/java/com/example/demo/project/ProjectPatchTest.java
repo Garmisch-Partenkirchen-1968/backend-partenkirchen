@@ -22,6 +22,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,13 +84,16 @@ public class ProjectPatchTest {
         this.mockMvc.perform(patch("/projects/" + projectAlphaId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(projectPatchRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("projects/patch/success-change-name",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
         Project projectAlpha = projectRepository.getReferenceById(projectAlphaId);
         assertEquals("New Project Alpha", projectAlpha.getName());
     }
 
     @Test
-    @DisplayName("성공 - project의 description 변경")
+    @DisplayName("성공 - project의 name과 description 변경")
     void patchProjectNameAndDescription() throws Exception {
         ProjectPatchRequest projectPatchRequest = ProjectPatchRequest.builder()
                 .username("admin")
@@ -98,7 +104,10 @@ public class ProjectPatchTest {
         this.mockMvc.perform(patch("/projects/" + projectAlphaId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(projectPatchRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("projects/patch/success-change-name-and-description",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
         Project projectAlpha = projectRepository.getReferenceById(projectAlphaId);
         assertEquals("New Project Alpha", projectAlpha.getName());
         assertEquals("This is new description", projectAlpha.getDescription());

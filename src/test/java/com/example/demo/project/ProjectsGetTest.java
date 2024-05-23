@@ -19,6 +19,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -77,13 +80,16 @@ public class ProjectsGetTest {
                         .param("username", "admin")
                         .param("password", "admin"))
                 .andExpect(status().isOk())
+                .andDo(document("projects/gets/success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
                 .andReturn();
         JsonNode jsonNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
         assertEquals(2, jsonNode.size());
     }
 
     @Test
-    @DisplayName("성공")
+    @DisplayName("실패 - 로그인 실패")
     void getProjectWithWrongAuthorization() throws Exception {
         this.mockMvc.perform(get("/projects")
                         .param("username", "wrongusername")

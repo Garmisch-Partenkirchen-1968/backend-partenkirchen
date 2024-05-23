@@ -36,10 +36,24 @@ operation::user/delete/fail-with-other-account[snippets='curl-request,http-reque
 
 == project
 === post
+==== 성공
+operation::projects/post/success[snippets='curl-request,http-request,http-response']
+==== 실패 - description 없이 project 생성 시도
+operation::projects/post/fail-without-description[snippets='curl-request,http-request,http-response']
 === get all
+==== 성공
+operation::projects/gets/success[snippets='curl-request,http-request,http-response']
 === get one
+==== 성공
+operation::projects/get/success[snippets='curl-request,http-request,http-response']
 === patch
+==== 성공 - project의 name 변경
+operation::projects/patch/success-change-name[snippets='curl-request,http-request,http-response']
+==== 성공 - project의 name과 description 변경
+operation::projects/patch/success-change-name-and-description[snippets='curl-request,http-request,http-response']
 === delete
+==== 성공
+operation::projects/delete/success[snippets='curl-request,http-request,http-response']
 
 == issue
 === post
