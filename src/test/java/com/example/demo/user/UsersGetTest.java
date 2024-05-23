@@ -16,6 +16,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,6 +55,9 @@ public class UsersGetTest {
                         .param("username", "user1")
                         .param("password", "user1"))
                 .andExpect(status().isOk())
+                .andDo(document("user/gets/success-get-all",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
                 .andReturn();
         User[] users = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), User[].class);
         assertEquals(2, users.length);
@@ -78,6 +84,9 @@ public class UsersGetTest {
                         .param("password", "user1")
                         .param("keyword", "1"))
                 .andExpect(status().isOk())
+                .andDo(document("user/gets/success-search-with-1",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
                 .andReturn();
         User[] users = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), User[].class);
         assertEquals(1, users.length);

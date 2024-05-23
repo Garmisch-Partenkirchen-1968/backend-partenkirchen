@@ -20,6 +20,11 @@ operation::signin/get/success[snippets='curl-request,http-request,http-response'
 operation::signin/get/fail-unexist-username[snippets='curl-request,http-request,http-response']
 
 == user
+=== get all
+==== get all users
+operation::user/gets/success-get-all[snippets='curl-request,http-request,http-response']
+==== get all users containing '1'
+operation::user/gets/success-search-with-1[snippets='curl-request,http-request,http-response']
 === patch
 ==== 성공
 operation::user/patch/success[snippets='curl-request,http-request,http-response']

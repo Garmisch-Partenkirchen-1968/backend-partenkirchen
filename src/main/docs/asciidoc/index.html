@@ -576,6 +576,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_user">user</a>
 <ul class="sectlevel2">
+<li><a href="#_get_all">get all</a>
+<ul class="sectlevel3">
+<li><a href="#_get_all_users">get all users</a></li>
+<li><a href="#_get_all_users_containing_1">get all users containing '1'</a></li>
+</ul>
+</li>
 <li><a href="#_patch">patch</a>
 <ul class="sectlevel3">
 <li><a href="#_성공_3">성공</a></li>
@@ -599,7 +605,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_실패_description_없이_project_생성_시도">실패 - description 없이 project 생성 시도</a></li>
 </ul>
 </li>
-<li><a href="#_get_all">get all</a>
+<li><a href="#_get_all_2">get all</a>
 <ul class="sectlevel3">
 <li><a href="#_성공_6">성공</a></li>
 </ul>
@@ -630,7 +636,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_실패_priority_없이_issue_생성_시도">실패 - priority 없이 issue 생성 시도</a></li>
 </ul>
 </li>
-<li><a href="#_get_all_2">get all</a>
+<li><a href="#_get_all_3">get all</a>
 <ul class="sectlevel3">
 <li><a href="#_성공_모든_issue_검색">성공 - 모든 issue 검색</a></li>
 <li><a href="#_성공_assignee가_없는_issue_검색">성공 - assignee가 없는 issue 검색</a></li>
@@ -867,6 +873,91 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect1">
 <h2 id="_user">user</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_get_all">get all</h3>
+<div class="sect3">
+<h4 id="_get_all_users">get all users</h4>
+<div class="sect4">
+<h5 id="_get_all_users_curl_request">Curl request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/users?username=user1&amp;password=user1' -i -X GET</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_get_all_users_http_request">HTTP request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /users?username=user1&amp;password=user1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_get_all_users_http_response">HTTP response</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Length: 132
+
+[ {
+  "id" : 24,
+  "username" : "user1",
+  "password" : "user1"
+}, {
+  "id" : 25,
+  "username" : "user2",
+  "password" : "user2"
+} ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_get_all_users_containing_1">get all users containing '1'</h4>
+<div class="sect4">
+<h5 id="_get_all_users_containing_1_curl_request">Curl request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/users?username=user1&amp;password=user1&amp;keyword=1' -i -X GET</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_get_all_users_containing_1_http_request">HTTP request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /users?username=user1&amp;password=user1&amp;keyword=1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_get_all_users_containing_1_http_response">HTTP response</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Length: 67
+
+[ {
+  "id" : 16,
+  "username" : "user1",
+  "password" : "user1"
+} ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="sect2">
 <h3 id="_patch">patch</h3>
 <div class="sect3">
@@ -1212,7 +1303,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_get_all">get all</h3>
+<h3 id="_get_all_2">get all</h3>
 <div class="sect3">
 <h4 id="_성공_6">성공</h4>
 <div class="sect4">
@@ -1554,7 +1645,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_get_all_2">get all</h3>
+<h3 id="_get_all_3">get all</h3>
 <div class="sect3">
 <h4 id="_성공_모든_issue_검색">성공 - 모든 issue 검색</h4>
 <div class="sect4">
@@ -2356,7 +2447,7 @@ Content-Length: 289
     "username" : "tester1",
     "password" : "tester1"
   },
-  "reportedDate" : "2024-05-23T12:37:37.597323",
+  "reportedDate" : "2024-05-23T13:39:27.487121",
   "fixer" : null,
   "assignee" : null,
   "priority" : "MEDIUM",
@@ -2847,7 +2938,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-05-23 12:40:57 +0900
+Last updated 2024-05-23 13:41:22 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
