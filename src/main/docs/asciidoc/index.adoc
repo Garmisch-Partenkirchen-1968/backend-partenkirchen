@@ -72,8 +72,18 @@ operation::issues/delete/success[snippets='curl-request,http-request,http-respon
 
 == comment
 === post
+==== 성공 - 해당 issue의 description으로 comment 작성
+operation::comments/post/success-as-description[snippets='curl-request,http-request,http-response']
+==== 실패 - content 없이 comment 작성
+operation::comments/post/fail-without-content[snippets='curl-request,http-request,http-response']
+==== 실패 - isDescription 없이 comment 작성
+operation::comments/post/fail-without-is-description[snippets='curl-request,http-request,http-response']
 === patch
+==== 성공
+operation::comments/patch/success[snippets='curl-request,http-request,http-response']
 === delete
+==== 성공
+operation::comments/delete/success[snippets='curl-request,http-request,http-response']
 
 == permission
 === post
