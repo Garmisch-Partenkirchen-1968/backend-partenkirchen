@@ -9,27 +9,74 @@
 === post
 ==== 성공
 operation::signup/post/success[snippets='curl-request,http-request,http-response']
-==== username에 공백이 있는 경우
+==== 실패 - username에 공백이 있는 경우
 operation::signup/post/fail-with-whitespace-username[snippets='curl-request,http-request,http-response']
 
 == signin
 === get
 ==== 성공
 operation::signin/get/success[snippets='curl-request,http-request,http-response']
-==== 존재하지 않는 username으로 로그인
+==== 실패 - 존재하지 않는 username으로 로그인
 operation::signin/get/fail-unexist-username[snippets='curl-request,http-request,http-response']
 
 == user
 === patch
 ==== 성공
 operation::user/patch/success[snippets='curl-request,http-request,http-response']
-==== 기존 비밀번호가 틀린 경우
+==== 실패 - 기존 비밀번호가 틀린 경우
 operation::user/patch/fail-with-wrong-password[snippets='curl-request,http-request,http-response']
-==== 새로운 비밀번호 없이 시도
+==== 실패 - 새로운 비밀번호 없이 시도
 operation::user/patch/fail-without-new-password[snippets='curl-request,http-request,http-response']
 
 === delete
 ==== 성공
 operation::user/delete/success[snippets='curl-request,http-request,http-response']
-==== 다른 사람 계정 지우려 하는 경우
+==== 실패 - 다른 사람 계정 지우려 하는 경우
 operation::user/delete/fail-with-other-account[snippets='curl-request,http-request,http-response']
+
+== project
+=== post
+=== get all
+=== get one
+=== patch
+=== delete
+
+== issue
+=== post
+==== 성공
+operation::issues/post/success[snippets='curl-request,http-request,http-response']
+==== 실패 - priority 없이 issue 생성 시도
+operation::issues/post/fail-without-priority[snippets='curl-request,http-request,http-response']
+=== get all
+==== 성공 - 모든 issue 검색
+operation::issues/gets/success[snippets='curl-request,http-request,http-response']
+==== 성공 - assignee가 없는 issue 검색
+operation::issues/gets/success-with-no-assignee[snippets='curl-request,http-request,http-response']
+==== 성공 - title로 검색
+operation::issues/gets/success-with-issue-title[snippets='curl-request,http-request,http-response']
+==== 성공 - 모든 조건 붙여서 검색
+operation::issues/gets/success-combination[snippets='curl-request,http-request,http-response']
+=== get one
+==== 성공
+operation::issues/get/success[snippets='curl-request,http-request,http-response']
+=== patch
+==== 성공 - assignee 할당
+operation::issues/patch/success-change-assignee[snippets='curl-request,http-request,http-response']
+==== 성공 - title 변경
+operation::issues/patch/success-change-title[snippets='curl-request,http-request,http-response']
+==== 성공 - status를 resolved로 변경
+operation::issues/patch/success-change-to-resolved[snippets='curl-request,http-request,http-response']
+=== delete
+==== 성공
+operation::issues/delete/success[snippets='curl-request,http-request,http-response']
+
+== comment
+=== post
+=== patch
+=== delete
+
+== permission
+=== post
+=== get
+=== patch
+=== delete
