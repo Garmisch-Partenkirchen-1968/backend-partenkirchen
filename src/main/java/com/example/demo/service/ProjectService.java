@@ -21,6 +21,13 @@ public class ProjectService {
     private final UserRepository userRepository;
 
     public Project createProject(ProjectPostRequest projectPostRequest) {
+        if (projectPostRequest.getName() == null || projectPostRequest.getName().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
+        }
+        if (projectPostRequest.getDescription() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "isDescription is required");
+        }
+
         // project name이 겹치는 지 검사
         Optional<Project> optionalProject = projectRepository.findByName(projectPostRequest.getName());
         if(optionalProject.isPresent()){
