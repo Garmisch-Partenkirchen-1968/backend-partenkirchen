@@ -48,7 +48,7 @@ public class UserTest {
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andDo(document("users/post/success",
+                .andDo(document("signup/post/success",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())));
     }
@@ -62,7 +62,7 @@ public class UserTest {
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andDo(document("users/post/fail-with-whitespace-username",
+                .andDo(document("signup/post/fail-with-whitespace-username",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -80,10 +80,7 @@ public class UserTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andDo(document("users/post/fail-empty-username",
-                    preprocessRequest(prettyPrint()),
-                    preprocessResponse(prettyPrint())));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -94,10 +91,7 @@ public class UserTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andDo(document("users/post/fail-empty-password",
-                    preprocessRequest(prettyPrint()),
-                    preprocessResponse(prettyPrint())));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -108,7 +102,10 @@ public class UserTest {
                         .param("username", "wrongusername")
                         .param("password", "aadmin"))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(document("signin/get/fail-unexist-username",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -137,7 +134,10 @@ public class UserTest {
                     .param("username", "test-admin")
                     .param("password", "test-admin"))
             .andDo(print())
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+                .andDo(document("signin/get/success",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -183,7 +183,10 @@ public class UserTest {
         this.mockMvc.perform(patch("/user/" + userSignUp.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(document("user/patch/fail-with-wrong-password",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -201,7 +204,10 @@ public class UserTest {
         this.mockMvc.perform(patch("/user/" + userSignUp.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(document("user/patch/fail-without-new-password",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -239,7 +245,10 @@ public class UserTest {
         this.mockMvc.perform(patch("/user/" + userSignUp.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("user/patch/success",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -253,7 +262,10 @@ public class UserTest {
         this.mockMvc.perform(delete("/user/3484539")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized())
+                .andDo(document("user/delete/fail-unexist-user",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -272,7 +284,10 @@ public class UserTest {
         this.mockMvc.perform(delete("/user/" + anotherUserSignUp.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(document("user/delete/fail-with-other-account",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -287,7 +302,10 @@ public class UserTest {
         this.mockMvc.perform(delete("/user/" + userSignUp.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(document("user/delete/fail-with-wrong-password",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -302,6 +320,9 @@ public class UserTest {
         this.mockMvc.perform(delete("/user/" + userSignUp.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("user/delete/success",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 }
