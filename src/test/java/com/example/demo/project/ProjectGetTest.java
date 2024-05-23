@@ -41,7 +41,6 @@ public class ProjectGetTest {
     private UserService userService;
 
     private Long projectAlphaId;
-    private Long projectBetaId;
 
     @BeforeEach
     void init() throws Exception {
@@ -63,21 +62,6 @@ public class ProjectGetTest {
                 .andReturn();
         JsonNode alphaJsonNode = objectMapper.readTree(alphaMvcResult.getResponse().getContentAsString());
         projectAlphaId = alphaJsonNode.path("id").asLong();
-
-        // Project beta 생성
-        ProjectPostRequest projectBetaPostRequest = ProjectPostRequest.builder()
-                .username("admin")
-                .password("admin")
-                .name("Project Beta")
-                .description("This is beta.")
-                .build();
-        MvcResult betaMvcResult = this.mockMvc.perform(post("/projects")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(projectBetaPostRequest)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        JsonNode betaJsonNode = objectMapper.readTree(betaMvcResult.getResponse().getContentAsString());
-        projectBetaId = betaJsonNode.path("id").asLong();
     }
 
     @Test
