@@ -18,7 +18,7 @@ public class ProjectController {
     private final UserFindController userFindController;
 
     @PostMapping("/projects")
-    public ResponseEntity<Project> createProject(@RequestBody ProjectPostRequest projectCreater) {
+    public ResponseEntity<ProjectGetResponse> createProject(@RequestBody ProjectPostRequest projectCreater) {
         userFindController.RequesterIsFound(projectCreater);
         return new ResponseEntity<>(projectService.createProject(projectCreater), HttpStatus.CREATED);
     }

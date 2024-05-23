@@ -20,7 +20,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    public Project createProject(ProjectPostRequest projectPostRequest) {
+    public ProjectGetResponse createProject(ProjectPostRequest projectPostRequest) {
         if (projectPostRequest.getName() == null || projectPostRequest.getName().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
         }
@@ -43,7 +43,7 @@ public class ProjectService {
         // project 생성자에게 admin 권한 부여
         project.getMembers().put(user, 1 << 3);
 
-        return projectRepository.save(project);
+        return projectRepository.save(project).toProjectGetResponse();
     }
 
     public List<ProjectsGetResponse> getAllProjects() {
