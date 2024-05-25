@@ -1,4 +1,4 @@
-package com.example.demo.dto.project;
+package com.example.demo.dto.Permission;
 
 import com.example.demo.Interface.ToUser;
 import com.example.demo.entity.Project;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Getter
 @Builder
-public class PermissionRequest implements ToUser {
+public class PermissionPostRequest implements ToUser {
     private String username;
     private String password;
     private boolean[] permissions;

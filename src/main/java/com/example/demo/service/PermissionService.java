@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.project.GetPermissionDTO;
-import com.example.demo.dto.project.PermissionRequest;
+import com.example.demo.dto.Permission.PermissionDeleteRequest;
+import com.example.demo.dto.Permission.PermissionPatchRequest;
+import com.example.demo.dto.Permission.PermissionPostRequest;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.repository.ProjectRepository;
@@ -20,10 +21,10 @@ public class PermissionService {
     private final UserRepository userRepository;
 
 
-    public Project addPermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
+    public Project addPermission(Long projectId, Long userId, PermissionPostRequest permissionPostRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
-        Optional<User> req = userRepository.findByUsername(permissionRequest.getUsername());
+        Optional<User> req = userRepository.findByUsername(permissionPostRequest.getUsername());
 
         Project project;
         User user, requester;
@@ -31,7 +32,7 @@ public class PermissionService {
         if(proj.isEmpty()){throw new RuntimeException("project not found");}
         if(us.isEmpty()){throw new RuntimeException("user is not exist"); }
 
-        boolean[] permissions = permissionRequest.getPermissions();
+        boolean[] permissions = permissionPostRequest.getPermissions();
         requester = req.get();
         project = proj.get();
         user = us.get();
@@ -53,10 +54,10 @@ public class PermissionService {
         return projectRepository.save(project);
     }
 
-    public Project updatePermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
+    public Project updatePermission(Long projectId, Long userId, PermissionPatchRequest permissionPatchRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
-        Optional<User> req = userRepository.findByUsername(permissionRequest.getUsername());
+        Optional<User> req = userRepository.findByUsername(permissionPatchRequest.getUsername());
 
         Project project;
         User user, requester;
@@ -64,7 +65,7 @@ public class PermissionService {
         if(proj.isEmpty()){throw new RuntimeException("project not found");}
         if(us.isEmpty()){throw new RuntimeException("user is not exist"); }
 
-        boolean[] permissions = permissionRequest.getPermissions();
+        boolean[] permissions = permissionPatchRequest.getPermissions();
         requester = req.get();
         project = proj.get();
         user = us.get();
@@ -87,9 +88,9 @@ public class PermissionService {
         return projectRepository.save(project);
     }
 
-    public Project deletePermission(Long projectId, Long userId, PermissionRequest permissionRequest) {
+    public Project deletePermission(Long projectId, Long userId, PermissionDeleteRequest permissionDeleteRequest) {
         Project project = getProject(projectId);
-        User requester = getUserByUsername(permissionRequest.getUsername());
+        User requester = getUserByUsername(permissionDeleteRequest.getUsername());
         User user = getUserById(userId);
 
         if(project.getMembers().get(user) == null){
@@ -102,9 +103,8 @@ public class PermissionService {
         return projectRepository.save(project);
     }
 
-    public boolean[] getPermission(Long projectId, Long userId, GetPermissionDTO getPermissionDTO) {
+    public boolean[] getPermission(Long projectId, Long userId, User requester) {
         Project project = getProject(projectId);
-        User requester = getUserByUsername(getPermissionDTO.getUsername());
         User user = getUserById(userId);
 
         if(project.getMembers().get(user) == null){

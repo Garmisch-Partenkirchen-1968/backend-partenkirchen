@@ -5,7 +5,6 @@ import com.example.demo.dto.comment.CommentPostRequest;
 import com.example.demo.dto.comment.CommentPostResponse;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
-import com.example.demo.dto.project.PermissionRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.Issue;
