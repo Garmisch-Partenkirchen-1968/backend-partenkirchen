@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -33,6 +34,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
 public class CommentPatchTest {
     @Autowired
     private MockMvc mockMvc;
@@ -208,7 +213,10 @@ public class CommentPatchTest {
         this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment1.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(commentPatchRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("comments/patch/success",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
 
 
         assertSame(comment1.getCommenter(), userRepository.findByUsername("tester").get());

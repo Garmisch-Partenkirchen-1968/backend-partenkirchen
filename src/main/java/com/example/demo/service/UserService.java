@@ -59,6 +59,8 @@ public class UserService {
     }
 
     public List<User> getUsers(String keyword) {
-        return userRepository.findByUsernameContaining(keyword);
+        List<User> users = userRepository.findAll();
+        users.removeIf(user -> !(user.getUsername().contains(keyword)));
+        return users;
     }
 }

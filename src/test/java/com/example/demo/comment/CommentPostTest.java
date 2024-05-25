@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -30,6 +31,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Optional;
@@ -40,6 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ActiveProfiles
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
 public class CommentPostTest {
     @Autowired
     private MockMvc mockMvc;
@@ -153,6 +158,9 @@ public class CommentPostTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(commentTruePostRequest)))
                 .andExpect(status().isCreated())
+                .andDo(document("comments/post/success-as-description",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
                 .andReturn();
         // comment 잘 등록됐는지 확인
         CommentPostResponse commentTruePostResponse = objectMapper.readValue(mvcTrueResult.getResponse().getContentAsString(), CommentPostResponse.class);
@@ -273,7 +281,10 @@ public class CommentPostTest {
         this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentPostRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(document("comments/post/fail-without-content",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test
@@ -288,6 +299,9 @@ public class CommentPostTest {
         this.mockMvc.perform(post("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentPostRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(document("comments/post/fail-without-is-description",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 }

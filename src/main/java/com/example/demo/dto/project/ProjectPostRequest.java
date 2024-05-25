@@ -3,6 +3,7 @@ package com.example.demo.dto.project;
 import com.example.demo.Interface.ToUser;
 import com.example.demo.entity.User;
 import jakarta.annotation.Nonnull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProjectPostRequest implements ToUser {
     private String username;
     private String password;
-    @Nonnull
     private String name;
-    @Nonnull
     private String description;
 
     public User toUser(){

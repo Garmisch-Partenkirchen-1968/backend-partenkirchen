@@ -5,6 +5,8 @@ import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,9 +18,9 @@ public class ProjectController {
     private final UserFindController userFindController;
 
     @PostMapping("/projects")
-    public Project createProject(@RequestBody ProjectPostRequest projectCreater) {
+    public ResponseEntity<ProjectGetResponse> createProject(@RequestBody ProjectPostRequest projectCreater) {
         userFindController.RequesterIsFound(projectCreater);
-        return projectService.createProject(projectCreater);
+        return new ResponseEntity<>(projectService.createProject(projectCreater), HttpStatus.CREATED);
     }
 
     @GetMapping("/projects")
