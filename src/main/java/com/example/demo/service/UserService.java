@@ -5,6 +5,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -14,10 +15,12 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final BCryptService bCryptService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptService bCryptService) {
         this.userRepository = userRepository;
+        this.bCryptService = bCryptService;
     }
 
     public User signUpUser(User user) {
@@ -30,7 +33,10 @@ public class UserService {
         if (user.getUsername().matches(".*[ \\t\\n\\r].*")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "whitespace in username");
         }
-        return userRepository.save(user);
+
+        String encodedPassword = bCryptService.encodeBcrypt(user.getPassword(), 23);
+        User encryptedUser = new User(user.getUsername(), encodedPassword);
+        return userRepository.save(encryptedUser);
     }
 
     public UserSignInResponse signInUser(User user) {
@@ -38,9 +44,12 @@ public class UserService {
         if (foundUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
-        if (!foundUser.get().getPassword().equals(user.getPassword())) {
+        String encodedPassword = bCryptService.encodeBcrypt(user.getPassword(), 23);
+
+        if(!encodedPassword.equals(foundUser.get().getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
+
         return new UserSignInResponse(foundUser.get().getId());
     }
 
@@ -49,7 +58,9 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password cannot be empty");
         }
         User user = userRepository.findById(userId).orElseThrow();
-        user.setPassword(newPassword);
+
+        String encodedPassword = bCryptService.encodeBcrypt(newPassword, 23);
+        user.setPassword(encodedPassword);
         userRepository.save(user);
     }
 
