@@ -32,12 +32,12 @@ public class UserService {
         if (user.getUsername().matches(".*[ \\t\\n\\r].*")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "whitespace in username");
         }
-
         String encodedPassword = bCryptService.encodeBcrypt(user.getPassword(), 23);
         User encryptedUser = new User(user.getUsername(), encodedPassword);
         return userRepository.save(encryptedUser);
     }
 
+    // 여기서부터 hashing 더 해야 함
     public UserSignInResponse signInUser(User user) {
         Optional<User> foundUser = userRepository.findByUsername(user.getUsername());
         if (foundUser.isEmpty()) {

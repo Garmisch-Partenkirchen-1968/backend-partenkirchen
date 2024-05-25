@@ -9,6 +9,7 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,30 +23,31 @@ public class PermissionController {
     private final UserRepository userRepository;
 
     @PostMapping("/projects/{projectId}/permissions/{userId}")
-    public Project addPermission(@RequestBody PermissionPostRequest permissionPostRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
+    public ResponseEntity<boolean[]> addPermission(@RequestBody PermissionPostRequest permissionPostRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
         userFindController.RequesterIsFound(permissionPostRequest);
-        return permissionService.addPermission(projectId, userId, permissionPostRequest);
+        return new ResponseEntity<>(permissionService.addPermission(projectId, userId, permissionPostRequest), HttpStatus.OK);
     }
 
     @PatchMapping("/projects/{projectId}/permissions/{userId}")
-    public Project updatePermission(@RequestBody PermissionPatchRequest permissionPatchRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
+    public ResponseEntity<boolean[]> updatePermission(@RequestBody PermissionPatchRequest permissionPatchRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
         userFindController.RequesterIsFound(permissionPatchRequest);
-        return permissionService.updatePermission(projectId, userId, permissionPatchRequest);
+        return new ResponseEntity<>(permissionService.updatePermission(projectId, userId, permissionPatchRequest), HttpStatus.OK);
     }
 
     @DeleteMapping("/projects/{projectId}/permissions/{userId}")
-    public Project deletePermission(@RequestBody PermissionDeleteRequest permissionDeleteRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
+    public ResponseEntity deletePermission(@RequestBody PermissionDeleteRequest permissionDeleteRequest, @PathVariable("projectId") Long projectId, @PathVariable("userId") Long userId){
         userFindController.RequesterIsFound(permissionDeleteRequest);
-        return permissionService.deletePermission(projectId, userId, permissionDeleteRequest);
+        permissionService.deletePermission(projectId, userId, permissionDeleteRequest);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/projects/{projectId}/permissions/{userId}")
-    public boolean[] getPermission(@RequestParam(value = "username", defaultValue = "") String username,
+    public ResponseEntity<boolean[]> getPermission(@RequestParam(value = "username", defaultValue = "") String username,
                                    @RequestParam(value = "password", defaultValue = "") String password,
                                    @PathVariable("projectId") Long projectId,
                                    @PathVariable("userId") Long userId) {
         User user = new User(username, password);
         Long requesterId = userFindController.RequesterIsFound(user);
-        return permissionService.getPermission(projectId, userId, requesterId);
+        return new ResponseEntity<>(permissionService.getPermission(projectId, userId, requesterId), HttpStatus.OK);
     }
 }
