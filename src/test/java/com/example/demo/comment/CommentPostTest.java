@@ -1,5 +1,6 @@
 package com.example.demo.comment;
 
+import com.example.demo.dto.Permission.PermissionPostRequest;
 import com.example.demo.dto.comment.CommentPostRequest;
 import com.example.demo.dto.comment.CommentPostResponse;
 import com.example.demo.dto.issue.IssuePostRequest;
@@ -9,10 +10,12 @@ import com.example.demo.entity.Comment;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
+import com.example.demo.permission.PermissionPostTest;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.PermissionService;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +59,9 @@ public class CommentPostTest {
     private IssueRepository issueRepository;
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private PermissionService permissionService;
 
     @Autowired
     private UserRepository userRepository;
@@ -105,20 +111,20 @@ public class CommentPostTest {
         projectId = projectService.createProject(projectCreater).getId();
 
         // project에 tester 할당
-        PermissionRequest testerPermissionRequest = PermissionRequest.builder()
+        PermissionPostRequest testerPermissionRequest = PermissionPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, false, true, false})
                 .build();
-        projectService.addPermission(projectId, testerId, testerPermissionRequest);
+        permissionService.addPermission(projectId, testerId, testerPermissionRequest);
 
         // project에 dev1 할당
-        PermissionRequest dev1PermissionRequest = PermissionRequest.builder()
+        PermissionPostRequest dev1PermissionRequest = PermissionPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, false, false, true})
                 .build();
-        projectService.addPermission(projectId, dev1Id, dev1PermissionRequest);
+        permissionService.addPermission(projectId, dev1Id, dev1PermissionRequest);
 
         // issue 생성 (reporter는 tester)
         IssuePostRequest issuePostRequest = IssuePostRequest.builder()

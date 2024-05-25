@@ -21,26 +21,26 @@ public class PermissionService {
     private final UserRepository userRepository;
 
 
-    public Project addPermission(Long projectId, Long userId, PermissionPostRequest permissionPostRequest) {
+    public boolean[] addPermission(Long projectId, Long userId, PermissionPostRequest permissionPostRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
         Optional<User> req = userRepository.findByUsername(permissionPostRequest.getUsername());
 
         Project project;
         User user, requester;
-        if(req.isEmpty()){throw new RuntimeException("requester is not exist");}
-        if(proj.isEmpty()){throw new RuntimeException("project not found");}
-        if(us.isEmpty()){throw new RuntimeException("user is not exist"); }
+        if(req.isEmpty()){throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "requester is not exist");}
+        if(proj.isEmpty()){throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project not found");}
+        if(us.isEmpty()){throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is not exist"); }
 
         boolean[] permissions = permissionPostRequest.getPermissions();
         requester = req.get();
         project = proj.get();
         user = us.get();
         if(project.getMembers().get(user) != null){
-            throw new RuntimeException("User already exsists in project");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exsists in project");
         }
-        if(!hasPermisiion(project, requester)){
-            throw new RuntimeException("requester has not permission");
+        if(!hasPermission(project, requester)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "requester has not permission");
         }
         Integer permission = 0;
         if(permissions[0]) permission = permission | (1 << 3);
@@ -48,32 +48,34 @@ public class PermissionService {
         if(permissions[2]) permission = permission | (1 << 1);
         if(permissions[3]) permission = permission | (1 << 0);
         if(permission == 0){
-            throw new RuntimeException("permission should not be zero");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "permission should not be zero");
         }
         project.getMembers().put(user, permission);
-        return projectRepository.save(project);
+        projectRepository.save(project);
+
+        return permissions;
     }
 
-    public Project updatePermission(Long projectId, Long userId, PermissionPatchRequest permissionPatchRequest) {
+    public boolean[] updatePermission(Long projectId, Long userId, PermissionPatchRequest permissionPatchRequest) {
         Optional<Project> proj = projectRepository.findById(projectId);
         Optional<User> us = userRepository.findById(userId);
         Optional<User> req = userRepository.findByUsername(permissionPatchRequest.getUsername());
 
         Project project;
         User user, requester;
-        if(req.isEmpty()){throw new RuntimeException("requester is not exist");}
-        if(proj.isEmpty()){throw new RuntimeException("project not found");}
-        if(us.isEmpty()){throw new RuntimeException("user is not exist"); }
+        if(req.isEmpty()){throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "requester is not exist");}
+        if(proj.isEmpty()){throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project not found");}
+        if(us.isEmpty()){throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is not exist"); }
 
         boolean[] permissions = permissionPatchRequest.getPermissions();
         requester = req.get();
         project = proj.get();
         user = us.get();
         if(project.getMembers().get(user) == null){
-            throw new RuntimeException("Bad Request: User not exsists in project");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request: User not exsists in project");
         }
-        if(!hasPermisiion(project, requester)){
-            throw new RuntimeException("Bad Request: requester has not permission");
+        if(!hasPermission(project, requester)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request: requester has not permission");
         }
         Integer permission = 0;
         if(permissions[0]) permission = permission | (1 << 3);
@@ -81,26 +83,28 @@ public class PermissionService {
         if(permissions[2]) permission = permission | (1 << 1);
         if(permissions[3]) permission = permission | (1 << 0);
         if(permission == 0){
-            throw new RuntimeException("permission should not be zero");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "permission should not be zero");
         }
         project.getMembers().remove(user);
         project.getMembers().put(user, permission);
-        return projectRepository.save(project);
+        projectRepository.save(project);
+
+        return permissions;
     }
 
-    public Project deletePermission(Long projectId, Long userId, PermissionDeleteRequest permissionDeleteRequest) {
+    public void deletePermission(Long projectId, Long userId, PermissionDeleteRequest permissionDeleteRequest) {
         Project project = getProject(projectId);
         User requester = getUserByUsername(permissionDeleteRequest.getUsername());
         User user = getUserById(userId);
 
         if(project.getMembers().get(user) == null){
-            throw new RuntimeException("Bad Request: user not exsists in project");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request: user not exsists in project");
         }
-        if(!hasPermisiion(project, requester)){
-            throw new RuntimeException("Bad Request: requester has not permission");
+        if(!hasPermission(project, requester)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request: requester has not permission");
         }
         project.getMembers().remove(user);
-        return projectRepository.save(project);
+        projectRepository.save(project);
     }
 
     public boolean[] getPermission(Long projectId, Long userId, User requester) {
@@ -108,10 +112,10 @@ public class PermissionService {
         User user = getUserById(userId);
 
         if(project.getMembers().get(user) == null){
-            throw new RuntimeException("User not exsists in project");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not exsists in project");
         }
-        if(!hasPermisiion(project, requester)){
-            if(requester.getId() != userId) throw new RuntimeException("requester has not permission");
+        if(!hasPermission(project, requester)){
+            if(requester.getId() != userId) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "requester has not permission");
         }
         boolean[] permissions = new boolean[4];
         int permission = project.getMembers().get(user);
@@ -143,7 +147,7 @@ public class PermissionService {
         return permissions;
     }
 
-    public boolean hasPermisiion(Project project, User user) {
+    public boolean hasPermission(Project project, User user) {
         return project.getMembers().get(user) >= (1 << 3);
     }
 
