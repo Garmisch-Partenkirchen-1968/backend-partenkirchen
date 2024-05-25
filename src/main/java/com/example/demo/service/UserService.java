@@ -43,9 +43,8 @@ public class UserService {
         if (foundUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
-        String encodedPassword = bCryptService.encodeBcrypt(user.getPassword(), 23);
 
-        if(!encodedPassword.equals(foundUser.get().getPassword())) {
+        if (!bCryptService.matchesBcrypt(user.getPassword(), foundUser.get().getPassword(), 23)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 
