@@ -26,8 +26,7 @@ public class UserFindController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
         }
         User requester = req.get();
-        String encodedPassword = bCryptService.encodeBcrypt(requester.getPassword(), 23);
-        if(!encodedPassword.equals(toUser.toUser().getPassword())) {
+        if (!bCryptService.matchesBcrypt(toUser.toUser().getPassword(), requester.getPassword(), 23)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Passwords do not match");
         }
         return requester.getId();
