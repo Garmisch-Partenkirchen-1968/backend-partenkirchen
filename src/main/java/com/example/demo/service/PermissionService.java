@@ -103,7 +103,8 @@ public class PermissionService {
         return projectRepository.save(project);
     }
 
-    public boolean[] getPermission(Long projectId, Long userId, User requester) {
+    public boolean[] getPermission(Long projectId, Long userId, Long requesterId) {
+        User requester = getUserById(requesterId);
         Project project = getProject(projectId);
         User user = getUserById(userId);
 

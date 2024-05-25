@@ -44,14 +44,8 @@ public class PermissionController {
                                    @RequestParam(value = "password", defaultValue = "") String password,
                                    @PathVariable("projectId") Long projectId,
                                    @PathVariable("userId") Long userId) {
-        Optional<User> OptionalUser = userRepository.findByUsername(username);
-        if(OptionalUser.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user not found");
-        }
-        User requester = OptionalUser.get();
-        if(!requester.getPassword().equals(password)){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong username or wrong password");
-        }
-        return permissionService.getPermission(projectId, userId, requester);
+        User user = new User(username, password);
+        Long requesterId = userFindController.RequesterIsFound(user);
+        return permissionService.getPermission(projectId, userId, requesterId);
     }
 }
