@@ -3,7 +3,6 @@ package com.example.demo.issue;
 import com.example.demo.dto.issue.IssuePatchRequest;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
-import com.example.demo.dto.project.PermissionRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
