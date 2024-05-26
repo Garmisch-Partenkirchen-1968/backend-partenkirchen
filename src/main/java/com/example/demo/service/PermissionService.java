@@ -178,7 +178,4 @@ public class PermissionService {
         }
         return optionalProject.get();
     }
-
-
-
 }

@@ -1,10 +1,11 @@
 package com.example.demo.permission;
 
+import com.example.demo.dto.Permission.PermissionDeleteRequest;
 import com.example.demo.dto.Permission.PermissionPatchRequest;
 import com.example.demo.dto.Permission.PermissionPostRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
 import com.example.demo.dto.user.UserSignupRequest;
-import com.example.demo.entity.User;
+import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.PermissionService;
 import com.example.demo.service.ProjectService;
@@ -19,19 +20,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @SpringBootTest
 @ActiveProfiles
 @AutoConfigureMockMvc
 @Transactional
-public class PermissionPatchTest {
+public class PermissionDeleteTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -59,6 +61,8 @@ public class PermissionPatchTest {
     Long PLId;
     Long testerId;
     Long devId;
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @BeforeEach
     void setUp() {
@@ -134,117 +138,154 @@ public class PermissionPatchTest {
         PermissionPostRequest permissionPostRequest2 = PermissionPostRequest.builder()
                 .username("admin3")
                 .password("admin3")
-                .permissions(new boolean[] {false, false, true, false})
+                .permissions(new boolean[] {false, false, false, true})
                 .build();
         permissionService.addPermission(project2Id, devId, permissionPostRequest2);
     }
 
     @Test
-    @DisplayName("Admin1이 Admin2를 변경 성공")
-    void TesterPermission() throws Exception {
-        PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
+    @DisplayName("admin1이 admin2의 permission 삭제 성공")
+    void DeletePermission1() throws Exception {
+        // admin1이 admin2 삭제
+        PermissionDeleteRequest permissionDeleteRequest = PermissionDeleteRequest.builder()
                 .username("admin1")
                 .password("admin1")
+                .build();
+        mockMvc.perform(delete("/projects/" + project1Id + "/permissions/" + admin2Id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(permissionDeleteRequest)))
+                .andExpect(status().isOk());
+
+        assertNull(projectRepository.findById(project1Id).get().getMembers().get(userRepository.findById(admin2Id).get()));
+    }
+
+    @Test
+    @DisplayName("admin2가 admin1의 permission 삭제 성공")
+    void DeletePermission2() throws Exception {
+        // admin2가 admin1 삭제
+        PermissionDeleteRequest permissionDeleteRequest = PermissionDeleteRequest.builder()
+                .username("admin2")
+                .password("admin2")
+                .build();
+        mockMvc.perform(delete("/projects/" + project1Id + "/permissions/" + admin1Id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(permissionDeleteRequest)))
+                .andExpect(status().isOk());
+
+        assertNull(projectRepository.findById(project1Id).get().getMembers().get(userRepository.findById(admin1Id).get()));
+    }
+
+    @Test
+    @DisplayName("admin3가 dev의 permission 삭제 성공")
+    void DeletePermission3() throws Exception {
+        // admin3가 dev 삭제
+        PermissionDeleteRequest permissionDeleteRequest = PermissionDeleteRequest.builder()
+                .username("admin3")
+                .password("admin3")
+                .build();
+        mockMvc.perform(delete("/projects/" + project2Id + "/permissions/" + devId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(permissionDeleteRequest)))
+                .andExpect(status().isOk());
+
+        assertNull(projectRepository.findById(project2Id).get().getMembers().get(userRepository.findById(devId).get()));
+    }
+
+    @Test
+    @DisplayName("dev가 admin 권한을 얻은 후 admin3의 permission 삭제 성공")
+    void DeletePermission4() throws Exception {
+        // dev에게 admin 권한 부여
+        PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
+                .username("admin3")
+                .password("admin3")
                 .permissions(new boolean[] {true, false, true, false})
-                .build();
-
-        mockMvc.perform(patch("/projects/" + project1Id + "/permissions/" + admin2Id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(permissionPatchRequest)))
-                .andExpect(status().isOk());
-
-        assertEquals(projectService.getProject(project1Id).getMembers().get(userRepository.findById(admin2Id).get()), (1 << 3) + (1 << 1));
-    }
-
-    @Test
-    @DisplayName("Admin3이 dev를 변경 성공")
-    void TesterPermission2() throws Exception {
-        PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
-                .username("admin3")
-                .password("admin3")
-                .permissions(new boolean[] {true, true, true, false})
-                .build();
-
-        this.mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + devId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(permissionPatchRequest)))
-                .andExpect(status().isOk());
-
-        assertEquals(projectService.getProject(project2Id).getMembers().get(userRepository.findById(devId).get()), (1 << 3) + (1 << 2) + (1 << 1));
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 user를 변경")
-    void ghostPermissionPatch() throws Exception {
-        PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
-                .username("admin3")
-                .password("admin3")
-                .permissions(new boolean[] {true, true, true, false})
-                .build();
-
-        mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + 99999)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(permissionPatchRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 user가 변경")
-    void ghostPermissionRequest() throws Exception {
-        PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
-                .username("ghost")
-                .password("ghost")
-                .permissions(new boolean[] {true, true, true, false})
                 .build();
 
         mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + devId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(permissionPatchRequest)))
+                .andExpect(status().isOk());
+
+        // dev가 admin3 삭제
+        PermissionDeleteRequest permissionDeleteRequest = PermissionDeleteRequest.builder()
+                .username("dev")
+                .password("dev")
+                .build();
+        mockMvc.perform(delete("/projects/" + project2Id + "/permissions/" + admin3Id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(permissionDeleteRequest)))
+                .andExpect(status().isOk());
+
+        assertNull(projectRepository.findById(project2Id).get().getMembers().get(userRepository.findById(admin3Id).get()));
+    }
+
+    @Test
+    @DisplayName("project에 없는 사람의 delete 요청")
+    void nonMemberDeleteRequest() throws Exception {
+        // tester가 admin1 삭제
+        PermissionDeleteRequest permissionDeleteRequest = PermissionDeleteRequest.builder()
+                .username("tester")
+                .password("tester")
+                .build();
+        mockMvc.perform(delete("/projects/" + project1Id + "/permissions/" + admin1Id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(permissionDeleteRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("없는 user의 delete 요청")
+    void RequestOfGhost() throws Exception {
+        // ghost가 admin1 삭제
+        PermissionDeleteRequest permissionDeleteRequest = PermissionDeleteRequest.builder()
+                .username("ghost")
+                .password("ghost")
+                .build();
+        mockMvc.perform(delete("/projects/" + project1Id + "/permissions/" + admin1Id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(permissionDeleteRequest)))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("다른 project의 admin이 변경")
-    void anotherProjectRequest() throws Exception {
-        PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
+    @DisplayName("없는 user의 delete 요청")
+    void GhostDeleteRequest() throws Exception {
+        // admin1이 ghost 삭제
+        PermissionDeleteRequest permissionDeleteRequest = PermissionDeleteRequest.builder()
                 .username("admin1")
                 .password("admin1")
-                .permissions(new boolean[] {true, true, true, false})
                 .build();
-
-        mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + devId)
+        mockMvc.perform(delete("/projects/" + project1Id + "/permissions/" + 12345)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(permissionPatchRequest)))
+                        .content(objectMapper.writeValueAsString(permissionDeleteRequest)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("권한을 모두 없애는 요청")
-    void nonAuthorization() throws Exception {
-        PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
-                .username("admin3")
-                .password("admin3")
-                .permissions(new boolean[] {false, false, false, false})
+    @DisplayName("권한 없는 사람의 delete request")
+    void nonPermissionRequest() throws Exception {
+        // dev가 admin1 삭제
+        PermissionDeleteRequest permissionDeleteRequest = PermissionDeleteRequest.builder()
+                .username("dev")
+                .password("dev")
                 .build();
-
-        mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + devId)
+        mockMvc.perform(delete("/projects/" + project2Id + "/permissions/" + admin3Id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(permissionPatchRequest)))
+                        .content(objectMapper.writeValueAsString(permissionDeleteRequest)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("없는 Project의 요청")
-    void nonProject() throws Exception {
-        PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
-                .username("admin3")
-                .password("admin3")
-                .permissions(new boolean[] {false, false, false, false})
+    @DisplayName("project가 없는 경우")
+    void nonProjectRequest() throws Exception {
+        // admin1이 admin2를 non project에서 삭제
+        PermissionDeleteRequest permissionDeleteRequest = PermissionDeleteRequest.builder()
+                .username("admin1")
+                .password("admin1")
                 .build();
-
-        mockMvc.perform(patch("/projects/" + 12345 + "/permissions/" + devId)
+        mockMvc.perform(delete("/projects/" + 12345 + "/permissions/" + admin2Id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(permissionPatchRequest)))
+                        .content(objectMapper.writeValueAsString(permissionDeleteRequest)))
                 .andExpect(status().isBadRequest());
     }
 }
