@@ -4,6 +4,7 @@ import com.example.demo.dto.Permission.PermissionPostRequest;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
@@ -65,21 +66,21 @@ public class IssueGetTest {
     @BeforeEach
     void init() throws Exception {
         // projeect를 생성할 유저 생성
-        User admin = User.builder()
+        UserSignupRequest admin = UserSignupRequest.builder()
                 .username("admin")
                 .password("admin")
                 .build();
         userService.signUpUser(admin);
 
         // issue를 생성할 유저 생성
-        User tester1 = User.builder()
+        UserSignupRequest tester1 = UserSignupRequest.builder()
                 .username("tester1")
                 .password("tester1")
                 .build();
         Long tester1Id = userService.signUpUser(tester1).getId();
 
         // another issue를 생성할 유저 생성
-        User tester2 = User.builder()
+        UserSignupRequest tester2 = UserSignupRequest.builder()
                 .username("tester2")
                 .password("tester2")
                 .build();

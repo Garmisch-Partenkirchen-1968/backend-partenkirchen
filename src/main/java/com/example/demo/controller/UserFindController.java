@@ -23,10 +23,12 @@ public class UserFindController {
     public Long RequesterIsFound(ToUser toUser){
         Optional<User> req = userRepository.findByUsername(toUser.toUser().getUsername());
         if(req.isEmpty()){
+            System.out.println("User not found");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
         }
         User requester = req.get();
-        if (!bCryptService.matchesBcrypt(toUser.toUser().getPassword(), requester.getPassword(), 23)) {
+        if (!bCryptService.matchesBcrypt(toUser.toUser().getPassword(), requester.getPassword())) {
+            System.out.println("password do not match");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Passwords do not match");
         }
         return requester.getId();

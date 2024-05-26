@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.user.UserSignInResponse;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +23,21 @@ public class UserService {
         this.bCryptService = bCryptService;
     }
 
-    public User signUpUser(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+    public User signUpUser(UserSignupRequest userSignupRequest) {
+        if (userRepository.findByUsername(userSignupRequest.getUsername()).isPresent()) {
+            System.out.println("username already exists");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already exists");
         }
-        if (user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
+        if (userSignupRequest.getUsername().isEmpty() || userSignupRequest.getPassword().isEmpty()) {
+            System.out.println("field cannot be empty");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "field cannot be empty");
         }
-        if (user.getUsername().matches(".*[ \\t\\n\\r].*")) {
+        if (userSignupRequest.getUsername().matches(".*[ \\t\\n\\r].*")) {
+            System.out.println("whitespace in username");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "whitespace in username");
         }
-        String encodedPassword = bCryptService.encodeBcrypt(user.getPassword(), 23);
-        User encryptedUser = new User(user.getUsername(), encodedPassword);
+        String encodedPassword = bCryptService.encodeBcrypt(userSignupRequest.getPassword());
+        User encryptedUser = new User(userSignupRequest.getUsername(), encodedPassword);
         return userRepository.save(encryptedUser);
     }
 
@@ -44,7 +48,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 
-        if (!bCryptService.matchesBcrypt(user.getPassword(), foundUser.get().getPassword(), 23)) {
+        if (!bCryptService.matchesBcrypt(user.getPassword(), foundUser.get().getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 
@@ -57,7 +61,7 @@ public class UserService {
         }
         User user = userRepository.findById(userId).orElseThrow();
 
-        String encodedPassword = bCryptService.encodeBcrypt(newPassword, 23);
+        String encodedPassword = bCryptService.encodeBcrypt(newPassword);
         user.setPassword(encodedPassword);
         userRepository.save(user);
     }

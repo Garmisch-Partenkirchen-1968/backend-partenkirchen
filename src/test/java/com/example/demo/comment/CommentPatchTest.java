@@ -7,6 +7,7 @@ import com.example.demo.dto.comment.CommentPostResponse;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
@@ -75,28 +76,28 @@ public class CommentPatchTest {
     @BeforeEach
     void init() throws Exception {
         // admin 생성
-        User admin = User.builder()
+        UserSignupRequest admin = UserSignupRequest.builder()
                 .username("admin")
                 .password("admin")
                 .build();
         userService.signUpUser(admin);
 
         // issue를 추가할 tester 생성
-        User tester = User.builder()
+        UserSignupRequest tester = UserSignupRequest.builder()
                 .username("tester")
                 .password("tester")
                 .build();
         Long testerId = userService.signUpUser(tester).getId();
 
         // comment를 추가할 dev(dev1) 생성
-        User dev1 = User.builder()
+        UserSignupRequest dev1 = UserSignupRequest.builder()
                 .username("dev1")
                 .password("dev1")
                 .build();
         Long dev1Id = userService.signUpUser(dev1).getId();
 
         // project에 해당되지 않는 dev(dev2) 생성
-        User dev2 = User.builder()
+        UserSignupRequest dev2 = UserSignupRequest.builder()
                 .username("dev2")
                 .password("dev2")
                 .build();

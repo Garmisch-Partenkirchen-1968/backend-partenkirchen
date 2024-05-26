@@ -3,6 +3,7 @@ package com.example.demo.issue;
 import com.example.demo.dto.Permission.PermissionPostRequest;
 import com.example.demo.dto.issue.IssuesGetRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
@@ -103,63 +104,63 @@ public class IssuesGetTest {
     @BeforeEach
     void init() {
         // create admin
-        User admin = User.builder()
+        UserSignupRequest admin = UserSignupRequest.builder()
                 .username("admin")
                 .password("admin")
                 .build();
         userService.signUpUser(admin);
 
         // create PL1
-        User PL1 = User.builder()
+        UserSignupRequest PL1 = UserSignupRequest.builder()
                 .username("PL1")
                 .password("PL1")
                 .build();
         Long PL1Id = userService.signUpUser(PL1).getId();
 
         // create tester1
-        User tester1 = User.builder()
+        UserSignupRequest tester1 = UserSignupRequest.builder()
                 .username("tester1")
                 .password("tester1")
                 .build();
         Long tester1Id = userService.signUpUser(tester1).getId();
 
         // create tester2
-        User tester2 = User.builder()
+        UserSignupRequest tester2 = UserSignupRequest.builder()
                 .username("tester2")
                 .password("tester2")
                 .build();
         Long tester2Id = userService.signUpUser(tester2).getId();
 
         // create dev1
-        User dev1 = User.builder()
+        UserSignupRequest dev1 = UserSignupRequest.builder()
                 .username("dev1")
                 .password("dev1")
                 .build();
         Long dev1Id = userService.signUpUser(dev1).getId();
 
         // create dev2
-        User dev2 = User.builder()
+        UserSignupRequest dev2 = UserSignupRequest.builder()
                 .username("dev2")
                 .password("dev2")
                 .build();
         Long dev2Id = userService.signUpUser(dev2).getId();
 
         // create dev3
-        User dev3 = User.builder()
+        UserSignupRequest dev3 = UserSignupRequest.builder()
                 .username("dev3")
                 .password("dev3")
                 .build();
         Long dev3Id = userService.signUpUser(dev3).getId();
 
         // create dev4
-        User dev4 = User.builder()
+        UserSignupRequest dev4 = UserSignupRequest.builder()
                 .username("dev4")
                 .password("dev4")
                 .build();
         Long dev4Id = userService.signUpUser(dev4).getId();
 
         // create foreign
-        User foreign = User.builder()
+        UserSignupRequest foreign = UserSignupRequest.builder()
                 .username("foreign")
                 .password("foreign")
                 .build();

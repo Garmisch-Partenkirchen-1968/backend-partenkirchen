@@ -149,6 +149,9 @@ public class PermissionService {
     }
 
     public boolean hasPermission(Project project, User user) {
+        if(project.getMembers().get(user) == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request: user not exsists in project");
+        }
         return project.getMembers().get(user) >= (1 << 3);
     }
 

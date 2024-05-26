@@ -3,7 +3,9 @@ package com.example.demo.permission;
 import com.example.demo.dto.Permission.PermissionPatchRequest;
 import com.example.demo.dto.Permission.PermissionPostRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.service.PermissionService;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
@@ -17,9 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,46 +56,48 @@ public class PermissionPatchTest {
     Long PLId;
     Long testerId;
     Long devId;
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
         // project 1의 admin 1
-        User admin1 = User.builder()
+        UserSignupRequest admin1 = UserSignupRequest.builder()
                 .username("admin1")
                 .password("admin1")
                 .build();
         admin1Id = userService.signUpUser(admin1).getId();
 
         // project 1의 admin 2
-        User admin2 = User.builder()
+        UserSignupRequest admin2 = UserSignupRequest.builder()
                 .username("admin2")
                 .password("admin2")
                 .build();
         admin2Id = userService.signUpUser(admin2).getId();
 
         // project 2의 admin 3
-        User admin3 = User.builder()
+        UserSignupRequest admin3 = UserSignupRequest.builder()
                 .username("admin3")
                 .password("admin3")
                 .build();
         admin3Id = userService.signUpUser(admin3).getId();
 
         // PL
-        User PL = User.builder()
+        UserSignupRequest PL = UserSignupRequest.builder()
                 .username("PL")
                 .password("PL")
                 .build();
         PLId = userService.signUpUser(PL).getId();
 
         // tester
-        User tester = User.builder()
+        UserSignupRequest tester = UserSignupRequest.builder()
                 .username("tester")
                 .password("tester")
                 .build();
         testerId = userService.signUpUser(tester).getId();
 
         // dev
-        User dev = User.builder()
+        UserSignupRequest dev = UserSignupRequest.builder()
                 .username("dev")
                 .password("dev")
                 .build();
@@ -137,16 +143,16 @@ public class PermissionPatchTest {
     void TesterPermission() throws Exception {
         PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
                 .username("admin1")
-                .username("admin1")
+                .password("admin1")
                 .permissions(new boolean[] {true, false, true, false})
                 .build();
 
-        mockMvc.perform(post("/projects/" + project1Id + "/permissions/" + testerId)
+        mockMvc.perform(patch("/projects/" + project1Id + "/permissions/" + admin2Id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(permissionPatchRequest)))
                 .andExpect(status().isOk());
 
-        assertEquals(projectService.getProject(project1Id).getMembers().get(testerId), (1 << 3) + (1 << 1));
+        assertEquals(projectService.getProject(project1Id).getMembers().get(userRepository.findById(admin2Id).get()), (1 << 3) + (1 << 1));
     }
 
     @Test
@@ -154,16 +160,16 @@ public class PermissionPatchTest {
     void TesterPermission2() throws Exception {
         PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
                 .username("admin3")
-                .username("admin3")
+                .password("admin3")
                 .permissions(new boolean[] {true, true, true, false})
                 .build();
 
-        mockMvc.perform(post("/projects/" + project2Id + "/permissions/" + devId)
+        this.mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + devId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(permissionPatchRequest)))
                 .andExpect(status().isOk());
 
-        assertEquals(projectService.getProject(project1Id).getMembers().get(testerId), (1 << 3) + (1 << 2) + (1 << 1));
+        assertEquals(projectService.getProject(project2Id).getMembers().get(userRepository.findById(devId).get()), (1 << 3) + (1 << 2) + (1 << 1));
     }
 
     @Test
@@ -171,14 +177,14 @@ public class PermissionPatchTest {
     void ghostPermissionPatch() throws Exception {
         PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
                 .username("admin3")
-                .username("admin3")
+                .password("admin3")
                 .permissions(new boolean[] {true, true, true, false})
                 .build();
 
-        mockMvc.perform(post("/projects/" + project2Id + "/permissions/" + 99999)
+        mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + 99999)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(permissionPatchRequest)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -186,14 +192,14 @@ public class PermissionPatchTest {
     void ghostPermissionRequest() throws Exception {
         PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
                 .username("ghost")
-                .username("ghost")
+                .password("ghost")
                 .permissions(new boolean[] {true, true, true, false})
                 .build();
 
-        mockMvc.perform(post("/projects/" + project2Id + "/permissions/" + devId)
+        mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + devId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(permissionPatchRequest)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -201,14 +207,14 @@ public class PermissionPatchTest {
     void anotherProjectRequest() throws Exception {
         PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
                 .username("admin1")
-                .username("admin1")
+                .password("admin1")
                 .permissions(new boolean[] {true, true, true, false})
                 .build();
 
-        mockMvc.perform(post("/projects/" + project2Id + "/permissions/" + devId)
+        mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + devId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(permissionPatchRequest)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -216,14 +222,14 @@ public class PermissionPatchTest {
     void nonAuthorization() throws Exception {
         PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
                 .username("admin3")
-                .username("admin3")
+                .password("admin3")
                 .permissions(new boolean[] {false, false, false, false})
                 .build();
 
-        mockMvc.perform(post("/projects/" + project2Id + "/permissions/" + devId)
+        mockMvc.perform(patch("/projects/" + project2Id + "/permissions/" + devId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(permissionPatchRequest)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -231,13 +237,13 @@ public class PermissionPatchTest {
     void nonProject() throws Exception {
         PermissionPatchRequest permissionPatchRequest = PermissionPatchRequest.builder()
                 .username("admin3")
-                .username("admin3")
+                .password("admin3")
                 .permissions(new boolean[] {false, false, false, false})
                 .build();
 
-        mockMvc.perform(post("/projects/" + 12345 + "/permissions/" + devId)
+        mockMvc.perform(patch("/projects/" + 12345 + "/permissions/" + devId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(permissionPatchRequest)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isBadRequest());
     }
 }

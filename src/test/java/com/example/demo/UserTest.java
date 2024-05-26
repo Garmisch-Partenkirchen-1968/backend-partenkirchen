@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.dto.user.UserUpdatePasswordRequest;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
@@ -35,7 +36,7 @@ public class UserTest {
     @Test
     @DisplayName("회원가입 성공하는 경우")
     void signUp() throws Exception {
-        User user = User.builder().username("test-admin").password("test-admin").build();
+        UserSignupRequest user = UserSignupRequest.builder().username("test-admin").password("test-admin").build();
         this.mockMvc.perform(post("/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
@@ -91,7 +92,7 @@ public class UserTest {
     @DisplayName("잘못 된 비밀번호로 로그인")
     void signInWithWrongPassword() throws Exception {
         // 테스트 계정 생성
-        User userSignUp = User.builder().username("test-admin").password("test-admin").build();
+        UserSignupRequest userSignUp = UserSignupRequest.builder().username("test-admin").password("test-admin").build();
 
         userService.signUpUser(userSignUp);
         this.mockMvc.perform(get("/signin")
@@ -105,7 +106,7 @@ public class UserTest {
     @DisplayName("로그인 성공하는 경우")
     void signIn() throws Exception {
         // 테스트 계정 생성
-        User userSignUp = User.builder().username("test-admin").password("test-admin").build();
+        UserSignupRequest userSignUp = UserSignupRequest.builder().username("test-admin").password("test-admin").build();
         userService.signUpUser(userSignUp);
 
         // 로그인 시도
@@ -120,7 +121,7 @@ public class UserTest {
     @DisplayName("없는 계정의 비밀번호를 바꾸려 한 경우")
     void updatePasswordWithNotExistUser() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
+        UserSignupRequest userSignUp = UserSignupRequest.builder().username("test").password("test").build();
         userService.signUpUser(userSignUp);
 
         User user = User.builder().username("test").password("test").build();
@@ -134,12 +135,12 @@ public class UserTest {
     @DisplayName("다른 사람의 비밀번호를 바꾸려 한 경우")
     void updatePasswordAnotherUser() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
+        UserSignupRequest userSignUp = UserSignupRequest.builder().username("test").password("test").build();
         userService.signUpUser(userSignUp);
 
         // 다른 사람 계정 생성
-        User anotherUserSignUp = User.builder().username("another").password("another").build();
-        anotherUserSignUp = userService.signUpUser(anotherUserSignUp);
+        UserSignupRequest anotherUserSignUpReq = UserSignupRequest.builder().username("another").password("another").build();
+        User anotherUserSignUp = userService.signUpUser(anotherUserSignUpReq);
 
         User user = User.builder().username("test").password("test").build();
         this.mockMvc.perform(patch("/user/" + anotherUserSignUp.getId())
@@ -152,8 +153,8 @@ public class UserTest {
     @DisplayName("비밀번호를 바꾸려는데 기존 비밀번호가 틀린 경우")
     void updatePasswordWithWrongPassword() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
-        userSignUp = userService.signUpUser(userSignUp);
+        UserSignupRequest userSignUpReq = UserSignupRequest.builder().username("test").password("test").build();
+        User userSignUp = userService.signUpUser(userSignUpReq);
 
         User user = User.builder().username("test").password("wrongpassword").build();
         this.mockMvc.perform(patch("/user/" + userSignUp.getId())
@@ -166,8 +167,8 @@ public class UserTest {
     @DisplayName("새로운 비밀번호없이 patch하는 경우")
     void updatePasswordWithoutPassword() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
-        userSignUp = userService.signUpUser(userSignUp);
+        UserSignupRequest userSignUpReq = UserSignupRequest.builder().username("test").password("test").build();
+        User userSignUp = userService.signUpUser(userSignUpReq);
 
         // 비밀번호 변경 시도
         UserUpdatePasswordRequest user = UserUpdatePasswordRequest.builder()
@@ -184,8 +185,8 @@ public class UserTest {
     @DisplayName("새로운 비밀번호가 empty string인 경우")
     void updatePasswordWithEmptyPassword() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
-        userSignUp = userService.signUpUser(userSignUp);
+        UserSignupRequest userSignUpReq = UserSignupRequest.builder().username("test").password("test").build();
+        User userSignUp = userService.signUpUser(userSignUpReq);
 
         // 비밀번호 변경 시도
         UserUpdatePasswordRequest user = UserUpdatePasswordRequest.builder()
@@ -203,8 +204,8 @@ public class UserTest {
     @DisplayName("성공적으로 비밀번호를 바꾸는 경우")
     void updatePassword() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
-        userSignUp = userService.signUpUser(userSignUp);
+        UserSignupRequest userSignUpReq = UserSignupRequest.builder().username("test").password("test").build();
+        User userSignUp = userService.signUpUser(userSignUpReq);
 
         // 비밀번호 변경 시도
         UserUpdatePasswordRequest user = UserUpdatePasswordRequest.builder()
@@ -222,7 +223,7 @@ public class UserTest {
     @DisplayName("없는 계정을 삭제하려고 하는 경우")
     void deleteNotExistUser() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
+        UserSignupRequest userSignUp = UserSignupRequest.builder().username("test").password("test").build();
         userService.signUpUser(userSignUp);
 
         User user = User.builder().username("test").password("test").build();
@@ -236,12 +237,12 @@ public class UserTest {
     @DisplayName("다른 사람 계정을 삭제하려고 하는 경우")
     void deleteAnotherUser() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
+        UserSignupRequest userSignUp = UserSignupRequest.builder().username("test").password("test").build();
         userService.signUpUser(userSignUp);
 
         // 다른 사람 계정 생성
-        User anotherUserSignUp = User.builder().username("another").password("another").build();
-        anotherUserSignUp = userService.signUpUser(anotherUserSignUp);
+        UserSignupRequest anotherUserSignUpReq = UserSignupRequest.builder().username("another").password("another").build();
+        User anotherUserSignUp = userService.signUpUser(anotherUserSignUpReq);
 
         // 삭제 시도
         User user = User.builder().username("test").password("test").build();
@@ -255,8 +256,8 @@ public class UserTest {
     @DisplayName("자기 계정을 삭제하려는데, 비밀번호가 틀린 경우")
     void deleteMeWithWrongPassword() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
-        userSignUp = userService.signUpUser(userSignUp);
+        UserSignupRequest userSignUpReq = UserSignupRequest.builder().username("test").password("test").build();
+        User userSignUp = userService.signUpUser(userSignUpReq);
 
         // 삭제 시도
         User user = User.builder().username("test").password("wrongpassword").build();
@@ -270,8 +271,8 @@ public class UserTest {
     @DisplayName("계정을 성공적으로 삭제한 경우")
     void deleteMe() throws Exception {
         // 내 계정 생성
-        User userSignUp = User.builder().username("test").password("test").build();
-        userSignUp = userService.signUpUser(userSignUp);
+        UserSignupRequest userSignUpReq = UserSignupRequest.builder().username("test").password("test").build();
+        User userSignUp = userService.signUpUser(userSignUpReq);
 
         // 삭제 시도
         User user = User.builder().username("test").password("test").build();
