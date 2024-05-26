@@ -1,14 +1,17 @@
 package com.example.demo.issue;
 
+import com.example.demo.dto.Permission.PermissionPostRequest;
 import com.example.demo.dto.issue.IssueDeleteRequest;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
-import com.example.demo.dto.project.PermissionRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
+import com.example.demo.permission.PermissionPostTest;
 import com.example.demo.repository.IssueRepository;
+import com.example.demo.service.PermissionService;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,6 +57,9 @@ public class IssueDeleteTest {
     private ProjectService projectService;
 
     @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
     private IssueRepository issueRepository;
 
     private Long projectId;
@@ -62,21 +68,21 @@ public class IssueDeleteTest {
     @BeforeEach
     void init() throws Exception {
         // project를 생성할 유저 생성
-        User admin = User.builder()
+        UserSignupRequest admin = UserSignupRequest.builder()
                 .username("admin")
                 .password("admin")
                 .build();
         userService.signUpUser(admin);
 
         // issue를 생성할 유저 생성
-        User tester1 = User.builder()
+        UserSignupRequest tester1 = UserSignupRequest.builder()
                 .username("tester1")
                 .password("tester1")
                 .build();
         Long tester1Id = userService.signUpUser(tester1).getId();
 
         // another issue를 생성할 유저 생성
-        User tester2 = User.builder()
+        UserSignupRequest tester2 = UserSignupRequest.builder()
                 .username("tester2")
                 .password("tester2")
                 .build();
@@ -101,12 +107,12 @@ public class IssueDeleteTest {
         Long anotherProjectId = projectService.createProject(anotherProjectCreater).getId();
 
         // admin이 tester1에게 tester권한 부여
-        PermissionRequest permissionRequest = PermissionRequest.builder()
+        PermissionPostRequest permissionRequest = PermissionPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, false, true, false})
                 .build();
-        projectService.addPermission(projectId, tester1Id, permissionRequest);
+        permissionService.addPermission(projectId, tester1Id, permissionRequest);
 
         // default issue 생성
         IssuePostRequest issuePostRequest = IssuePostRequest.builder()
@@ -126,12 +132,12 @@ public class IssueDeleteTest {
         defaultIssue = optionalIssue.get();
 
         // admin이 tester2에게 tester권한 부여 (another project에서)
-        PermissionRequest anotherPermissionRequest = PermissionRequest.builder()
+        PermissionPostRequest anotherPermissionRequest = PermissionPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, false, true, false})
                 .build();
-        projectService.addPermission(anotherProjectId, tester2Id, anotherPermissionRequest);
+        permissionService.addPermission(anotherProjectId, tester2Id, anotherPermissionRequest);
     }
 
     @Test

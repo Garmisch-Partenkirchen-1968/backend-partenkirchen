@@ -1,15 +1,20 @@
-package com.example.demo.dto.project;
+package com.example.demo.dto.Permission;
 
 import com.example.demo.Interface.ToUser;
+import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
+import com.example.demo.repository.ProjectRepository;
+import com.example.demo.repository.UserRepository;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @Getter
-@Setter
-public class GetPermissionDTO implements ToUser {
+@Builder
+public class PermissionDeleteRequest implements ToUser {
     private String username;
     private String password;
 

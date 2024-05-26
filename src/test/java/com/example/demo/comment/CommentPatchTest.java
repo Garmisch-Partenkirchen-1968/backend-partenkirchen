@@ -1,12 +1,13 @@
 package com.example.demo.comment;
 
+import com.example.demo.dto.Permission.PermissionPostRequest;
 import com.example.demo.dto.comment.CommentPatchRequest;
 import com.example.demo.dto.comment.CommentPostRequest;
 import com.example.demo.dto.comment.CommentPostResponse;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
-import com.example.demo.dto.project.PermissionRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.User;
@@ -15,6 +16,7 @@ import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.PermissionService;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,7 +56,7 @@ public class CommentPatchTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private PermissionService permissionService;
 
     @Autowired
     private UserService userService;
@@ -79,28 +81,28 @@ public class CommentPatchTest {
     @BeforeEach
     void init() throws Exception {
         // admin 생성
-        User admin = User.builder()
+        UserSignupRequest admin = UserSignupRequest.builder()
                 .username("admin")
                 .password("admin")
                 .build();
         userService.signUpUser(admin);
 
         // issue를 추가할 tester 생성
-        User tester = User.builder()
+        UserSignupRequest tester = UserSignupRequest.builder()
                 .username("tester")
                 .password("tester")
                 .build();
         Long testerId = userService.signUpUser(tester).getId();
 
         // comment를 추가할 dev(dev1) 생성
-        User dev1 = User.builder()
+        UserSignupRequest dev1 = UserSignupRequest.builder()
                 .username("dev1")
                 .password("dev1")
                 .build();
         Long dev1Id = userService.signUpUser(dev1).getId();
 
         // project에 해당되지 않는 dev(dev2) 생성
-        User dev2 = User.builder()
+        UserSignupRequest dev2 = UserSignupRequest.builder()
                 .username("dev2")
                 .password("dev2")
                 .build();
@@ -116,20 +118,20 @@ public class CommentPatchTest {
         projectId = projectService.createProject(projectCreater).getId();
 
         // project에 tester 할당
-        PermissionRequest testerPermissionRequest = PermissionRequest.builder()
+        PermissionPostRequest testerPermissionRequest = PermissionPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, false, true, false})
                 .build();
-        projectService.addPermission(projectId, testerId, testerPermissionRequest);
+        permissionService.addPermission(projectId, testerId, testerPermissionRequest);
 
         // project에 dev1 할당
-        PermissionRequest dev1PermissionRequest = PermissionRequest.builder()
+        PermissionPostRequest dev1PermissionRequest = PermissionPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, false, false, true})
                 .build();
-        projectService.addPermission(projectId, dev1Id, dev1PermissionRequest);
+        permissionService.addPermission(projectId, dev1Id, dev1PermissionRequest);
 
         // project에 issue 생성 (reporter는 tester)
         IssuePostRequest issuePostRequest = IssuePostRequest.builder()

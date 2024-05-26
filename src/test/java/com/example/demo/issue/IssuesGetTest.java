@@ -1,8 +1,9 @@
 package com.example.demo.issue;
 
+import com.example.demo.dto.Permission.PermissionPostRequest;
 import com.example.demo.dto.issue.IssuesGetRequest;
-import com.example.demo.dto.project.PermissionRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.Issue;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
@@ -12,6 +13,7 @@ import com.example.demo.repository.IssueRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.IssueService;
+import com.example.demo.service.PermissionService;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,6 +57,9 @@ public class IssuesGetTest {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private PermissionService permissionService;
 
     @Autowired
     private IssueRepository issueRepository;
@@ -104,63 +109,63 @@ public class IssuesGetTest {
     @BeforeEach
     void init() {
         // create admin
-        User admin = User.builder()
+        UserSignupRequest admin = UserSignupRequest.builder()
                 .username("admin")
                 .password("admin")
                 .build();
         userService.signUpUser(admin);
 
         // create PL1
-        User PL1 = User.builder()
+        UserSignupRequest PL1 = UserSignupRequest.builder()
                 .username("PL1")
                 .password("PL1")
                 .build();
         Long PL1Id = userService.signUpUser(PL1).getId();
 
         // create tester1
-        User tester1 = User.builder()
+        UserSignupRequest tester1 = UserSignupRequest.builder()
                 .username("tester1")
                 .password("tester1")
                 .build();
         Long tester1Id = userService.signUpUser(tester1).getId();
 
         // create tester2
-        User tester2 = User.builder()
+        UserSignupRequest tester2 = UserSignupRequest.builder()
                 .username("tester2")
                 .password("tester2")
                 .build();
         Long tester2Id = userService.signUpUser(tester2).getId();
 
         // create dev1
-        User dev1 = User.builder()
+        UserSignupRequest dev1 = UserSignupRequest.builder()
                 .username("dev1")
                 .password("dev1")
                 .build();
         Long dev1Id = userService.signUpUser(dev1).getId();
 
         // create dev2
-        User dev2 = User.builder()
+        UserSignupRequest dev2 = UserSignupRequest.builder()
                 .username("dev2")
                 .password("dev2")
                 .build();
         Long dev2Id = userService.signUpUser(dev2).getId();
 
         // create dev3
-        User dev3 = User.builder()
+        UserSignupRequest dev3 = UserSignupRequest.builder()
                 .username("dev3")
                 .password("dev3")
                 .build();
         Long dev3Id = userService.signUpUser(dev3).getId();
 
         // create dev4
-        User dev4 = User.builder()
+        UserSignupRequest dev4 = UserSignupRequest.builder()
                 .username("dev4")
                 .password("dev4")
                 .build();
         Long dev4Id = userService.signUpUser(dev4).getId();
 
         // create foreign
-        User foreign = User.builder()
+        UserSignupRequest foreign = UserSignupRequest.builder()
                 .username("foreign")
                 .password("foreign")
                 .build();
@@ -176,40 +181,40 @@ public class IssuesGetTest {
         projectId = projectService.createProject(projectCreater).getId();
 
         // give PL permission to PL1
-        PermissionRequest PLPermissionRequest = PermissionRequest.builder()
+        PermissionPostRequest PLPermissionRequest = PermissionPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, true, false, false})
                 .build();
-        projectService.addPermission(projectId, PL1Id, PLPermissionRequest);
+        permissionService.addPermission(projectId, PL1Id, PLPermissionRequest);
 
         // give tester permission to tester1
-        PermissionRequest testerPermissionRequest = PermissionRequest.builder()
+        PermissionPostRequest testerPermissionRequest = PermissionPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, false, true, false})
                 .build();
-        projectService.addPermission(projectId, tester1Id, testerPermissionRequest);
+        permissionService.addPermission(projectId, tester1Id, testerPermissionRequest);
 
         // give tester permission to tester2
-        projectService.addPermission(projectId, tester2Id, testerPermissionRequest);
+        permissionService.addPermission(projectId, tester2Id, testerPermissionRequest);
 
         // give tester permission to dev1
-        PermissionRequest dev1PermissionRequest = PermissionRequest.builder()
+        PermissionPostRequest dev1PermissionRequest = PermissionPostRequest.builder()
                 .username("admin")
                 .password("admin")
                 .permissions(new boolean[] {false, false, false, true})
                 .build();
-        projectService.addPermission(projectId, dev1Id, dev1PermissionRequest);
+        permissionService.addPermission(projectId, dev1Id, dev1PermissionRequest);
 
         // give tester permission to dev2
-        projectService.addPermission(projectId, dev2Id, dev1PermissionRequest);
+        permissionService.addPermission(projectId, dev2Id, dev1PermissionRequest);
 
         // give tester permission to dev2
-        projectService.addPermission(projectId, dev3Id, dev1PermissionRequest);
+        permissionService.addPermission(projectId, dev3Id, dev1PermissionRequest);
 
         // give tester permission to dev2
-        projectService.addPermission(projectId, dev4Id, dev1PermissionRequest);
+        permissionService.addPermission(projectId, dev4Id, dev1PermissionRequest);
 
         addIssue("alpha1", "tester1", "", "", IssuePriority.LOW, IssueStatus.NEW);
         addIssue("beta1", "tester2", "", "dev1", IssuePriority.MEDIUM, IssueStatus.ASSIGNED);

@@ -1,5 +1,6 @@
 package com.example.demo.user;
 
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,11 +41,11 @@ public class UsersGetTest {
     @BeforeEach
     void init() {
         // user1 생성
-        User user1 = new User("user1", "user1");
+        UserSignupRequest user1 = new UserSignupRequest("user1", "user1");
         userService.signUpUser(user1);
 
         // user2 생성
-        User user2 = new User("user2", "user2");
+        UserSignupRequest user2 = new UserSignupRequest("user2", "user2");
         userService.signUpUser(user2);
     }
 

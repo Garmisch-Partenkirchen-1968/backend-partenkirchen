@@ -2,6 +2,7 @@ package com.example.demo.project;
 
 import com.example.demo.dto.project.ProjectGetResponse;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
@@ -48,7 +49,7 @@ public class ProjectGetTest {
     @BeforeEach
     void init() throws Exception {
         // projeect를 생성할 유저 생성
-        User admin = new User("admin", "admin");
+        UserSignupRequest admin = new UserSignupRequest("admin", "admin");
         userService.signUpUser(admin);
 
         // Project Alpha 생성
