@@ -3,6 +3,7 @@ package com.example.demo.project;
 import com.example.demo.dto.project.ProjectDeleteRequest;
 import com.example.demo.dto.project.ProjectPatchRequest;
 import com.example.demo.dto.project.ProjectPostRequest;
+import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.repository.ProjectRepository;
@@ -54,11 +55,11 @@ public class ProjectDeleteTest {
     @BeforeEach
     void init() throws Exception {
         // projeect를 생성할 유저 생성
-        User admin = new User("admin", "admin");
+        UserSignupRequest admin = new UserSignupRequest("admin", "admin");
         userService.signUpUser(admin);
 
         // 외부인 생성
-        User foreign = new User("foreign", "foreign");
+        UserSignupRequest foreign = new UserSignupRequest("foreign", "foreign");
         userService.signUpUser(foreign);
 
         // Project Alpha 생성
