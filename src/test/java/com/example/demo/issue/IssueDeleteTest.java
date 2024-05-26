@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -30,6 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
 public class IssueDeleteTest {
     @Autowired
     private MockMvc mockMvc;
@@ -146,7 +151,10 @@ public class IssueDeleteTest {
         this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(issueDeleteRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("issues/delete/success",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
 
         // 잘 지워졌는지 확인
         Optional<Issue> optionalIssue = issueRepository.findById(defaultIssue.getId());

@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -34,6 +35,9 @@ import java.security.Permission;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
 public class IssuePatchTest {
     @Autowired
     private MockMvc mockMvc;
@@ -201,6 +206,9 @@ public class IssuePatchTest {
         this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(issuePatchRequest)))
+                .andDo(document("issues/patch/success-change-title",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
                 .andExpect(status().isOk());
 
         // 수정된 issue 검색
@@ -242,7 +250,10 @@ public class IssuePatchTest {
         this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("issues/patch/success-change-assignee",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
 
         // 수정된 issue 검색
         Optional<Issue> optionalIssue = issueRepository.findById(defaultIssue.getId());
@@ -421,7 +432,10 @@ public class IssuePatchTest {
         this.mockMvc.perform(patch("/projects/" + projectId + "/issues/" + defaultIssue.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issuePatchRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("issues/patch/success-change-to-resolved",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
 
         // fixed로 수정
         IssuePatchRequest fixedPatchRequest = IssuePatchRequest.builder()

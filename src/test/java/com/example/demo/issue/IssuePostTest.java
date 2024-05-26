@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -30,6 +31,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
 public class IssuePostTest {
     @Autowired
     private MockMvc mockMvc;
@@ -107,6 +112,9 @@ public class IssuePostTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(issuePostRequest)))
                 .andExpect(status().isCreated())
+                .andDo(document("issues/post/success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
                 .andReturn();
         IssuePostResponse issuePostResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), IssuePostResponse.class);
         Optional<Issue> optionalIssue = issueRepository.findById(issuePostResponse.getId());
@@ -177,7 +185,10 @@ public class IssuePostTest {
         this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":  \"tester1\", \"password\": \"tester1\",  \"title\":  \"new issue without priority\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(document("issues/post/fail-without-priority",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
     }
 
     @Test

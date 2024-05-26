@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -33,6 +34,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,6 +49,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ActiveProfiles
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
 public class CommentDeleteTest {
     @Autowired
     private MockMvc mockMvc;
@@ -210,7 +215,10 @@ public class CommentDeleteTest {
         this.mockMvc.perform(delete("/projects/" + projectId + "/issues/" + defaultIssue.getId() + "/comments/" + comment1.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(comment1DeleteRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("comments/delete/success",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
 
         Optional<Comment> optionalComment1 = commentRepository.findById(comment1.getId());
         assertTrue(optionalComment1.isEmpty());

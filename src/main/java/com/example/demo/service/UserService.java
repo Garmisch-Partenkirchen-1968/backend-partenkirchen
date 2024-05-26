@@ -41,7 +41,6 @@ public class UserService {
         return userRepository.save(encryptedUser);
     }
 
-    // 여기서부터 hashing 더 해야 함
     public UserSignInResponse signInUser(User user) {
         Optional<User> foundUser = userRepository.findByUsername(user.getUsername());
         if (foundUser.isEmpty()) {
@@ -72,6 +71,8 @@ public class UserService {
     }
 
     public List<User> getUsers(String keyword) {
-        return userRepository.findByUsernameContaining(keyword);
+        List<User> users = userRepository.findAll();
+        users.removeIf(user -> !(user.getUsername().contains(keyword)));
+        return users;
     }
 }
