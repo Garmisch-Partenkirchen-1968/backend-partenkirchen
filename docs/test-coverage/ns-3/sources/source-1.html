@@ -1,0 +1,147 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CommentController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: CommentController (com.example.demo.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CommentController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.demo.controller;
+&nbsp;
+&nbsp;import com.example.demo.dto.comment.CommentDeleteRequest;
+&nbsp;import com.example.demo.dto.comment.CommentPatchRequest;
+&nbsp;import com.example.demo.dto.comment.CommentPostRequest;
+&nbsp;import com.example.demo.dto.comment.CommentPostResponse;
+&nbsp;import com.example.demo.service.CommentService;
+&nbsp;import com.example.demo.service.UserService;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;@RestController
+&nbsp;public class CommentController {
+&nbsp;    private final CommentService commentService;
+&nbsp;    private final UserService userService;
+&nbsp;
+<b class="fc">&nbsp;    public CommentController(CommentService commentService, UserService userService) {</b>
+<b class="fc">&nbsp;        this.commentService = commentService;</b>
+<b class="fc">&nbsp;        this.userService = userService;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/projects/{projectId}/issues/{issueId}/comments&quot;)
+&nbsp;    public ResponseEntity&lt;CommentPostResponse&gt; postComment(@PathVariable(&quot;projectId&quot;) Long projectId, @PathVariable(&quot;issueId&quot;) Long issueId, @RequestBody CommentPostRequest commentPostRequest) {
+<b class="fc">&nbsp;        Long userId = userService.RequesterIsFound(commentPostRequest);</b>
+<b class="fc">&nbsp;        CommentPostResponse commentPostResponse = commentService.postComment(projectId, issueId, userId, commentPostRequest);</b>
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(commentPostResponse, HttpStatus.CREATED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PatchMapping(&quot;/projects/{projectId}/issues/{issueId}/comments/{commentId}&quot;)
+&nbsp;    public ResponseEntity patchComment(@PathVariable(&quot;projectId&quot;) Long projectId, @PathVariable(&quot;commentId&quot;) Long commentId, @RequestBody CommentPatchRequest commentPatchRequest) {
+<b class="fc">&nbsp;        Long userId = userService.RequesterIsFound(commentPatchRequest);</b>
+<b class="fc">&nbsp;        commentService.patchComment(projectId, commentId, userId, commentPatchRequest);</b>
+<b class="fc">&nbsp;        return new ResponseEntity(HttpStatus.OK);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/projects/{projectId}/issues/{issueId}/comments/{commentId}&quot;)
+&nbsp;    public ResponseEntity deleteComment(@PathVariable(&quot;projectId&quot;) Long projectId, @PathVariable(&quot;commentId&quot;) Long commentId, @RequestBody CommentDeleteRequest commentDeleteRequest) {
+<b class="fc">&nbsp;        Long userId = userService.RequesterIsFound(commentDeleteRequest);</b>
+<b class="fc">&nbsp;        commentService.deleteComment(projectId, commentId, userId);</b>
+<b class="fc">&nbsp;        return new ResponseEntity(HttpStatus.OK);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-05-27 22:17</div>
+</div>
+</body>
+</html>
