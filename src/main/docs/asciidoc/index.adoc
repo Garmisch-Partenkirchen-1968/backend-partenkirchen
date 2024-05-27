@@ -106,6 +106,18 @@ operation::comments/delete/success[snippets='curl-request,http-request,http-resp
 
 == permission
 === post
+==== 성공
+operation::permissions/post/success[snippets='curl-request,http-request,http-response']
+==== 실패 - 권한이 없는 dev가 다른 user에게 권한을 주려 시도
+operation::permissions/post/fail-wrong-permission[snippets='curl-request,http-request,http-response']
 === get
+==== 성공
+operation::permissions/get/success[snippets='curl-request,http-request,http-response']
+==== 실패 - 권한이 없는 user가 permission 정보 얻으려 하는 경우
+operation::permissions/get/fail-without-permission[snippets='curl-request,http-request,http-response']
 === patch
+==== 성공
+operation::permissions/patch/success[snippets='curl-request,http-request,http-response']
 === delete
+==== 성공
+operation::permissions/delete/success[snippets='curl-request,http-request,http-response']
