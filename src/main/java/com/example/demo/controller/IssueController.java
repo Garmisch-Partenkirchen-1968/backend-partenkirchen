@@ -24,14 +24,12 @@ public class IssueController {
         return new ResponseEntity<> (issueService.postIssue(projectId, issuePostRequest), HttpStatus.CREATED);
     }
 
+    // 파라미터로 추가해야됨
     @GetMapping("/projects/{projectId}/issues")
     public ResponseEntity<List<Issue>> getIssues(@PathVariable("projectId") Long projectId,
                                                  @RequestParam(value = "username", defaultValue = "") String username,
-                                                 @RequestParam(value = "password", defaultValue = "") String password,
-                                                 @RequestBody(required = false) IssuesGetRequest issuesGetRequest) {
-        if (issuesGetRequest == null) {
-            issuesGetRequest = new IssuesGetRequest();
-        }
+                                                 @RequestParam(value = "password", defaultValue = "") String password) {
+        IssuesGetRequest issuesGetRequest = new IssuesGetRequest();
         issuesGetRequest.setUsername(username);
         issuesGetRequest.setPassword(password);
         userFindController.RequesterIsFound(issuesGetRequest);
@@ -42,11 +40,9 @@ public class IssueController {
     public ResponseEntity<Issue> getIssue(@PathVariable("projectId") Long projectId,
                                           @PathVariable("issueId") Long issueId,
                                           @RequestParam(value = "username", defaultValue = "") String username,
-                                          @RequestParam(value = "password", defaultValue = "") String password,
-                                          @RequestBody(required = false) IssueGetRequest issueGetRequest) {
-        if (issueGetRequest == null) {
-            issueGetRequest = new IssueGetRequest();
-        }
+                                          @RequestParam(value = "password", defaultValue = "") String password) {
+
+        IssueGetRequest issueGetRequest = new IssueGetRequest();
         issueGetRequest.setUsername(username);
         issueGetRequest.setPassword(password);
         userFindController.RequesterIsFound(issueGetRequest);
