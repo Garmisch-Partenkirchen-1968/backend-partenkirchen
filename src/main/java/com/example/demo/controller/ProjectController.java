@@ -4,6 +4,7 @@ import com.example.demo.dto.project.*;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
 import com.example.demo.service.ProjectService;
+import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProjectController {
     private final ProjectService projectService;
-    private final UserFindController userFindController;
+    private final UserService userService;
 
     @PostMapping("/projects")
     public ResponseEntity<ProjectGetResponse> createProject(@RequestBody ProjectPostRequest projectCreater) {
-        userFindController.RequesterIsFound(projectCreater);
+        userService.RequesterIsFound(projectCreater);
         return new ResponseEntity<>(projectService.createProject(projectCreater), HttpStatus.CREATED);
     }
 
@@ -27,7 +28,7 @@ public class ProjectController {
     public List<ProjectsGetResponse> getProjects(@RequestParam(value = "username", defaultValue = "") String username,
                                                  @RequestParam(value = "password", defaultValue = "") String password) {
         User user = new User(username, password);
-        userFindController.RequesterIsFound(user);
+        userService.RequesterIsFound(user);
 
         return projectService.getAllProjects();
     }
@@ -37,21 +38,21 @@ public class ProjectController {
                                          @RequestParam(value = "username", defaultValue = "") String username,
                                          @RequestParam(value = "password", defaultValue = "") String password) {
         User user = new User(username, password);
-        userFindController.RequesterIsFound(user);
+        userService.RequesterIsFound(user);
 
         return projectService.getProject(projectId).toProjectGetResponse();
     }
 
     @PatchMapping("/projects/{projectId}")
     public void patchProject(@PathVariable Long projectId, @RequestBody ProjectPatchRequest projectPatchRequest) {
-        userFindController.RequesterIsFound(projectPatchRequest);
+        userService.RequesterIsFound(projectPatchRequest);
 
         projectService.patchProject(projectId, projectPatchRequest);
     }
 
     @DeleteMapping("/projects/{projectId}")
     public void deleteProject(@PathVariable Long projectId, @RequestBody ProjectDeleteRequest projectDeleteRequest) {
-        userFindController.RequesterIsFound(projectDeleteRequest);
+        userService.RequesterIsFound(projectDeleteRequest);
 
         projectService.deleteProject(projectId, projectDeleteRequest.getUsername());
     }
