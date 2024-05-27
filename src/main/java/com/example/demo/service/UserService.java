@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.Interface.ToUser;
 import com.example.demo.dto.user.UserSignInResponse;
 import com.example.demo.dto.user.UserSignupRequest;
 import com.example.demo.entity.User;
@@ -74,5 +75,19 @@ public class UserService {
         List<User> users = userRepository.findAll();
         users.removeIf(user -> !(user.getUsername().contains(keyword)));
         return users;
+    }
+
+    public Long RequesterIsFound(ToUser toUser){
+        Optional<User> req = userRepository.findByUsername(toUser.toUser().getUsername());
+        if(req.isEmpty()){
+            System.out.println("User not found");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+        }
+        User requester = req.get();
+        if (!bCryptService.matchesBcrypt(toUser.toUser().getPassword(), requester.getPassword())) {
+            System.out.println("password do not match");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Passwords do not match");
+        }
+        return requester.getId();
     }
 }
