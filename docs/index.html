@@ -686,10 +686,28 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_permission">permission</a>
 <ul class="sectlevel2">
-<li><a href="#_post_5">post</a></li>
-<li><a href="#_get_2">get</a></li>
-<li><a href="#_patch_5">patch</a></li>
-<li><a href="#_delete_5">delete</a></li>
+<li><a href="#_post_5">post</a>
+<ul class="sectlevel3">
+<li><a href="#_성공_14">성공</a></li>
+<li><a href="#_실패_권한이_없는_dev가_다른_user에게_권한을_주려_시도">실패 - 권한이 없는 dev가 다른 user에게 권한을 주려 시도</a></li>
+</ul>
+</li>
+<li><a href="#_get_2">get</a>
+<ul class="sectlevel3">
+<li><a href="#_성공_15">성공</a></li>
+<li><a href="#_실패_권한이_없는_user가_permission_정보_얻으려_하는_경우">실패 - 권한이 없는 user가 permission 정보 얻으려 하는 경우</a></li>
+</ul>
+</li>
+<li><a href="#_patch_5">patch</a>
+<ul class="sectlevel3">
+<li><a href="#_성공_16">성공</a></li>
+</ul>
+</li>
+<li><a href="#_delete_5">delete</a>
+<ul class="sectlevel3">
+<li><a href="#_성공_17">성공</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -710,7 +728,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/signup' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
-  "id" : null,
   "username" : "test-admin",
   "password" : "test-admin"
 }'</code></pre>
@@ -723,11 +740,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /signup HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 75
+Content-Length: 60
 Host: localhost:8080
 
 {
-  "id" : null,
   "username" : "test-admin",
   "password" : "test-admin"
 }</code></pre>
@@ -741,7 +757,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -786,7 +808,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 400 Bad Request
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -827,6 +855,12 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 Content-Length: 14
 
 {
@@ -862,7 +896,13 @@ Host: localhost:8080</code></pre>
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 401 Unauthorized
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -903,16 +943,22 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 132
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 242
 
 [ {
   "id" : 24,
   "username" : "user1",
-  "password" : "user1"
+  "password" : "$2a$10$av60kukjkwjObkYRNZb6BeL4tY6nv9ncKpJlS0GCb/KTpEf3HuhMW"
 }, {
   "id" : 25,
   "username" : "user2",
-  "password" : "user2"
+  "password" : "$2a$10$jMse80xrTI1RTHlXgR/cxeuQamTge1ZgZwYH/3ihpbJJBIm55IXra"
 } ]</code></pre>
 </div>
 </div>
@@ -946,12 +992,18 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 67
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 122
 
 [ {
   "id" : 16,
   "username" : "user1",
-  "password" : "user1"
+  "password" : "$2a$10$c8h3ECA0zzmfwiUEoK/9UO7cP54Kt4x1TLRL58WuW5IgWWXvziHHO"
 } ]</code></pre>
 </div>
 </div>
@@ -1000,7 +1052,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1045,7 +1103,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 401 Unauthorized
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1090,7 +1154,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 400 Bad Request
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1138,7 +1208,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1183,7 +1259,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 401 Unauthorized
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1240,14 +1322,20 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 159
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 215
 
 {
-  "id" : 85,
+  "id" : 157,
   "name" : "New Project",
   "description" : "This is new project.",
   "members" : {
-    "User(id=341, username=admin, password=admin)" : 8
+    "User(id=557, username=admin, password=$2a$10$i1JRgyFVbFR.urMEnRxofOjO1JOX7fQ3Ydo3OKNGXUy6XPY.t327u)" : 8
   }
 }</code></pre>
 </div>
@@ -1296,7 +1384,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 400 Bad Request
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1332,14 +1426,20 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 162
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 164
 
 [ {
-  "id" : 88,
+  "id" : 160,
   "name" : "Project Alpha",
   "description" : "This is alpha."
 }, {
-  "id" : 89,
+  "id" : 161,
   "name" : "Project Beta",
   "description" : "This is beta."
 } ]</code></pre>
@@ -1356,7 +1456,7 @@ Content-Length: 162
 <h5 id="_성공_7_curl_request">Curl request</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/81?username=admin&amp;password=admin' -i -X GET</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/153?username=admin&amp;password=admin' -i -X GET</code></pre>
 </div>
 </div>
 </div>
@@ -1364,7 +1464,7 @@ Content-Length: 162
 <h5 id="_성공_7_http_request">HTTP request</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /projects/81?username=admin&amp;password=admin HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /projects/153?username=admin&amp;password=admin HTTP/1.1
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1378,14 +1478,20 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 155
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 211
 
 {
-  "id" : 81,
+  "id" : 153,
   "name" : "Project Alpha",
   "description" : "This is alpha.",
   "members" : {
-    "User(id=332, username=admin, password=admin)" : 8
+    "User(id=548, username=admin, password=$2a$10$7bjf0w1JsBBm8V5g9EaE6eexhNYv8TskwjyrDGqi53oE5UfjZHo9G)" : 8
   }
 }</code></pre>
 </div>
@@ -1401,7 +1507,7 @@ Content-Length: 155
 <h5 id="_성공_project의_name_변경_curl_request">Curl request</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/82' -i -X PATCH \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/154' -i -X PATCH \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
   "username" : "admin",
@@ -1416,7 +1522,7 @@ Content-Length: 155
 <h5 id="_성공_project의_name_변경_http_request">HTTP request</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /projects/82 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /projects/154 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Content-Length: 106
 Host: localhost:8080
@@ -1437,7 +1543,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1448,7 +1560,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <h5 id="_성공_project의_name과_description_변경_curl_request">Curl request</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/84' -i -X PATCH \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/156' -i -X PATCH \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
   "username" : "admin",
@@ -1463,7 +1575,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <h5 id="_성공_project의_name과_description_변경_http_request">HTTP request</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /projects/84 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /projects/156 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Content-Length: 127
 Host: localhost:8080
@@ -1484,7 +1596,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1498,7 +1616,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <h5 id="_성공_8_curl_request">Curl request</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/77' -i -X DELETE \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/149' -i -X DELETE \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
   "username" : "admin",
@@ -1511,7 +1629,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <h5 id="_성공_8_http_request">HTTP request</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /projects/77 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /projects/149 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Content-Length: 50
 Host: localhost:8080
@@ -1530,7 +1648,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1587,6 +1711,12 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 Content-Length: 67
 
 {
@@ -1638,7 +1768,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 400 Bad Request
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -1674,7 +1810,13 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 7154
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 9782
 
 [ {
   "id" : 225,
@@ -1682,7 +1824,7 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : null,
@@ -1696,14 +1838,14 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : null,
   "assignee" : {
     "id" : 195,
     "username" : "dev1",
-    "password" : "dev1"
+    "password" : "$2a$10$8ze9PoeuHlEiml2VoDnLoO5BXe9tjN5Pw4jfYYQq2gwctlhYNlchK"
   },
   "priority" : "MEDIUM",
   "status" : "ASSIGNED",
@@ -1714,18 +1856,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 195,
     "username" : "dev1",
-    "password" : "dev1"
+    "password" : "$2a$10$8ze9PoeuHlEiml2VoDnLoO5BXe9tjN5Pw4jfYYQq2gwctlhYNlchK"
   },
   "assignee" : {
     "id" : 195,
     "username" : "dev1",
-    "password" : "dev1"
+    "password" : "$2a$10$8ze9PoeuHlEiml2VoDnLoO5BXe9tjN5Pw4jfYYQq2gwctlhYNlchK"
   },
   "priority" : "HIGH",
   "status" : "FIXED",
@@ -1736,18 +1878,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 195,
     "username" : "dev1",
-    "password" : "dev1"
+    "password" : "$2a$10$8ze9PoeuHlEiml2VoDnLoO5BXe9tjN5Pw4jfYYQq2gwctlhYNlchK"
   },
   "assignee" : {
     "id" : 195,
     "username" : "dev1",
-    "password" : "dev1"
+    "password" : "$2a$10$8ze9PoeuHlEiml2VoDnLoO5BXe9tjN5Pw4jfYYQq2gwctlhYNlchK"
   },
   "priority" : "CRITICAL",
   "status" : "RESOLVED",
@@ -1758,18 +1900,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 195,
     "username" : "dev1",
-    "password" : "dev1"
+    "password" : "$2a$10$8ze9PoeuHlEiml2VoDnLoO5BXe9tjN5Pw4jfYYQq2gwctlhYNlchK"
   },
   "assignee" : {
     "id" : 195,
     "username" : "dev1",
-    "password" : "dev1"
+    "password" : "$2a$10$8ze9PoeuHlEiml2VoDnLoO5BXe9tjN5Pw4jfYYQq2gwctlhYNlchK"
   },
   "priority" : "LOW",
   "status" : "CLOSED",
@@ -1780,7 +1922,7 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : null,
@@ -1794,14 +1936,14 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : null,
   "assignee" : {
     "id" : 196,
     "username" : "dev2",
-    "password" : "dev2"
+    "password" : "$2a$10$xBGZx6bSY5BzHA0JKSRN7.YOWLfW83UE7YMG5ByONrBGoNcainfPK"
   },
   "priority" : "HIGH",
   "status" : "ASSIGNED",
@@ -1812,18 +1954,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 196,
     "username" : "dev2",
-    "password" : "dev2"
+    "password" : "$2a$10$xBGZx6bSY5BzHA0JKSRN7.YOWLfW83UE7YMG5ByONrBGoNcainfPK"
   },
   "assignee" : {
     "id" : 196,
     "username" : "dev2",
-    "password" : "dev2"
+    "password" : "$2a$10$xBGZx6bSY5BzHA0JKSRN7.YOWLfW83UE7YMG5ByONrBGoNcainfPK"
   },
   "priority" : "CRITICAL",
   "status" : "FIXED",
@@ -1834,18 +1976,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 196,
     "username" : "dev2",
-    "password" : "dev2"
+    "password" : "$2a$10$xBGZx6bSY5BzHA0JKSRN7.YOWLfW83UE7YMG5ByONrBGoNcainfPK"
   },
   "assignee" : {
     "id" : 196,
     "username" : "dev2",
-    "password" : "dev2"
+    "password" : "$2a$10$xBGZx6bSY5BzHA0JKSRN7.YOWLfW83UE7YMG5ByONrBGoNcainfPK"
   },
   "priority" : "LOW",
   "status" : "RESOLVED",
@@ -1856,18 +1998,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 196,
     "username" : "dev2",
-    "password" : "dev2"
+    "password" : "$2a$10$xBGZx6bSY5BzHA0JKSRN7.YOWLfW83UE7YMG5ByONrBGoNcainfPK"
   },
   "assignee" : {
     "id" : 196,
     "username" : "dev2",
-    "password" : "dev2"
+    "password" : "$2a$10$xBGZx6bSY5BzHA0JKSRN7.YOWLfW83UE7YMG5ByONrBGoNcainfPK"
   },
   "priority" : "MEDIUM",
   "status" : "CLOSED",
@@ -1878,7 +2020,7 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : null,
@@ -1892,14 +2034,14 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : null,
   "assignee" : {
     "id" : 197,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$pin9w4iCe6oDpfmmMlUvWOPgga01wkLPToq9Rgl3c157qPkNDuMe6"
   },
   "priority" : "CRITICAL",
   "status" : "ASSIGNED",
@@ -1910,18 +2052,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 197,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$pin9w4iCe6oDpfmmMlUvWOPgga01wkLPToq9Rgl3c157qPkNDuMe6"
   },
   "assignee" : {
     "id" : 197,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$pin9w4iCe6oDpfmmMlUvWOPgga01wkLPToq9Rgl3c157qPkNDuMe6"
   },
   "priority" : "LOW",
   "status" : "FIXED",
@@ -1932,18 +2074,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 197,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$pin9w4iCe6oDpfmmMlUvWOPgga01wkLPToq9Rgl3c157qPkNDuMe6"
   },
   "assignee" : {
     "id" : 197,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$pin9w4iCe6oDpfmmMlUvWOPgga01wkLPToq9Rgl3c157qPkNDuMe6"
   },
   "priority" : "MEDIUM",
   "status" : "RESOLVED",
@@ -1954,18 +2096,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 197,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$pin9w4iCe6oDpfmmMlUvWOPgga01wkLPToq9Rgl3c157qPkNDuMe6"
   },
   "assignee" : {
     "id" : 197,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$pin9w4iCe6oDpfmmMlUvWOPgga01wkLPToq9Rgl3c157qPkNDuMe6"
   },
   "priority" : "HIGH",
   "status" : "CLOSED",
@@ -1976,7 +2118,7 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : null,
@@ -1990,14 +2132,14 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : null,
   "assignee" : {
     "id" : 198,
     "username" : "dev4",
-    "password" : "dev4"
+    "password" : "$2a$10$x4CvOkc4FqfxPjMINO5xHe.rjB2mKJdYgHTnNDZ.SQ9e4C98PwzAa"
   },
   "priority" : "LOW",
   "status" : "ASSIGNED",
@@ -2008,18 +2150,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 198,
     "username" : "dev4",
-    "password" : "dev4"
+    "password" : "$2a$10$x4CvOkc4FqfxPjMINO5xHe.rjB2mKJdYgHTnNDZ.SQ9e4C98PwzAa"
   },
   "assignee" : {
     "id" : 198,
     "username" : "dev4",
-    "password" : "dev4"
+    "password" : "$2a$10$x4CvOkc4FqfxPjMINO5xHe.rjB2mKJdYgHTnNDZ.SQ9e4C98PwzAa"
   },
   "priority" : "MEDIUM",
   "status" : "FIXED",
@@ -2030,18 +2172,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 193,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$bnHWYuW9lM2hvu76DWfloukX0WNnDREqEg8OaxKFykKXgFqnMtZui"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 198,
     "username" : "dev4",
-    "password" : "dev4"
+    "password" : "$2a$10$x4CvOkc4FqfxPjMINO5xHe.rjB2mKJdYgHTnNDZ.SQ9e4C98PwzAa"
   },
   "assignee" : {
     "id" : 198,
     "username" : "dev4",
-    "password" : "dev4"
+    "password" : "$2a$10$x4CvOkc4FqfxPjMINO5xHe.rjB2mKJdYgHTnNDZ.SQ9e4C98PwzAa"
   },
   "priority" : "HIGH",
   "status" : "RESOLVED",
@@ -2052,18 +2194,18 @@ Content-Length: 7154
   "reporter" : {
     "id" : 194,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$zmyzMt1WFr3JnsCoacjlM.fWEFZOHa1uIh3ysd7RRTiYI5216go/q"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 198,
     "username" : "dev4",
-    "password" : "dev4"
+    "password" : "$2a$10$x4CvOkc4FqfxPjMINO5xHe.rjB2mKJdYgHTnNDZ.SQ9e4C98PwzAa"
   },
   "assignee" : {
     "id" : 198,
     "username" : "dev4",
-    "password" : "dev4"
+    "password" : "$2a$10$x4CvOkc4FqfxPjMINO5xHe.rjB2mKJdYgHTnNDZ.SQ9e4C98PwzAa"
   },
   "priority" : "CRITICAL",
   "status" : "CLOSED",
@@ -2127,7 +2269,13 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1052
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 1264
 
 [ {
   "id" : 285,
@@ -2135,7 +2283,7 @@ Content-Length: 1052
   "reporter" : {
     "id" : 220,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$3mIgUel.DH2HHsSsPmr4HOXMoT0QLBv4PSGbT17RWyc3GmcJWLhr6"
   },
   "reportedDate" : null,
   "fixer" : null,
@@ -2149,7 +2297,7 @@ Content-Length: 1052
   "reporter" : {
     "id" : 221,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$OFVIEmHOP3NfHNd9Cd.XT.Uik/i4nRlFeu54BRcaKxD3Vy9UX13FO"
   },
   "reportedDate" : null,
   "fixer" : null,
@@ -2163,7 +2311,7 @@ Content-Length: 1052
   "reporter" : {
     "id" : 220,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$3mIgUel.DH2HHsSsPmr4HOXMoT0QLBv4PSGbT17RWyc3GmcJWLhr6"
   },
   "reportedDate" : null,
   "fixer" : null,
@@ -2177,7 +2325,7 @@ Content-Length: 1052
   "reporter" : {
     "id" : 221,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$OFVIEmHOP3NfHNd9Cd.XT.Uik/i4nRlFeu54BRcaKxD3Vy9UX13FO"
   },
   "reportedDate" : null,
   "fixer" : null,
@@ -2244,7 +2392,13 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 1386
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 1878
 
 [ {
   "id" : 145,
@@ -2252,7 +2406,7 @@ Content-Length: 1386
   "reporter" : {
     "id" : 157,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$iJY5vMojzIZmfZrPEAp/4.wX4Zxq0Wh.pOWJ7iSF.nriqwxKeaLy2"
   },
   "reportedDate" : null,
   "fixer" : null,
@@ -2266,14 +2420,14 @@ Content-Length: 1386
   "reporter" : {
     "id" : 157,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$iJY5vMojzIZmfZrPEAp/4.wX4Zxq0Wh.pOWJ7iSF.nriqwxKeaLy2"
   },
   "reportedDate" : null,
   "fixer" : null,
   "assignee" : {
     "id" : 160,
     "username" : "dev2",
-    "password" : "dev2"
+    "password" : "$2a$10$xaxXWjVirzOTAULMl9/ioOI.M1nkjBVRr3CeFWtlIjJpn30U7UPYC"
   },
   "priority" : "HIGH",
   "status" : "ASSIGNED",
@@ -2284,18 +2438,18 @@ Content-Length: 1386
   "reporter" : {
     "id" : 157,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$iJY5vMojzIZmfZrPEAp/4.wX4Zxq0Wh.pOWJ7iSF.nriqwxKeaLy2"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 161,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$8.BYGe71KUf7W8cG9Dp30OXMxYazdIbVQTGhP/G0rFkU3YWsR/p6O"
   },
   "assignee" : {
     "id" : 161,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$8.BYGe71KUf7W8cG9Dp30OXMxYazdIbVQTGhP/G0rFkU3YWsR/p6O"
   },
   "priority" : "LOW",
   "status" : "FIXED",
@@ -2306,18 +2460,18 @@ Content-Length: 1386
   "reporter" : {
     "id" : 157,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$iJY5vMojzIZmfZrPEAp/4.wX4Zxq0Wh.pOWJ7iSF.nriqwxKeaLy2"
   },
   "reportedDate" : null,
   "fixer" : {
     "id" : 162,
     "username" : "dev4",
-    "password" : "dev4"
+    "password" : "$2a$10$x0UU2QoGyF8ebCvPlfbJue2vAv.BLWrcisNTH/.w40drlcuXACQdW"
   },
   "assignee" : {
     "id" : 162,
     "username" : "dev4",
-    "password" : "dev4"
+    "password" : "$2a$10$x0UU2QoGyF8ebCvPlfbJue2vAv.BLWrcisNTH/.w40drlcuXACQdW"
   },
   "priority" : "HIGH",
   "status" : "RESOLVED",
@@ -2381,7 +2535,13 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 337
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 446
 
 [ {
   "id" : 336,
@@ -2389,14 +2549,14 @@ Content-Length: 337
   "reporter" : {
     "id" : 239,
     "username" : "tester2",
-    "password" : "tester2"
+    "password" : "$2a$10$kjqN0jMdn73RX.cQozO4j.qkrlLl2T9Abl6kpbhhW6WI051YJLt9y"
   },
   "reportedDate" : null,
   "fixer" : null,
   "assignee" : {
     "id" : 242,
     "username" : "dev3",
-    "password" : "dev3"
+    "password" : "$2a$10$qGn3kExLlVq8idWOD9.cuOEzZrmdRbZPVOXlVOy28i7hSq02ePzk."
   },
   "priority" : "CRITICAL",
   "status" : "ASSIGNED",
@@ -2437,7 +2597,13 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 289
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 344
 
 {
   "id" : 14,
@@ -2445,9 +2611,9 @@ Content-Length: 289
   "reporter" : {
     "id" : 26,
     "username" : "tester1",
-    "password" : "tester1"
+    "password" : "$2a$10$BOoqvJffFTah4I.KbV8r7Opl7agS0DJUBerthxUKUh6Kyu5n8Poq2"
   },
-  "reportedDate" : "2024-05-23T13:39:27.487121",
+  "reportedDate" : "2024-05-27T19:36:21.46499348",
   "fixer" : null,
   "assignee" : null,
   "priority" : "MEDIUM",
@@ -2507,7 +2673,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2558,7 +2730,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2609,7 +2787,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2655,7 +2839,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2712,6 +2902,12 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
 Content-Length: 22
 
 {
@@ -2763,7 +2959,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 400 Bad Request
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2810,7 +3012,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 400 Bad Request
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2860,7 +3068,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2906,7 +3120,13 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 Vary: Origin
 Vary: Access-Control-Request-Method
-Vary: Access-Control-Request-Headers</code></pre>
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
 </div>
 </div>
 </div>
@@ -2919,26 +3139,314 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_post_5">post</h3>
+<div class="sect3">
+<h4 id="_성공_14">성공</h4>
+<div class="sect4">
+<h5 id="_성공_14_curl_request">Curl request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/131/permissions/492' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "username" : "admin1",
+  "password" : "admin1",
+  "permissions" : [ false, false, true, false ]
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_성공_14_http_request">HTTP request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /projects/131/permissions/492 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 101
+Host: localhost:8080
 
+{
+  "username" : "admin1",
+  "password" : "admin1",
+  "permissions" : [ false, false, true, false ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_성공_14_http_response">HTTP response</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 29
+
+[ false, false, true, false ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_실패_권한이_없는_dev가_다른_user에게_권한을_주려_시도">실패 - 권한이 없는 dev가 다른 user에게 권한을 주려 시도</h4>
+<div class="sect4">
+<h5 id="_실패_권한이_없는_dev가_다른_user에게_권한을_주려_시도_curl_request">Curl request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/133/permissions/497' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "username" : "dev",
+  "password" : "dev",
+  "permissions" : [ false, true, false, false ]
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_실패_권한이_없는_dev가_다른_user에게_권한을_주려_시도_http_request">HTTP request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /projects/133/permissions/497 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 95
+Host: localhost:8080
+
+{
+  "username" : "dev",
+  "password" : "dev",
+  "permissions" : [ false, true, false, false ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_실패_권한이_없는_dev가_다른_user에게_권한을_주려_시도_http_response">HTTP response</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 400 Bad Request
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_get_2">get</h3>
+<div class="sect3">
+<h4 id="_성공_15">성공</h4>
+<div class="sect4">
+<h5 id="_성공_15_curl_request">Curl request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/101/permissions/399?username=admin1&amp;password=admin1' -i -X GET \
+    -H 'Content-Type: application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_성공_15_http_request">HTTP request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /projects/101/permissions/399?username=admin1&amp;password=admin1 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_성공_15_http_response">HTTP response</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 29
 
+[ true, false, false, false ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_실패_권한이_없는_user가_permission_정보_얻으려_하는_경우">실패 - 권한이 없는 user가 permission 정보 얻으려 하는 경우</h4>
+<div class="sect4">
+<h5 id="_실패_권한이_없는_user가_permission_정보_얻으려_하는_경우_curl_request">Curl request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/96/permissions/382?username=dev&amp;password=dev' -i -X GET \
+    -H 'Content-Type: application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_실패_권한이_없는_user가_permission_정보_얻으려_하는_경우_http_request">HTTP request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /projects/96/permissions/382?username=dev&amp;password=dev HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_실패_권한이_없는_user가_permission_정보_얻으려_하는_경우_http_response">HTTP response</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 400 Bad Request
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_patch_5">patch</h3>
+<div class="sect3">
+<h4 id="_성공_16">성공</h4>
+<div class="sect4">
+<h5 id="_성공_16_curl_request">Curl request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/126/permissions/475' -i -X PATCH \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "username" : "admin3",
+  "password" : "admin3",
+  "permissions" : [ true, true, true, false ]
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_성공_16_http_request">HTTP request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /projects/126/permissions/475 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 99
+Host: localhost:8080
 
+{
+  "username" : "admin3",
+  "password" : "admin3",
+  "permissions" : [ true, true, true, false ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_성공_16_http_response">HTTP response</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 27
+
+[ true, true, true, false ]</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_delete_5">delete</h3>
+<div class="sect3">
+<h4 id="_성공_17">성공</h4>
+<div class="sect4">
+<h5 id="_성공_17_curl_request">Curl request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/projects/86/permissions/355' -i -X DELETE \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "username" : "admin3",
+  "password" : "admin3"
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_성공_17_http_request">HTTP request</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /projects/86/permissions/355 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 52
+Host: localhost:8080
 
+{
+  "username" : "admin3",
+  "password" : "admin3"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_성공_17_http_response">HTTP response</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-05-23 13:41:22 +0900
+Last updated 2024-05-27 19:40:11 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
