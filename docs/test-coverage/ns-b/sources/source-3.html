@@ -1,0 +1,417 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > IssueService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.demo.service</a>
+</div>
+
+<h1>Coverage Summary for Class: IssueService (com.example.demo.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IssueService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (70/84)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    89.7%
+  </span>
+  <span class="absValue">
+    (131/146)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.demo.service;
+&nbsp;
+&nbsp;import com.example.demo.dto.issue.*;
+&nbsp;import com.example.demo.entity.Issue;
+&nbsp;import com.example.demo.entity.Project;
+&nbsp;import com.example.demo.entity.User;
+&nbsp;import com.example.demo.entity.enumerate.IssuePriority;
+&nbsp;import com.example.demo.entity.enumerate.IssueStatus;
+&nbsp;import com.example.demo.repository.IssueRepository;
+&nbsp;import com.example.demo.repository.ProjectRepository;
+&nbsp;import com.example.demo.repository.UserRepository;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.antlr.v4.runtime.misc.Pair;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.server.ResponseStatusException;
+&nbsp;
+&nbsp;import javax.swing.text.html.Option;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class IssueService {
+&nbsp;    private final IssueRepository issueRepository;
+&nbsp;    private final ProjectRepository projectRepository;
+&nbsp;    private final UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+<b class="fc">&nbsp;    public IssueService(IssueRepository issueRepository, ProjectRepository projectRepository, UserRepository userRepository) {</b>
+<b class="fc">&nbsp;        this.issueRepository = issueRepository;</b>
+<b class="fc">&nbsp;        this.projectRepository = projectRepository;</b>
+<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public IssuePostResponse postIssue(Long projectId, IssuePostRequest issuePostRequest) {
+<b class="fc">&nbsp;        User user = getUserByUsername(issuePostRequest.toUser().getUsername());</b>
+<b class="fc">&nbsp;        Optional&lt;Project&gt; proj = projectRepository.findById(projectId);</b>
+<b class="fc">&nbsp;        System.out.println(&quot;PostIssue&quot;);</b>
+&nbsp;
+&nbsp;        // project가 없는 경우
+<b class="pc">&nbsp;        if (proj.isEmpty()) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Project not found&quot;);</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Project not found&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Project project = proj.get();</b>
+&nbsp;
+&nbsp;        // user가 project member가 아닌 경우
+<b class="pc">&nbsp;        if(project.getMembers().get(user) == null){</b>
+<b class="nc">&nbsp;            System.out.println(&quot;User is not a member of this project&quot;);</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;User is not a member of this project&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // user가 tester가 아닌 경우
+<b class="fc">&nbsp;        if ((project.getMembers().get(user) &amp; (1 &lt;&lt; 1)) == 0) {</b>
+<b class="fc">&nbsp;            System.out.println(&quot;User is not tester&quot;);</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not tester&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // title 입력이 없는 경우
+<b class="fc">&nbsp;        if(issuePostRequest.getTitle().isEmpty()){</b>
+<b class="fc">&nbsp;            System.out.println(&quot;Title is required&quot;);</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Title is required&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        Issue issue = new Issue();</b>
+<b class="fc">&nbsp;        issue.setPriority(issuePostRequest.getPriority());</b>
+<b class="fc">&nbsp;        issue.setTitle(issuePostRequest.getTitle());</b>
+<b class="fc">&nbsp;        issue.setReporter(user);</b>
+<b class="fc">&nbsp;        issue.setReportedDate(LocalDateTime.now());</b>
+<b class="fc">&nbsp;        issue.setStatus(IssueStatus.NEW);</b>
+<b class="fc">&nbsp;        issueRepository.save(issue);</b>
+<b class="fc">&nbsp;        project.getIssues().add(issue);</b>
+<b class="fc">&nbsp;        projectRepository.save(project);</b>
+&nbsp;
+<b class="fc">&nbsp;        return new IssuePostResponse(issue.getId(), issue.getTitle(), issue.getPriority());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Issue&gt; getIssues(Long projectId, IssuesGetRequest issuesGetRequest) {
+<b class="fc">&nbsp;        Optional&lt;Project&gt; proj = projectRepository.findById(projectId);</b>
+&nbsp;        // project가 없는 경우
+<b class="pc">&nbsp;        if (proj.isEmpty()) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Project not found&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        Project project = proj.get();</b>
+<b class="fc">&nbsp;        User user = getUserByUsername(issuesGetRequest.toUser().getUsername());</b>
+&nbsp;
+&nbsp;        // user가 project의 member가 아닐 때
+<b class="fc">&nbsp;        if (project.getMembers().get(user) == null) {</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not member of project&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        List&lt;Issue&gt; issues = project.getIssues();</b>
+&nbsp;
+&nbsp;        // Title이 요청으로 왔을 때
+<b class="fc">&nbsp;        if (issuesGetRequest.getTitle() != null) {</b>
+<b class="fc">&nbsp;            issues.removeIf(issue -&gt; !(issue.getTitle().contains(issuesGetRequest.getTitle())));</b>
+&nbsp;        }
+&nbsp;        // Reporter가 요청으로 왔을 때
+<b class="fc">&nbsp;        if (issuesGetRequest.getReporter() != null) {</b>
+<b class="fc">&nbsp;            Optional&lt;User&gt; report = userRepository.findByUsername(issuesGetRequest.getReporter());</b>
+&nbsp;            // 검색한 reporter가 존재하는지
+<b class="pc">&nbsp;            if (report.isPresent()) {</b>
+<b class="fc">&nbsp;                User reporter = report.get();</b>
+<b class="fc">&nbsp;                issues.removeIf(issue -&gt; !(issue.getReporter().equals(reporter)));</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                issues.clear();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        // ReportedDate가 요청으로 왔을 때
+<b class="pc">&nbsp;        if (issuesGetRequest.getReportedDate() != null) {</b>
+<b class="nc">&nbsp;            issues.removeIf(issue -&gt; !(issue.getReportedDate().isEqual(issuesGetRequest.getReportedDate())));</b>
+&nbsp;        }
+&nbsp;        // Fixer가 요청으로 왔을 때
+<b class="fc">&nbsp;        if (issuesGetRequest.getFixer() != null) {</b>
+<b class="fc">&nbsp;            Optional&lt;User&gt; fix = userRepository.findByUsername(issuesGetRequest.getFixer());</b>
+<b class="fc">&nbsp;            if (issuesGetRequest.getFixer().isEmpty()) { // fixer 배정 안 된 issue 찾기</b>
+<b class="fc">&nbsp;                issues.removeIf(issue -&gt; issue.getFixer() != null);</b>
+&nbsp;            }
+&nbsp;            else {
+&nbsp;                // fixer가 존재하는지
+<b class="pc">&nbsp;                if (fix.isPresent()) {</b>
+<b class="fc">&nbsp;                    User fixer = fix.get();</b>
+<b class="fc">&nbsp;                    issues.removeIf(issue -&gt; !(fixer.equals(issue.getFixer())));</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    issues.clear();</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;        // Asignee가 요청으로 왔을 때
+<b class="fc">&nbsp;        if (issuesGetRequest.getAssignee() != null) {</b>
+<b class="fc">&nbsp;            Optional&lt;User&gt; assign = userRepository.findByUsername(issuesGetRequest.getAssignee());</b>
+<b class="fc">&nbsp;            if (issuesGetRequest.getAssignee().isEmpty()) { // assignee 배정 안 된 issue 찾기</b>
+<b class="fc">&nbsp;                issues.removeIf(issue -&gt; issue.getAssignee() != null);</b>
+&nbsp;            } else {
+&nbsp;                // assignee가 존재하는지
+<b class="pc">&nbsp;                if (assign.isPresent()) {</b>
+<b class="fc">&nbsp;                    User assignee = assign.get();</b>
+<b class="fc">&nbsp;                    issues.removeIf(issue -&gt; !(assignee.equals(issue.getAssignee())));</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    issues.clear();</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;        }
+&nbsp;        // Priority가 요청으로 왔을 때
+<b class="fc">&nbsp;        if (issuesGetRequest.getPriority() != null) {</b>
+<b class="fc">&nbsp;            issues.removeIf(issue -&gt; !(issue.getPriority().equals(issuesGetRequest.getPriority())));</b>
+&nbsp;        }
+&nbsp;        // Status가 요청으로 왔을 때
+<b class="fc">&nbsp;        if (issuesGetRequest.getStatus() != null) {</b>
+<b class="fc">&nbsp;            issues.removeIf(issue -&gt; !(issue.getStatus().equals(issuesGetRequest.getStatus())));</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return issues;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Issue getIssue(Long projectId, Long issueId, IssueGetRequest issueGetRequest) {
+<b class="fc">&nbsp;        Pair&lt;Project, Issue&gt; PI = FindPI(projectId, issueId);</b>
+&nbsp;
+<b class="fc">&nbsp;        Project project = PI.a;</b>
+<b class="fc">&nbsp;        Issue issue = PI.b;</b>
+<b class="fc">&nbsp;        User user = getUserByUsername(issueGetRequest.getUsername());</b>
+&nbsp;
+<b class="fc">&nbsp;        if (project.getMembers().get(user) == null) {</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not tester&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return issue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void patchIssue(Long projectId, Long issueId, IssuePatchRequest issuePatchRequest) {
+<b class="fc">&nbsp;        Pair&lt;Project, Issue&gt; PI = FindPI(projectId, issueId);</b>
+<b class="fc">&nbsp;        Project project = PI.a;</b>
+<b class="fc">&nbsp;        Issue issue = PI.b;</b>
+<b class="fc">&nbsp;        Optional&lt;User&gt; assign = userRepository.findByUsername(issuePatchRequest.getAssignee());</b>
+&nbsp;
+<b class="fc">&nbsp;        User user = getUserByUsername(issuePatchRequest.toUser().getUsername());</b>
+&nbsp;
+&nbsp;        // user가 project 소속 인원이 아닐 때
+<b class="fc">&nbsp;        if(project.getMembers().get(user) == null) {</b>
+<b class="fc">&nbsp;            System.out.println(&quot;User is not member of project&quot;);</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not member of project&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        Integer userPermission = project.getMembers().get(user);</b>
+&nbsp;
+&nbsp;        // title 받았을 때
+<b class="fc">&nbsp;        if(issuePatchRequest.getTitle() != null){</b>
+<b class="pc">&nbsp;            if(issue.getReporter() != user){</b>
+<b class="nc">&nbsp;                System.out.println(&quot;User is not reporter&quot;);</b>
+<b class="nc">&nbsp;                throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not reporter&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            issue.setTitle(issuePatchRequest.getTitle());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // 없는 사람을 asignee로 요청
+<b class="fc">&nbsp;        if(issuePatchRequest.getAssignee() != null &amp;&amp; assign.isEmpty()){</b>
+<b class="fc">&nbsp;            System.out.println(&quot;Assignee is not in project&quot;);</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Assignee is not in project&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // priority 받았을 때
+<b class="pc">&nbsp;        if(issuePatchRequest.getPriority() != null){</b>
+<b class="nc">&nbsp;            issue.setPriority(issuePatchRequest.getPriority());</b>
+&nbsp;        }
+&nbsp;        // assignee 받았을 때
+<b class="fc">&nbsp;        if(assign.isPresent()){</b>
+<b class="fc">&nbsp;            User assignee = assign.get();</b>
+&nbsp;            // Assignee 수정, 원래랑 다른 입력을 받을 때만 변경
+<b class="pc">&nbsp;            if (issue.getAssignee() == null || issue.getAssignee() != assignee) {</b>
+&nbsp;                // permission check(PL만 가능)
+<b class="pc">&nbsp;                if ((userPermission &amp; (1 &lt;&lt; 2)) == 0) {</b>
+<b class="nc">&nbsp;                    System.out.println(&quot;User is not PL&quot;);</b>
+<b class="nc">&nbsp;                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not PL&quot;);</b>
+&nbsp;                }
+<b class="fc">&nbsp;                if((project.getMembers().get(assignee) &amp; (1 &lt;&lt; 0)) == 0) {</b>
+<b class="fc">&nbsp;                    System.out.println(&quot;Assignee is not developer&quot;);</b>
+<b class="fc">&nbsp;                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Assignee is not developer&quot;);</b>
+&nbsp;                }
+<b class="fc">&nbsp;                issue.setAssignee(assignee);</b>
+<b class="fc">&nbsp;                issue.setStatus(IssueStatus.ASSIGNED);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // Status FIXED로 수정(assignee만 가능)
+<b class="fc">&nbsp;        else if (issuePatchRequest.getStatus() == IssueStatus.FIXED) {</b>
+<b class="fc">&nbsp;            if (issue.getAssignee() != user) {</b>
+<b class="fc">&nbsp;                System.out.println(&quot;User is not assignee&quot;);</b>
+<b class="fc">&nbsp;                throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not assignee&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            issue.setFixer(user);</b>
+<b class="fc">&nbsp;            issue.setStatus(IssueStatus.FIXED);</b>
+&nbsp;        }
+&nbsp;        // Status RESOLVED로 수정(reporter만 가능)
+<b class="fc">&nbsp;        else if (issuePatchRequest.getStatus() == IssueStatus.RESOLVED) {</b>
+<b class="fc">&nbsp;            if (issue.getReporter() != user) {</b>
+<b class="fc">&nbsp;                System.out.println(&quot;User is not reporter&quot;);</b>
+<b class="fc">&nbsp;                throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not reporter&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            issue.setStatus(IssueStatus.RESOLVED);</b>
+&nbsp;        }
+&nbsp;        // Status closed로 바꿈(PL만 가능)
+<b class="fc">&nbsp;        else if (issuePatchRequest.getStatus() == IssueStatus.CLOSED) {</b>
+<b class="fc">&nbsp;            if ((userPermission &amp; (1 &lt;&lt; 2)) == 0) {</b>
+<b class="fc">&nbsp;                System.out.println(&quot;User is not PL&quot;);</b>
+<b class="fc">&nbsp;                throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not PL&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            issue.setStatus(IssueStatus.CLOSED);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        issueRepository.save(issue);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void deleteIssue(Long projectId, Long issueId, IssueDeleteRequest issueDeleteRequest) {
+<b class="fc">&nbsp;        Pair&lt;Project, Issue&gt; PI = FindPI(projectId, issueId);</b>
+&nbsp;
+<b class="fc">&nbsp;        Project project = PI.a;</b>
+<b class="fc">&nbsp;        Issue issue = PI.b;</b>
+&nbsp;
+<b class="fc">&nbsp;        User user = getUserByUsername(issueDeleteRequest.toUser().getUsername());</b>
+&nbsp;
+&nbsp;        // User가 Reporter가 아니면
+<b class="fc">&nbsp;        if (!Objects.equals(issue.getReporter().getId(), user.getId())) {</b>
+<b class="fc">&nbsp;            System.out.println(&quot;User is not reporter&quot;);</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not reporter&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        project.getIssues().remove(issue);</b>
+<b class="fc">&nbsp;        issueRepository.delete(issue);</b>
+<b class="fc">&nbsp;        projectRepository.save(project);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Pair&lt;Project, Issue&gt; FindPI(Long projectId, Long issueId) {
+<b class="fc">&nbsp;        Optional&lt;Project&gt; project = projectRepository.findById(projectId);</b>
+<b class="fc">&nbsp;        Optional&lt;Issue&gt; issue = issueRepository.findById(issueId);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (project.isEmpty()) {</b>
+<b class="fc">&nbsp;            System.out.println(&quot;Project not found&quot;);</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;Project not found&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (issue.isEmpty()) {</b>
+<b class="fc">&nbsp;            System.out.println(&quot;Issue not found&quot;);</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;Issue not found&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return new Pair&lt;&gt;(project.get(), issue.get());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private User getUserByUsername(String username) {
+<b class="fc">&nbsp;        Optional&lt;User&gt; optionalUser = userRepository.findByUsername(username);</b>
+<b class="pc">&nbsp;        if (optionalUser.isEmpty()) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;user not found&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return optionalUser.get();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-05-27 22:17</div>
+</div>
+</body>
+</html>
