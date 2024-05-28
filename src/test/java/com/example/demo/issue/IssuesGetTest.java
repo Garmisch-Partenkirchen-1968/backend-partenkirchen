@@ -217,25 +217,25 @@ public class IssuesGetTest {
         // give tester permission to dev2
         permissionService.addPermission(projectId, dev4Id, dev1PermissionRequest);
 
-        addIssue("alpha1", "tester1", "", "", IssuePriority.LOW, IssueStatus.NEW);
-        addIssue("beta1", "tester2", "", "dev1", IssuePriority.MEDIUM, IssueStatus.ASSIGNED);
-        addIssue("gamma1", "tester1", "dev1", "dev1", IssuePriority.HIGH, IssueStatus.FIXED);
+        addIssue("alpha1", "tester1", "", "", IssuePriority.TRIVIAL, IssueStatus.NEW);
+        addIssue("beta1", "tester2", "", "dev1", IssuePriority.MINOR, IssueStatus.ASSIGNED);
+        addIssue("gamma1", "tester1", "dev1", "dev1", IssuePriority.MAJOR, IssueStatus.FIXED);
         addIssue("delta1", "tester2", "dev1", "dev1", IssuePriority.CRITICAL, IssueStatus.RESOLVED);
-        addIssue("epsilon1", "tester1", "dev1", "dev1", IssuePriority.LOW, IssueStatus.CLOSED);
-        addIssue("zeta1", "tester2", "", "", IssuePriority.MEDIUM, IssueStatus.NEW);
-        addIssue("alpha2", "tester1", "", "dev2", IssuePriority.HIGH, IssueStatus.ASSIGNED);
+        addIssue("epsilon1", "tester1", "dev1", "dev1", IssuePriority.TRIVIAL, IssueStatus.CLOSED);
+        addIssue("zeta1", "tester2", "", "", IssuePriority.MINOR, IssueStatus.NEW);
+        addIssue("alpha2", "tester1", "", "dev2", IssuePriority.MAJOR, IssueStatus.ASSIGNED);
         addIssue("beta2", "tester2", "dev2", "dev2", IssuePriority.CRITICAL, IssueStatus.FIXED);
-        addIssue("gamma2", "tester1", "dev2", "dev2", IssuePriority.LOW, IssueStatus.RESOLVED);
-        addIssue("delta2", "tester2", "dev2", "dev2", IssuePriority.MEDIUM, IssueStatus.CLOSED);
-        addIssue("epsilon2", "tester1", "", "", IssuePriority.HIGH, IssueStatus.NEW);
+        addIssue("gamma2", "tester1", "dev2", "dev2", IssuePriority.TRIVIAL, IssueStatus.RESOLVED);
+        addIssue("delta2", "tester2", "dev2", "dev2", IssuePriority.MINOR, IssueStatus.CLOSED);
+        addIssue("epsilon2", "tester1", "", "", IssuePriority.MAJOR, IssueStatus.NEW);
         addIssue("zeta2", "tester2", "", "dev3", IssuePriority.CRITICAL, IssueStatus.ASSIGNED);
-        addIssue("alpha3", "tester1", "dev3", "dev3", IssuePriority.LOW, IssueStatus.FIXED);
-        addIssue("beta3", "tester2", "dev3", "dev3", IssuePriority.MEDIUM, IssueStatus.RESOLVED);
-        addIssue("gamma3", "tester1", "dev3", "dev3", IssuePriority.HIGH, IssueStatus.CLOSED);
+        addIssue("alpha3", "tester1", "dev3", "dev3", IssuePriority.TRIVIAL, IssueStatus.FIXED);
+        addIssue("beta3", "tester2", "dev3", "dev3", IssuePriority.MINOR, IssueStatus.RESOLVED);
+        addIssue("gamma3", "tester1", "dev3", "dev3", IssuePriority.MAJOR, IssueStatus.CLOSED);
         addIssue("delta3", "tester2", "", "", IssuePriority.CRITICAL, IssueStatus.NEW);
-        addIssue("epsilon3", "tester1", "", "dev4", IssuePriority.LOW, IssueStatus.ASSIGNED);
-        addIssue("zeta3", "tester2", "dev4", "dev4", IssuePriority.MEDIUM, IssueStatus.FIXED);
-        addIssue("alpha4", "tester1", "dev4", "dev4", IssuePriority.HIGH, IssueStatus.RESOLVED);
+        addIssue("epsilon3", "tester1", "", "dev4", IssuePriority.TRIVIAL, IssueStatus.ASSIGNED);
+        addIssue("zeta3", "tester2", "dev4", "dev4", IssuePriority.MINOR, IssueStatus.FIXED);
+        addIssue("alpha4", "tester1", "dev4", "dev4", IssuePriority.MAJOR, IssueStatus.RESOLVED);
         addIssue("beta4", "tester2", "dev4", "dev4", IssuePriority.CRITICAL, IssueStatus.CLOSED);
     }
 
@@ -430,12 +430,12 @@ public class IssuesGetTest {
     }
 
     @Test
-    @DisplayName("get issues priority: medium") // 5
+    @DisplayName("get issues priority: minor") // 5
     void getIssuePriorityMedium() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
                         .param("username", "admin")
                         .param("password", "admin")
-                        .param("priority", String.valueOf(IssuePriority.MEDIUM)))
+                        .param("priority", String.valueOf(IssuePriority.MINOR)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -546,13 +546,13 @@ public class IssuesGetTest {
     }
 
     @Test
-    @DisplayName("get issues assignee: dev3, priority: low") // 1
+    @DisplayName("get issues assignee: dev3, priority: trivial") // 1
     void getIssueAssigneeDev3PriorityLow() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/issues")
                         .param("username", "dev1")
                         .param("password", "dev1")
                         .param("assignee", "dev3")
-                        .param("priority", String.valueOf(IssuePriority.LOW)))
+                        .param("priority", String.valueOf(IssuePriority.TRIVIAL)))
                 .andExpect(status().isOk())
                 .andReturn();
 

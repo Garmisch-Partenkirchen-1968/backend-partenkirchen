@@ -156,7 +156,7 @@ public class IssuePatchTest {
                 .username("tester1")
                 .password("tester1")
                 .title("default issue")
-                .priority(IssuePriority.MEDIUM)
+                .priority(IssuePriority.MINOR)
                 .build();
         MvcResult mvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -181,7 +181,7 @@ public class IssuePatchTest {
                 .username("tester1")
                 .password("tester1")
                 .title("another issue")
-                .priority(IssuePriority.MEDIUM)
+                .priority(IssuePriority.MINOR)
                 .build();
         MvcResult anotherMvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -219,7 +219,7 @@ public class IssuePatchTest {
         // 수정된 이슈 검사
         assertEquals("new issue name", issue.getTitle());
         assertEquals(IssueStatus.NEW, issue.getStatus());
-        assertEquals(IssuePriority.MEDIUM, issue.getPriority());
+        assertEquals(IssuePriority.MINOR, issue.getPriority());
         assertNull(issue.getAssignee());
     }
 
@@ -263,7 +263,7 @@ public class IssuePatchTest {
         // 수정된 이슈 검사
         assertEquals("default issue", issue.getTitle());
         assertEquals(IssueStatus.ASSIGNED, issue.getStatus());
-        assertEquals(IssuePriority.MEDIUM, issue.getPriority());
+        assertEquals(IssuePriority.MINOR, issue.getPriority());
         assertEquals("dev1", issue.getAssignee().getUsername());
     }
 
@@ -289,7 +289,7 @@ public class IssuePatchTest {
         // 수정안된 이슈 검사
         assertEquals("default issue", issue.getTitle());
         assertEquals(IssueStatus.NEW, issue.getStatus());
-        assertEquals(IssuePriority.MEDIUM, issue.getPriority());
+        assertEquals(IssuePriority.MINOR, issue.getPriority());
         assertNull(issue.getAssignee());
     }
 
@@ -357,7 +357,7 @@ public class IssuePatchTest {
         // 수정된 이슈 검사
         assertEquals("default issue", issue.getTitle());
         assertEquals(IssueStatus.FIXED, issue.getStatus());
-        assertEquals(IssuePriority.MEDIUM, issue.getPriority());
+        assertEquals(IssuePriority.MINOR, issue.getPriority());
         assertEquals("dev1", issue.getAssignee().getUsername());
         assertEquals("dev1", issue.getFixer().getUsername());
     }
@@ -493,7 +493,7 @@ public class IssuePatchTest {
         // 수정된 이슈 검사
         assertEquals("default issue", issue.getTitle());
         assertEquals(IssueStatus.RESOLVED, issue.getStatus());
-        assertEquals(IssuePriority.MEDIUM, issue.getPriority());
+        assertEquals(IssuePriority.MINOR, issue.getPriority());
         assertEquals("dev1", issue.getAssignee().getUsername());
         assertEquals("dev1", issue.getFixer().getUsername());
     }
@@ -589,7 +589,7 @@ public class IssuePatchTest {
         // 수정된 이슈 검사
         assertEquals("default issue", issue.getTitle());
         assertEquals(IssueStatus.CLOSED, issue.getStatus());
-        assertEquals(IssuePriority.MEDIUM, issue.getPriority());
+        assertEquals(IssuePriority.MINOR, issue.getPriority());
         assertEquals("dev1", issue.getAssignee().getUsername());
         assertEquals("dev1", issue.getFixer().getUsername());
     }
