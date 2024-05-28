@@ -230,8 +230,6 @@ public class UserRecommendTest {
         addIssue("epsilon3", "tester1", "", "dev4", IssuePriority.LOW, IssueStatus.ASSIGNED);
         addIssue("zeta3", "tester2", "dev4", "dev4", IssuePriority.MEDIUM, IssueStatus.FIXED);
         addIssue("alpha4", "tester1", "dev4", "dev4", IssuePriority.HIGH, IssueStatus.RESOLVED);
-        addIssue("beta4", "tester2", "dev4", "dev4", IssuePriority.CRITICAL, IssueStatus.CLOSED);
-
         addIssue("gamma4", "tester1", "dev1", "dev1", IssuePriority.LOW, IssueStatus.CLOSED);
     }
 
@@ -254,6 +252,84 @@ public class UserRecommendTest {
 
         assertEquals("dev2", fixer[1].getUsername());
         assertEquals(IssuePriority.LOW, fixer[1].getPriority());
+        assertEquals(1, fixer[1].getNumberOfFixed());
+
+        assertEquals("dev3", fixer[2].getUsername());
+        assertEquals(IssuePriority.LOW, fixer[2].getPriority());
+        assertEquals(1, fixer[2].getNumberOfFixed());
+    }
+
+    @Test
+    @DisplayName("get recommended fixers - medium") // 8
+    void getRecommendedFixersMIDEUM() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/recommend-assignee")
+                        .param("username", "admin")
+                        .param("password", "admin")
+                        .param("priority", String.valueOf(IssuePriority.MEDIUM)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Fixer[] fixer = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Fixer[].class);
+        assertEquals(3, fixer.length);
+
+        assertEquals("dev2", fixer[0].getUsername());
+        assertEquals(IssuePriority.MEDIUM, fixer[0].getPriority());
+        assertEquals(1, fixer[0].getNumberOfFixed());
+
+        assertEquals("dev3", fixer[1].getUsername());
+        assertEquals(IssuePriority.MEDIUM, fixer[1].getPriority());
+        assertEquals(1, fixer[1].getNumberOfFixed());
+
+        assertEquals("dev4", fixer[2].getUsername());
+        assertEquals(IssuePriority.MEDIUM, fixer[2].getPriority());
+        assertEquals(1, fixer[2].getNumberOfFixed());
+    }
+
+    @Test
+    @DisplayName("get recommended fixers - high") // 8
+    void getRecommendedFixersHIGH() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/recommend-assignee")
+                        .param("username", "admin")
+                        .param("password", "admin")
+                        .param("priority", String.valueOf(IssuePriority.HIGH)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Fixer[] fixer = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Fixer[].class);
+        assertEquals(3, fixer.length);
+
+        assertEquals("dev1", fixer[0].getUsername());
+        assertEquals(IssuePriority.HIGH, fixer[0].getPriority());
+        assertEquals(1, fixer[0].getNumberOfFixed());
+
+        assertEquals("dev3", fixer[1].getUsername());
+        assertEquals(IssuePriority.HIGH, fixer[1].getPriority());
+        assertEquals(1, fixer[1].getNumberOfFixed());
+
+        assertEquals("dev4", fixer[2].getUsername());
+        assertEquals(IssuePriority.HIGH, fixer[2].getPriority());
+        assertEquals(1, fixer[2].getNumberOfFixed());
+    }
+
+    @Test
+    @DisplayName("get recommended fixers - critical") // 8
+    void getRecommendedFixersCRITICAL() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/recommend-assignee")
+                        .param("username", "admin")
+                        .param("password", "admin")
+                        .param("priority", String.valueOf(IssuePriority.CRITICAL)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Fixer[] fixer = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Fixer[].class);
+        assertEquals(3, fixer.length);
+
+        assertEquals("dev1", fixer[0].getUsername());
+        assertEquals(IssuePriority.CRITICAL, fixer[0].getPriority());
+        assertEquals(1, fixer[0].getNumberOfFixed());
+
+        assertEquals("dev2", fixer[1].getUsername());
+        assertEquals(IssuePriority.CRITICAL, fixer[1].getPriority());
         assertEquals(1, fixer[1].getNumberOfFixed());
 
         assertEquals("dev3", fixer[2].getUsername());
