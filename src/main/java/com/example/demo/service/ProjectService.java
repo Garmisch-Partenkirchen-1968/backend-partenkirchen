@@ -1,8 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.project.*;
+import com.example.demo.dto.user.Fixer;
+import com.example.demo.entity.Issue;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.User;
+import com.example.demo.entity.enumerate.IssuePriority;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +15,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -122,5 +128,48 @@ public class ProjectService {
         return optionalUser.get();
     }
 
+    static List<Fixer> getFixerList(Project project) {
+        ArrayList<Fixer> fixerList = new ArrayList<>();
 
+        for (Issue issue : project.getIssues()) {
+            if (issue.getFixer() != null) {
+                String fixerUsername = issue.getFixer().getUsername();
+                fixerList.add(new Fixer(fixerUsername, issue.getPriority()));
+            }
+        }
+
+        Map<String, List<Fixer>> lowFixer = fixerList.stream()
+                .filter(fixer -> fixer.getPriority() == IssuePriority.LOW)
+                .collect(Collectors.groupingBy(Fixer::getUsername));
+        Map<String, List<Fixer>> mediumFixer = fixerList.stream()
+                .filter(fixer -> fixer.getPriority() == IssuePriority.MEDIUM)
+                .collect(Collectors.groupingBy(Fixer::getUsername));
+        Map<String, List<Fixer>> highFixer = fixerList.stream()
+                .filter(fixer -> fixer.getPriority() == IssuePriority.HIGH)
+                .collect(Collectors.groupingBy(Fixer::getUsername));
+        Map<String, List<Fixer>> criticalFixer = fixerList.stream()
+                .filter(fixer -> fixer.getPriority() == IssuePriority.CRITICAL)
+                .collect(Collectors.groupingBy(Fixer::getUsername));
+
+        fixerList.clear();
+
+        lowFixer.forEach((username, fixers) -> {
+            Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
+            fixerList.add(fixer);
+        });
+        mediumFixer.forEach((username, fixers) -> {
+            Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
+            fixerList.add(fixer);
+        });
+        highFixer.forEach((username, fixers) -> {
+            Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
+            fixerList.add(fixer);
+        });
+        criticalFixer.forEach((username, fixers) -> {
+            Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
+            fixerList.add(fixer);
+        });
+
+        return fixerList;
+    }
 }

@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > UserService</title>
+  <title>Coverage Report > UserRecommendService</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,7 +22,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">com.example.demo.service</a>
 </div>
 
-<h1>Coverage Summary for Class: UserService (com.example.demo.service)</h1>
+<h1>Coverage Summary for Class: UserRecommendService (com.example.demo.service)</h1>
 
 <table class="coverageStats">
 <tr>
@@ -45,7 +45,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 </th>
 </tr>
 <tr>
-  <td class="name">UserService</td>
+  <td class="name">UserRecommendService</td>
 <td class="coverageStat">
   <span class="percent">
     100%
@@ -59,23 +59,23 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (7/7)
+    (4/4)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    95%
+    75%
   </span>
   <span class="absValue">
-    (19/20)
+    (9/12)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    95.1%
+    87.5%
   </span>
   <span class="absValue">
-    (39/41)
+    (21/24)
   </span>
 </td>
 </tr>
@@ -89,95 +89,74 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package com.example.demo.service;
 &nbsp;
-&nbsp;import com.example.demo.Interface.ToUser;
-&nbsp;import com.example.demo.dto.user.UserSignInResponse;
-&nbsp;import com.example.demo.dto.user.UserSignupRequest;
+&nbsp;import com.example.demo.dto.user.Fixer;
+&nbsp;import com.example.demo.entity.Project;
 &nbsp;import com.example.demo.entity.User;
+&nbsp;import com.example.demo.entity.enumerate.IssuePriority;
+&nbsp;import com.example.demo.repository.IssueRepository;
+&nbsp;import com.example.demo.repository.ProjectRepository;
 &nbsp;import com.example.demo.repository.UserRepository;
+&nbsp;import lombok.RequiredArgsConstructor;
 &nbsp;import org.springframework.beans.factory.annotation.Autowired;
 &nbsp;import org.springframework.http.HttpStatus;
 &nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
 &nbsp;import org.springframework.web.server.ResponseStatusException;
 &nbsp;
-&nbsp;import java.util.List;
-&nbsp;import java.util.Optional;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;import static com.example.demo.service.ProjectService.getFixerList;
 &nbsp;
 &nbsp;@Service
-&nbsp;public class UserService {
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class UserRecommendService {
+&nbsp;    private final ProjectRepository projectRepository;
 &nbsp;    private final UserRepository userRepository;
-&nbsp;    private final BCryptService bCryptService;
 &nbsp;
-&nbsp;    @Autowired
-<b class="fc">&nbsp;    public UserService(UserRepository userRepository, BCryptService bCryptService) {</b>
-<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
-<b class="fc">&nbsp;        this.bCryptService = bCryptService;</b>
+&nbsp;    public List&lt;Fixer&gt; getRecommendedAssigneeList(Long projectId, Long userId, IssuePriority priority) {
+<b class="fc">&nbsp;        Project project = getProject(projectId);</b>
+<b class="fc">&nbsp;        User user = getUser(userId);</b>
+&nbsp;
+&nbsp;        // user가 project member가 아닌 경우
+<b class="pc">&nbsp;        if(project.getMembers().get(user) == null){</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;User is not a member of this project&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        List&lt;Fixer&gt; fixers = getFixerList(project);</b>
+&nbsp;
+<b class="fc">&nbsp;        fixers.sort(Comparator</b>
+<b class="fc">&nbsp;                .comparing((Fixer f) -&gt; f.getPriority() == priority ? 0 : 1)</b>
+<b class="fc">&nbsp;                .thenComparing(Comparator.comparing(Fixer::getNumberOfFixed).reversed())</b>
+<b class="fc">&nbsp;                .thenComparing(Fixer::getUsername)</b>
+&nbsp;        );
+&nbsp;
+<b class="fc">&nbsp;        Set&lt;String&gt; seen = new HashSet&lt;&gt;();</b>
+<b class="fc">&nbsp;        List&lt;Fixer&gt; uniqueFixers = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Fixer fixer : fixers) {</b>
+<b class="fc">&nbsp;            if (seen.add(fixer.getUsername())) {</b>
+<b class="fc">&nbsp;                uniqueFixers.add(fixer);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return uniqueFixers;</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    public User signUpUser(UserSignupRequest userSignupRequest) {
-<b class="pc">&nbsp;        if (userRepository.findByUsername(userSignupRequest.getUsername()).isPresent()) {</b>
-<b class="nc">&nbsp;            System.out.println(&quot;username already exists&quot;);</b>
-<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;username already exists&quot;);</b>
+&nbsp;    private Project getProject(Long projectId) {
+<b class="fc">&nbsp;        Optional&lt;Project&gt; optionalProject = projectRepository.findById(projectId);</b>
+<b class="pc">&nbsp;        if (optionalProject.isEmpty()) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;project not found&quot;);</b>
 &nbsp;        }
-<b class="fc">&nbsp;        if (userSignupRequest.getUsername().isEmpty() || userSignupRequest.getPassword().isEmpty()) {</b>
-<b class="fc">&nbsp;            System.out.println(&quot;field cannot be empty&quot;);</b>
-<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;field cannot be empty&quot;);</b>
-&nbsp;        }
-<b class="fc">&nbsp;        if (userSignupRequest.getUsername().matches(&quot;.*[ \\t\\n\\r].*&quot;)) {</b>
-<b class="fc">&nbsp;            System.out.println(&quot;whitespace in username&quot;);</b>
-<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;whitespace in username&quot;);</b>
-&nbsp;        }
-<b class="fc">&nbsp;        String encodedPassword = bCryptService.encodeBcrypt(userSignupRequest.getPassword());</b>
-<b class="fc">&nbsp;        User encryptedUser = new User(userSignupRequest.getUsername(), encodedPassword);</b>
-<b class="fc">&nbsp;        return userRepository.save(encryptedUser);</b>
+<b class="fc">&nbsp;        return optionalProject.get();</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    public UserSignInResponse signInUser(User user) {
-<b class="fc">&nbsp;        Optional&lt;User&gt; foundUser = userRepository.findByUsername(user.getUsername());</b>
-<b class="fc">&nbsp;        if (foundUser.isEmpty()) {</b>
-<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;Invalid username or password&quot;);</b>
+&nbsp;    private User getUser(Long userId) {
+<b class="fc">&nbsp;        Optional&lt;User&gt; optionalUser = userRepository.findById(userId);</b>
+<b class="pc">&nbsp;        if (optionalUser.isEmpty()) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;user not found&quot;);</b>
 &nbsp;        }
-&nbsp;
-<b class="fc">&nbsp;        if (!bCryptService.matchesBcrypt(user.getPassword(), foundUser.get().getPassword())) {</b>
-<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;Invalid username or password&quot;);</b>
-&nbsp;        }
-&nbsp;
-<b class="fc">&nbsp;        return new UserSignInResponse(foundUser.get().getId());</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    public void updatePassword(Long userId, String newPassword) {
-<b class="fc">&nbsp;        if (newPassword == null || newPassword.isEmpty()) {</b>
-<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;password cannot be empty&quot;);</b>
-&nbsp;        }
-<b class="fc">&nbsp;        User user = userRepository.findById(userId).orElseThrow();</b>
-&nbsp;
-<b class="fc">&nbsp;        String encodedPassword = bCryptService.encodeBcrypt(newPassword);</b>
-<b class="fc">&nbsp;        user.setPassword(encodedPassword);</b>
-<b class="fc">&nbsp;        userRepository.save(user);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    public void deleteUser(Long userId) {
-<b class="fc">&nbsp;        User user = userRepository.findById(userId).orElseThrow();</b>
-<b class="fc">&nbsp;        userRepository.delete(user);</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    public List&lt;User&gt; getUsers(String keyword) {
-<b class="fc">&nbsp;        List&lt;User&gt; users = userRepository.findAll();</b>
-<b class="fc">&nbsp;        users.removeIf(user -&gt; !(user.getUsername().contains(keyword)));</b>
-<b class="fc">&nbsp;        return users;</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    public Long RequesterIsFound(ToUser toUser){
-<b class="fc">&nbsp;        Optional&lt;User&gt; req = userRepository.findByUsername(toUser.toUser().getUsername());</b>
-<b class="fc">&nbsp;        if(req.isEmpty()){</b>
-<b class="fc">&nbsp;            System.out.println(&quot;User not found&quot;);</b>
-<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;User not found&quot;);</b>
-&nbsp;        }
-<b class="fc">&nbsp;        User requester = req.get();</b>
-<b class="fc">&nbsp;        if (!bCryptService.matchesBcrypt(toUser.toUser().getPassword(), requester.getPassword())) {</b>
-<b class="fc">&nbsp;            System.out.println(&quot;password do not match&quot;);</b>
-<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;Passwords do not match&quot;);</b>
-&nbsp;        }
-<b class="fc">&nbsp;        return requester.getId();</b>
+<b class="fc">&nbsp;        return optionalUser.get();</b>
 &nbsp;    }
 &nbsp;}
 </code>
@@ -203,7 +182,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-05-27 22:17</div>
+    <div style="float:right;">generated on 2024-05-28 14:14</div>
 </div>
 </body>
 </html>

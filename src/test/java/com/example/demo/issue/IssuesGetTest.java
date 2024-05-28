@@ -70,9 +70,10 @@ public class IssuesGetTest {
     @Autowired
     private ProjectRepository projectRepository;
 
-    private Long projectId;
     @Autowired
     private IssueService issueService;
+
+    private Long projectId;
 
     void addIssue(String title, String reporterUsername, String fixerUsername, String assigneeUsername, IssuePriority priority, IssueStatus status) {
         Optional<User> optionalReporter = userRepository.getReferenceByUsername(reporterUsername);
