@@ -1,14 +1,12 @@
 package com.example.demo.dto.user;
 
 import com.example.demo.entity.enumerate.IssuePriority;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Fixer {
     @NonNull
     private String username;

@@ -40,6 +40,7 @@ public class UserRecommendService {
         fixers.sort(Comparator
                 .comparing((Fixer f) -> f.getPriority() == priority ? 0 : 1)
                 .thenComparing(Comparator.comparing(Fixer::getNumberOfFixed).reversed())
+                .thenComparing(Fixer::getUsername)
         );
 
         Set<String> seen = new HashSet<>();
