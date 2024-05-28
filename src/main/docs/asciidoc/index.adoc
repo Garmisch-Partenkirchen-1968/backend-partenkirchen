@@ -121,3 +121,12 @@ operation::permissions/patch/success[snippets='curl-request,http-request,http-re
 === delete
 ==== 성공
 operation::permissions/delete/success[snippets='curl-request,http-request,http-response']
+
+== recommend assignee
+=== get
+numberOfFixed: 해당 developer가 해당 priority를 가진 issue를 해결한 수
+
+==== 성공 - priority가 low인 issue의 assignee 추천 받기
+operation::recommend/get/success-low[snippets='curl-request,http-request,http-response']
+==== 성공 - priority가 critical인 issue의 assignee 추천 받기
+operation::recommend/get/success-critical[snippets='curl-request,http-request,http-response']

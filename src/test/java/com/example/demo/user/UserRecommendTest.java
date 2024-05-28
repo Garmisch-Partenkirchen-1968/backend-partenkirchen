@@ -32,6 +32,9 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -239,6 +242,9 @@ public class UserRecommendTest {
                         .param("password", "admin")
                         .param("priority", String.valueOf(IssuePriority.LOW)))
                 .andExpect(status().isOk())
+                .andDo(document("recommend/get/success-low",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
                 .andReturn();
 
         Fixer[] fixer = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Fixer[].class);
@@ -317,6 +323,9 @@ public class UserRecommendTest {
                         .param("password", "admin")
                         .param("priority", String.valueOf(IssuePriority.CRITICAL)))
                 .andExpect(status().isOk())
+                .andDo(document("recommend/get/success-critical",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
                 .andReturn();
 
         Fixer[] fixer = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Fixer[].class);
