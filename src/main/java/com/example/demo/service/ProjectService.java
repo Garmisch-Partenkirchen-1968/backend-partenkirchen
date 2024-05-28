@@ -154,19 +154,19 @@ public class ProjectService {
         fixerList.clear();
 
         lowFixer.forEach((username, fixers) -> {
-            Fixer fixer = new Fixer(username, fixers.getFirst().getPriority(), fixers.size());
+            Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
             fixerList.add(fixer);
         });
         mediumFixer.forEach((username, fixers) -> {
-            Fixer fixer = new Fixer(username, fixers.getFirst().getPriority(), fixers.size());
+            Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
             fixerList.add(fixer);
         });
         highFixer.forEach((username, fixers) -> {
-            Fixer fixer = new Fixer(username, fixers.getFirst().getPriority(), fixers.size());
+            Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
             fixerList.add(fixer);
         });
         criticalFixer.forEach((username, fixers) -> {
-            Fixer fixer = new Fixer(username, fixers.getFirst().getPriority(), fixers.size());
+            Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
             fixerList.add(fixer);
         });
 
