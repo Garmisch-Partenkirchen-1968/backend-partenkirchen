@@ -253,6 +253,14 @@ public class IssueService {
             }
             issue.setStatus(IssueStatus.CLOSED);
         }
+        // Status reopened로 바꿈(PL만 가능)
+        else if (issuePatchRequest.getStatus() == IssueStatus.REOPENED) {
+            if ((userPermission & (1 << 2)) == 0) {
+                System.out.println("User is not PL");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not PL");
+            }
+            issue.setStatus(IssueStatus.REOPENED);
+        }
 
         issueRepository.save(issue);
     }
