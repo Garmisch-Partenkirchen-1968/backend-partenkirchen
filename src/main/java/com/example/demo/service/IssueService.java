@@ -208,6 +208,7 @@ public class IssueService {
         if(issuePatchRequest.getPriority() != null){
             issue.setPriority(issuePatchRequest.getPriority());
         }
+
         // assignee 받았을 때
         if(assign.isPresent()){
             User assignee = assign.get();
