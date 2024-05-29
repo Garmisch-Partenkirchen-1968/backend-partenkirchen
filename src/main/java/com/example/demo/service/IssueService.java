@@ -208,6 +208,7 @@ public class IssueService {
         if(issuePatchRequest.getPriority() != null){
             issue.setPriority(issuePatchRequest.getPriority());
         }
+
         // assignee 받았을 때
         if(assign.isPresent()){
             User assignee = assign.get();
@@ -251,6 +252,14 @@ public class IssueService {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not PL");
             }
             issue.setStatus(IssueStatus.CLOSED);
+        }
+        // Status reopened로 바꿈(PL만 가능)
+        else if (issuePatchRequest.getStatus() == IssueStatus.REOPENED) {
+            if ((userPermission & (1 << 2)) == 0) {
+                System.out.println("User is not PL");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not PL");
+            }
+            issue.setStatus(IssueStatus.REOPENED);
         }
 
         issueRepository.save(issue);
