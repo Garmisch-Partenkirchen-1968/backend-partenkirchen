@@ -119,7 +119,7 @@ public class IssueDeleteTest {
                 .username("tester1")
                 .password("tester1")
                 .title("default issue")
-                .priority(IssuePriority.MEDIUM)
+                .priority(IssuePriority.MINOR)
                 .build();
         MvcResult mvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                         .contentType(MediaType.APPLICATION_JSON)

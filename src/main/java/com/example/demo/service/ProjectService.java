@@ -138,34 +138,41 @@ public class ProjectService {
             }
         }
 
-        Map<String, List<Fixer>> lowFixer = fixerList.stream()
-                .filter(fixer -> fixer.getPriority() == IssuePriority.LOW)
+        Map<String, List<Fixer>> trivialFixer = fixerList.stream()
+                .filter(fixer -> fixer.getPriority() == IssuePriority.TRIVIAL)
                 .collect(Collectors.groupingBy(Fixer::getUsername));
-        Map<String, List<Fixer>> mediumFixer = fixerList.stream()
-                .filter(fixer -> fixer.getPriority() == IssuePriority.MEDIUM)
+        Map<String, List<Fixer>> minorFixer = fixerList.stream()
+                .filter(fixer -> fixer.getPriority() == IssuePriority.MINOR)
                 .collect(Collectors.groupingBy(Fixer::getUsername));
-        Map<String, List<Fixer>> highFixer = fixerList.stream()
-                .filter(fixer -> fixer.getPriority() == IssuePriority.HIGH)
+        Map<String, List<Fixer>> majorFixer = fixerList.stream()
+                .filter(fixer -> fixer.getPriority() == IssuePriority.MAJOR)
                 .collect(Collectors.groupingBy(Fixer::getUsername));
         Map<String, List<Fixer>> criticalFixer = fixerList.stream()
                 .filter(fixer -> fixer.getPriority() == IssuePriority.CRITICAL)
                 .collect(Collectors.groupingBy(Fixer::getUsername));
+        Map<String, List<Fixer>> blockerFixer = fixerList.stream()
+                .filter(fixer -> fixer.getPriority() == IssuePriority.BLOCKER)
+                .collect(Collectors.groupingBy(Fixer::getUsername));
 
         fixerList.clear();
 
-        lowFixer.forEach((username, fixers) -> {
+        trivialFixer.forEach((username, fixers) -> {
             Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
             fixerList.add(fixer);
         });
-        mediumFixer.forEach((username, fixers) -> {
+        minorFixer.forEach((username, fixers) -> {
             Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
             fixerList.add(fixer);
         });
-        highFixer.forEach((username, fixers) -> {
+        majorFixer.forEach((username, fixers) -> {
             Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
             fixerList.add(fixer);
         });
         criticalFixer.forEach((username, fixers) -> {
+            Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
+            fixerList.add(fixer);
+        });
+        blockerFixer.forEach((username, fixers) -> {
             Fixer fixer = new Fixer(username, fixers.get(0).getPriority(), fixers.size());
             fixerList.add(fixer);
         });

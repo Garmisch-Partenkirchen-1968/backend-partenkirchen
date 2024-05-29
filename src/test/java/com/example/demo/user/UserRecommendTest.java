@@ -212,35 +212,35 @@ public class UserRecommendTest {
         // give tester permission to dev2
         permissionService.addPermission(projectId, dev4Id, dev1PermissionRequest);
 
-        addIssue("alpha1", "tester1", "", "", IssuePriority.LOW, IssueStatus.NEW);
-        addIssue("beta1", "tester2", "", "dev1", IssuePriority.MEDIUM, IssueStatus.ASSIGNED);
-        addIssue("gamma1", "tester1", "dev1", "dev1", IssuePriority.HIGH, IssueStatus.FIXED);
+        addIssue("alpha1", "tester1", "", "", IssuePriority.TRIVIAL, IssueStatus.NEW);
+        addIssue("beta1", "tester2", "", "dev1", IssuePriority.MINOR, IssueStatus.ASSIGNED);
+        addIssue("gamma1", "tester1", "dev1", "dev1", IssuePriority.MAJOR, IssueStatus.FIXED);
         addIssue("delta1", "tester2", "dev1", "dev1", IssuePriority.CRITICAL, IssueStatus.RESOLVED);
-        addIssue("epsilon1", "tester1", "dev1", "dev1", IssuePriority.LOW, IssueStatus.CLOSED);
-        addIssue("zeta1", "tester2", "", "", IssuePriority.MEDIUM, IssueStatus.NEW);
-        addIssue("alpha2", "tester1", "", "dev2", IssuePriority.HIGH, IssueStatus.ASSIGNED);
+        addIssue("epsilon1", "tester1", "dev1", "dev1", IssuePriority.TRIVIAL, IssueStatus.CLOSED);
+        addIssue("zeta1", "tester2", "", "", IssuePriority.MINOR, IssueStatus.NEW);
+        addIssue("alpha2", "tester1", "", "dev2", IssuePriority.MAJOR, IssueStatus.ASSIGNED);
         addIssue("beta2", "tester2", "dev2", "dev2", IssuePriority.CRITICAL, IssueStatus.FIXED);
-        addIssue("gamma2", "tester1", "dev2", "dev2", IssuePriority.LOW, IssueStatus.RESOLVED);
-        addIssue("delta2", "tester2", "dev2", "dev2", IssuePriority.MEDIUM, IssueStatus.CLOSED);
-        addIssue("epsilon2", "tester1", "", "", IssuePriority.HIGH, IssueStatus.NEW);
+        addIssue("gamma2", "tester1", "dev2", "dev2", IssuePriority.TRIVIAL, IssueStatus.RESOLVED);
+        addIssue("delta2", "tester2", "dev2", "dev2", IssuePriority.MINOR, IssueStatus.CLOSED);
+        addIssue("epsilon2", "tester1", "", "", IssuePriority.MAJOR, IssueStatus.NEW);
         addIssue("zeta2", "tester2", "", "dev3", IssuePriority.CRITICAL, IssueStatus.ASSIGNED);
-        addIssue("alpha3", "tester1", "dev3", "dev3", IssuePriority.LOW, IssueStatus.FIXED);
-        addIssue("beta3", "tester2", "dev3", "dev3", IssuePriority.MEDIUM, IssueStatus.RESOLVED);
-        addIssue("gamma3", "tester1", "dev3", "dev3", IssuePriority.HIGH, IssueStatus.CLOSED);
+        addIssue("alpha3", "tester1", "dev3", "dev3", IssuePriority.TRIVIAL, IssueStatus.FIXED);
+        addIssue("beta3", "tester2", "dev3", "dev3", IssuePriority.MINOR, IssueStatus.RESOLVED);
+        addIssue("gamma3", "tester1", "dev3", "dev3", IssuePriority.MAJOR, IssueStatus.CLOSED);
         addIssue("delta3", "tester2", "", "", IssuePriority.CRITICAL, IssueStatus.NEW);
-        addIssue("epsilon3", "tester1", "", "dev4", IssuePriority.LOW, IssueStatus.ASSIGNED);
-        addIssue("zeta3", "tester2", "dev4", "dev4", IssuePriority.MEDIUM, IssueStatus.FIXED);
-        addIssue("alpha4", "tester1", "dev4", "dev4", IssuePriority.HIGH, IssueStatus.RESOLVED);
-        addIssue("gamma4", "tester1", "dev1", "dev1", IssuePriority.LOW, IssueStatus.CLOSED);
+        addIssue("epsilon3", "tester1", "", "dev4", IssuePriority.TRIVIAL, IssueStatus.ASSIGNED);
+        addIssue("zeta3", "tester2", "dev4", "dev4", IssuePriority.MINOR, IssueStatus.FIXED);
+        addIssue("alpha4", "tester1", "dev4", "dev4", IssuePriority.MAJOR, IssueStatus.RESOLVED);
+        addIssue("gamma4", "tester1", "dev1", "dev1", IssuePriority.TRIVIAL, IssueStatus.CLOSED);
     }
 
     @Test
-    @DisplayName("get recommended fixers - low") // 8
-    void getRecommendedFixersLOW() throws Exception {
+    @DisplayName("get recommended fixers - trivial") // 8
+    void getRecommendedFixersTRIVIAL() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/recommend-assignee")
                         .param("username", "admin")
                         .param("password", "admin")
-                        .param("priority", String.valueOf(IssuePriority.LOW)))
+                        .param("priority", String.valueOf(IssuePriority.TRIVIAL)))
                 .andExpect(status().isOk())
                 .andDo(document("recommend/get/success-low",
                         preprocessRequest(prettyPrint()),
@@ -251,25 +251,25 @@ public class UserRecommendTest {
         assertEquals(3, fixer.length);
 
         assertEquals("dev1", fixer[0].getUsername());
-        assertEquals(IssuePriority.LOW, fixer[0].getPriority());
+        assertEquals(IssuePriority.TRIVIAL, fixer[0].getPriority());
         assertEquals(2, fixer[0].getNumberOfFixed());
 
         assertEquals("dev2", fixer[1].getUsername());
-        assertEquals(IssuePriority.LOW, fixer[1].getPriority());
+        assertEquals(IssuePriority.TRIVIAL, fixer[1].getPriority());
         assertEquals(1, fixer[1].getNumberOfFixed());
 
         assertEquals("dev3", fixer[2].getUsername());
-        assertEquals(IssuePriority.LOW, fixer[2].getPriority());
+        assertEquals(IssuePriority.TRIVIAL, fixer[2].getPriority());
         assertEquals(1, fixer[2].getNumberOfFixed());
     }
 
     @Test
-    @DisplayName("get recommended fixers - medium") // 8
+    @DisplayName("get recommended fixers - MINOR") // 8
     void getRecommendedFixersMIDEUM() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/recommend-assignee")
                         .param("username", "admin")
                         .param("password", "admin")
-                        .param("priority", String.valueOf(IssuePriority.MEDIUM)))
+                        .param("priority", String.valueOf(IssuePriority.MINOR)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -277,25 +277,25 @@ public class UserRecommendTest {
         assertEquals(3, fixer.length);
 
         assertEquals("dev2", fixer[0].getUsername());
-        assertEquals(IssuePriority.MEDIUM, fixer[0].getPriority());
+        assertEquals(IssuePriority.MINOR, fixer[0].getPriority());
         assertEquals(1, fixer[0].getNumberOfFixed());
 
         assertEquals("dev3", fixer[1].getUsername());
-        assertEquals(IssuePriority.MEDIUM, fixer[1].getPriority());
+        assertEquals(IssuePriority.MINOR, fixer[1].getPriority());
         assertEquals(1, fixer[1].getNumberOfFixed());
 
         assertEquals("dev4", fixer[2].getUsername());
-        assertEquals(IssuePriority.MEDIUM, fixer[2].getPriority());
+        assertEquals(IssuePriority.MINOR, fixer[2].getPriority());
         assertEquals(1, fixer[2].getNumberOfFixed());
     }
 
     @Test
-    @DisplayName("get recommended fixers - high") // 8
-    void getRecommendedFixersHIGH() throws Exception {
+    @DisplayName("get recommended fixers - major") // 8
+    void getRecommendedFixersMAJOR() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/projects/" + projectId + "/recommend-assignee")
                         .param("username", "admin")
                         .param("password", "admin")
-                        .param("priority", String.valueOf(IssuePriority.HIGH)))
+                        .param("priority", String.valueOf(IssuePriority.MAJOR)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -303,15 +303,15 @@ public class UserRecommendTest {
         assertEquals(3, fixer.length);
 
         assertEquals("dev1", fixer[0].getUsername());
-        assertEquals(IssuePriority.HIGH, fixer[0].getPriority());
+        assertEquals(IssuePriority.MAJOR, fixer[0].getPriority());
         assertEquals(1, fixer[0].getNumberOfFixed());
 
         assertEquals("dev3", fixer[1].getUsername());
-        assertEquals(IssuePriority.HIGH, fixer[1].getPriority());
+        assertEquals(IssuePriority.MAJOR, fixer[1].getPriority());
         assertEquals(1, fixer[1].getNumberOfFixed());
 
         assertEquals("dev4", fixer[2].getUsername());
-        assertEquals(IssuePriority.HIGH, fixer[2].getPriority());
+        assertEquals(IssuePriority.MAJOR, fixer[2].getPriority());
         assertEquals(1, fixer[2].getNumberOfFixed());
     }
 
@@ -340,7 +340,7 @@ public class UserRecommendTest {
         assertEquals(1, fixer[1].getNumberOfFixed());
 
         assertEquals("dev3", fixer[2].getUsername());
-        assertEquals(IssuePriority.LOW, fixer[2].getPriority());
+        assertEquals(IssuePriority.TRIVIAL, fixer[2].getPriority());
         assertEquals(1, fixer[2].getNumberOfFixed());
     }
 }

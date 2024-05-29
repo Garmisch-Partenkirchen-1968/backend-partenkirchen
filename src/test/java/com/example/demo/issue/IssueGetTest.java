@@ -122,7 +122,7 @@ public class IssueGetTest {
                 .username("tester1")
                 .password("tester1")
                 .title("default issue")
-                .priority(IssuePriority.MEDIUM)
+                .priority(IssuePriority.MINOR)
                 .build();
         MvcResult mvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -147,7 +147,7 @@ public class IssueGetTest {
                 .username("tester1")
                 .password("tester1")
                 .title("another issue")
-                .priority(IssuePriority.MEDIUM)
+                .priority(IssuePriority.MINOR)
                 .build();
         MvcResult anotherMvcResult = this.mockMvc.perform(post("/projects/" + projectId + "/issues")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -174,7 +174,7 @@ public class IssueGetTest {
 
         Issue issue = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Issue.class);
         assertEquals(issue.getTitle(), "default issue");
-        assertEquals(issue.getPriority(), IssuePriority.MEDIUM);
+        assertEquals(issue.getPriority(), IssuePriority.MINOR);
         assertEquals(issue.getStatus(), IssueStatus.NEW);
     }
 
