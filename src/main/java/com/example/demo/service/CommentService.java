@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -54,6 +55,7 @@ public class CommentService {
         }
 
         Comment comment = new Comment(commentPostRequest.getContent(), user, commentPostRequest.getIsDescription());
+        comment.setCommentedDate(LocalDateTime.now());
         comment = commentRepository.save(comment);
         issue.getComments().add(comment);
         issueRepository.save(issue);

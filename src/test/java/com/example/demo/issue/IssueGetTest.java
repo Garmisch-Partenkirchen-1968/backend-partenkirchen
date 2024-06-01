@@ -1,6 +1,7 @@
 package com.example.demo.issue;
 
 import com.example.demo.dto.Permission.PermissionPostRequest;
+import com.example.demo.dto.comment.CommentPostRequest;
 import com.example.demo.dto.issue.IssuePostRequest;
 import com.example.demo.dto.issue.IssuePostResponse;
 import com.example.demo.dto.project.ProjectPostRequest;
@@ -10,6 +11,7 @@ import com.example.demo.entity.User;
 import com.example.demo.entity.enumerate.IssuePriority;
 import com.example.demo.entity.enumerate.IssueStatus;
 import com.example.demo.repository.IssueRepository;
+import com.example.demo.service.CommentService;
 import com.example.demo.service.PermissionService;
 import com.example.demo.service.ProjectService;
 import com.example.demo.service.UserService;
@@ -60,6 +62,9 @@ public class IssueGetTest {
     private PermissionService permissionService;
 
     @Autowired
+    private CommentService commentService;
+
+    @Autowired
     private IssueRepository issueRepository;
 
     private Long projectId;
@@ -75,7 +80,7 @@ public class IssueGetTest {
                 .username("admin")
                 .password("admin")
                 .build();
-        userService.signUpUser(admin);
+        Long adminId = userService.signUpUser(admin).getId();
 
         // issue를 생성할 유저 생성
         UserSignupRequest tester1 = UserSignupRequest.builder()
@@ -158,6 +163,9 @@ public class IssueGetTest {
         Optional<Issue> anotherOptionalIssue = issueRepository.findById(anotherIssuePostResponse.getId());
         assertTrue(anotherOptionalIssue.isPresent());
         anotherIssue = optionalIssue.get();
+
+        CommentPostRequest commentPostRequest = new CommentPostRequest("admin", "admin", "this is content", false);
+        commentService.postComment(projectId, defaultIssue.getId(), adminId, commentPostRequest);
     }
 
     @Test
